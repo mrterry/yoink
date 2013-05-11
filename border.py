@@ -13,13 +13,24 @@ class DeformableBorder(object):
         self.ax.add_artist(self.line)
 
         self.circles = []
+        self.connect()
 
-        self.cidpress = self.line.figure.canvas.mpl_connect(
+    def connect(self):
+        self.cidpress = self.canvas.mpl_connect(
                 'button_press_event', self.on_press)
-        self.cidreleas = self.line.figure.canvas.mpl_connect(
+        self.cidrelease = self.canvas.mpl_connect(
                 'button_release_event', self.on_release)
-        self.cidmotion = self.line.figure.canvas.mpl_connect(
+        self.cidmotion = self.canvas.mpl_connect(
                 'motion_notify_event', self.on_motion)
+
+    def disconnect(self):
+        self.canvas.mpl_disconnect(self.cidpress)
+        self.canvas.mpl_disconnect(self.cidrelease)
+        self.canvas.mpl_disconnect(self.cidmotion)
+
+        self.cidpress = None
+        self.cidrelease = None
+        self.cidmotion = None
 
     def on_press(self, event):
         ci = self.get_circle_index(event)
