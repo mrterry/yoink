@@ -5,7 +5,7 @@ from matplotlib.lines import Line2D
 
 
 class DeformableLine(object):
-    def __init__(self, ax):
+    def __init__(self, ax, is_closed=False, max_points=None):
         self.ax = ax
         self.canvas = self.ax.figure.canvas
 
@@ -15,6 +15,10 @@ class DeformableLine(object):
         self.ax.add_artist(self.line)
 
         self.circles = []
+
+        self.is_closed = is_closed
+        self.max_points = max_points 
+
         self.callbacks = []
         self.moving_ci = None
         self.connected = False
@@ -60,7 +64,7 @@ class DeformableLine(object):
         self.circles[ci].center = (x, y)
 
         self.xs[ci], self.ys[ci] = x, y
-        if len(self.xs) == 5 and ci == 0:
+        if self.is_closed and len(self.circles) == self.max_points and ci == 0:
             self.xs[-1], self.ys[-1] = x, y
         self.line.set_data(self.xs, self.ys)
 
@@ -76,7 +80,7 @@ class DeformableLine(object):
         for i, c in enumerate(self.circles):
             if c.contains(event)[0]:
                 return i
-        if len(self.circles) == 4:
+        if len(self.circles) == self.max_points:
             return None
 
         # new circle
@@ -89,7 +93,7 @@ class DeformableLine(object):
         self.xs.append(x)
         self.ys.append(y)
         # finish square if adding last corner
-        if i == 3:
+        if self.is_closed and len(self.circles) == self.max_points:
             self.xs.append(self.xs[0])
             self.ys.append(self.ys[0])
         self.line.set_data(self.xs, self.ys)
