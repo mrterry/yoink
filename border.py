@@ -15,6 +15,8 @@ class DeformableBorder(object):
         self.ax.add_artist(self.line)
 
         self.circles = []
+        self.callbacks = []
+        self.connected = False
 
     def connect(self):
         self.cidpress = self.canvas.mpl_connect(
@@ -36,6 +38,8 @@ class DeformableBorder(object):
         self.connected = False
 
     def draw(self):
+        for f in self.callbacks:
+            f()
         self.canvas.draw()
 
     def on_press(self, event):
