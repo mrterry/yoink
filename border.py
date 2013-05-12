@@ -16,6 +16,7 @@ class DeformableLine(object):
 
         self.circles = []
         self.callbacks = []
+        self.moving_ci = None
         self.connected = False
 
     def connect(self):
