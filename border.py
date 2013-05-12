@@ -15,7 +15,6 @@ class DeformableBorder(object):
         self.ax.add_artist(self.line)
 
         self.circles = []
-        self.connect()
 
     def connect(self):
         self.cidpress = self.canvas.mpl_connect(
