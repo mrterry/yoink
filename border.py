@@ -23,6 +23,7 @@ class DeformableBorder(object):
                 'button_release_event', self.on_release)
         self.cidmotion = self.canvas.mpl_connect(
                 'motion_notify_event', self.on_motion)
+        self.connected = True
 
     def disconnect(self):
         self.canvas.mpl_disconnect(self.cidpress)
@@ -32,6 +33,7 @@ class DeformableBorder(object):
         self.cidpress = None
         self.cidrelease = None
         self.cidmotion = None
+        self.connected = False
 
     def on_press(self, event):
         ci = self.get_circle_index(event)
