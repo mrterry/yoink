@@ -4,7 +4,7 @@ from matplotlib.patches import Circle
 from matplotlib.lines import Line2D
 
 
-class DeformableBorder(object):
+class DeformableLine(object):
     def __init__(self, ax):
         self.ax = ax
         self.canvas = self.ax.figure.canvas
