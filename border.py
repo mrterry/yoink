@@ -1,3 +1,5 @@
+from __future__ import division
+
 from matplotlib.patches import Circle
 from matplotlib.lines import Line2D
 
