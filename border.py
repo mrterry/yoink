@@ -35,6 +35,9 @@ class DeformableBorder(object):
         self.cidmotion = None
         self.connected = False
 
+    def draw(self):
+        self.canvas.draw()
+
     def on_press(self, event):
         ci = self.get_circle_index(event)
         if ci is None:
@@ -56,12 +59,12 @@ class DeformableBorder(object):
             self.xs[-1], self.ys[-1] = x, y
         self.line.set_data(self.xs, self.ys)
 
-        self.canvas.draw()
+        self.draw()
 
     def on_release(self, event):
         if self.moving_ci:
             self.moving_ci = None
-            self.canvas.draw()
+            self.draw()
 
     def get_circle_index(self, event):
         i = 0
@@ -86,5 +89,5 @@ class DeformableBorder(object):
             self.ys.append(self.ys[0])
         self.line.set_data(self.xs, self.ys)
 
-        self.canvas.draw()
+        self.draw()
         return i
