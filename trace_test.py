@@ -1,36 +1,70 @@
-from yoink.trace import naive_trace
+from trace import naive_trace
+from nose.tools import assert_almost_equal
 
-def naive_trace_test1():
-    path = naive_trace(-10.1, 10.1,-3.4, -5.3)
-    assert len(path) == 24
+X0, Y0 = 4.2, 1.2
 
-
-def naive_trace_test2():
-    path = naive_trace(-3.4, -5.3, 10.1, 10.1)
-    assert len(path) == 30
-
-
-def naive_trace_test3():
-    path = naive_trace(3.4, 5.3, 10.1, 10.1)
-    assert len(path) == 14
-
-
-def naive_trace_test4():
-    path = naive_trace(3.4, 5.3, -10.1, 10.1)
-    assert len(path) == 20
+def naive_trace_right_test():
+    path = naive_trace(X0, Y0, X0+1, Y0)
+    oracle = [
+            (4, 4.2, 1, 1.2),
+            (5, 5.0, 1, 1.2),
+            (5, 5.2, 1, 1.2),
+            ]
+    for (pj,px,pi,py), (oj,ox,oi,oy) in zip(path, oracle):
+        assert pj == oj, "j doesn't match"
+        assert pi == oi, "i doesn't match"
+        assert_almost_equal(px, ox)
+        assert_almost_equal(py, oy)
 
 
-def naive_trace_test5():
-    x0, y0, x1, y1 = 632.596774194, 534.983870968, 636.596774194, 64.0161290323
-    i_j_x_y = naive_trace(x0, y0, x1, y1)
-    ii, jj, x, y = zip(*i_j_x_y)
+def naive_trace_left_test():
+    path = naive_trace(X0, Y0, X0-1, Y0)
+    oracle = [
+            (4, 4.2, 1, 1.2),
+            (4, 4.0, 1, 1.2),
+            (3, 3.2, 1, 1.2),
+            ]
+    for (pj,px,pi,py), (oj,ox,oi,oy) in zip(path, oracle):
+        assert pj == oj, "j doesn't match"
+        assert pi == oi, "i doesn't match"
+        assert_almost_equal(px, ox)
+        assert_almost_equal(py, oy)
+
+
+def naive_trace_up_test():
+    path = naive_trace(X0, Y0, X0, Y0+1)
+    oracle = [
+            (4, 4.2, 1, 1.2),
+            (4, 4.2, 2, 2.0),
+            (4, 4.2, 2, 2.2),
+            ]
+    for (pj,px,pi,py), (oj,ox,oi,oy) in zip(path, oracle):
+        assert pj == oj, "j doesn't match"
+        assert pi == oi, "i doesn't match"
+        assert_almost_equal(px, ox)
+        assert_almost_equal(py, oy)
+
+
+def naive_trace_down_test():
+    path = naive_trace(X0, Y0, X0, Y0-1)
+    oracle = [
+            (4, 4.2, 1, 1.2),
+            (4, 4.2, 1, 1.0),
+            (4, 4.2, 0, 0.2),
+            ]
+    print path
+    print oracle
+    for (pj,px,pi,py), (oj,ox,oi,oy) in zip(path, oracle):
+        assert pj == oj, "j doesn't match"
+        assert pi == oi, "i doesn't match"
+        assert_almost_equal(px, ox)
+        assert_almost_equal(py, oy)
 
 
 def naive_trace_endpoint_test():
-    x0, y0, x1, y1 = 632.596774194, 534.983870968, 636.596774194, 64.0161290323
-    i_j_x_y = naive_trace(x0, y0, x1, y1)
-    ii, jj, x, y = zip(*i_j_x_y)
-    assert x[0] == x0
-    assert y[0] == y0
-    assert x[1] == x1
-    assert y[1] == y1
+    i_j_x_y = naive_trace(X0, Y0, X0+1, Y0+1)
+    jj, ii, x, y = zip(*i_j_x_y)
+    assert x[0] == X0
+    assert y[0] == Y0
+    assert x[1] == X0+1
+    assert y[1] == Y0+1
