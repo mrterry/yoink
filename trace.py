@@ -10,37 +10,38 @@ def naive_trace(x, y, x1, y1):
     reliable, or good.
     """
     # TODO weird things happening at last step, negative step size
-    i, j = int(x), int(y)
-    ij_end = int(x1), int(y1)
+    ix, iy = int(x), int(y)
 
     dx, dy = x1-x, y1-y
-    di = -1 if dx < 0 else 1
-    dj = -1 if dy < 0 else 1
+    ij_end = int(x1), int(y1)
     dist_left = np.sqrt(dx**2 + dy**2)
+    max_steps = 2*int(abs(dx) + abs(dy))
     ct, st = dx/dist_left, dy/dist_left
+
+    dx = -1 if dx < 0 else 1
+    dy = -1 if dy < 0 else 1
     # deal 1/0 issues due to ct == 0 or st == 0
 
-    path = [(i, j, x, y)]
-    max_step = int(abs(dx))+1 + int(abs(dy)) + 1
-    for step in xrange(2*max_step):
-        l1 = (j+dj - y)/st
-        l2 = (i+di - x)/ct
+    path = [(ix, iy, x, y)]
+    for step in xrange(max_steps):
+        l1 = (iy+dy - y)/st
+        l2 = (ix+dx - x)/ct
 
         if l1 < l2:
-            j += dj
+            iy += dy
             x += l1*ct
-            y = j
+            y = iy
         else:
-            i += di
-            x = i
+            ix += dx
+            x = ix
             y += l2*st
-        path.append((i, j, x, y))
+        path.append((ix, iy, x, y))
 
-        if (i, j) == ij_end:
+        if (ix, iy) == ij_end:
             break
     else:
         assert False
-    path.append((i, j, x1, y1))
+    path.append((ix, iy, x1, y1))
     return path
 
 
