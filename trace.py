@@ -178,15 +178,15 @@ def naive_colormaping(x0, y0, x1, y1, spline):
         l: ndarray, shape=(N,) - normalized location of colors
         rgb ndarray, shape=(N,3) - sequence of colors at each point in l
     """
-    i_j_x_y = naive_trace(x0, y0, x1, y1)
-    ii, jj, x, y = zip(*i_j_x_y)
+    stuff = naive_trace(x0, y0, x1, y1)
+    jj, ii, x, y = zip(*stuff)
     x, y = np.array(x), np.array(y)
-    dx = x.max() - x.min() 
-    dy = y.max() - y.min() 
+    dx = x[-1] - x[0]
+    dy = y[-1] - y[0]
     if dx > dy:
-        l = (x - x.min())/dx
+        l = (x - x0)/dx
     else:
-        l = (y - y.min())/dy
+        l = (y - y0)/dy
     rgb = spline.ev(y, x)
     return l, rgb
 
