@@ -2,7 +2,6 @@ from __future__ import division
 from math import floor
 
 import numpy as np
-from scipy.interpolate import RectBivariateSpline
 from scipy.ndimage.interpolation import map_coordinates
 
 
