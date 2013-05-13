@@ -192,7 +192,7 @@ def naive_colormaping(x0, y0, x1, y1, spline):
     return l, rgb
 
 
-def equispaced_colormaping(x0, y0, x1, y1, spline, N=256):
+def equispaced_colormaping(x0, y0, x1, y1, im, N=256, order=1):
     """
     Get lineout from x0/y0 to x1/y1 with equally spaced points.
     Returns:
@@ -202,8 +202,7 @@ def equispaced_colormaping(x0, y0, x1, y1, spline, N=256):
     y2 = np.linspace(y0, y1, N)
     x2 = np.linspace(x0, x1, N)
     l = np.linspace(0, 1, N)
-    rgb = spline.ev(y2, x2)
-    return l, rgb
+    return l, get_rgb(im, y2, x2, order=1)
 
 
 def bresenham_colormapping(x0, y0, x1, y1, im):
