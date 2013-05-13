@@ -1,65 +1,46 @@
 from __future__ import division
+from math import floor
 
 import numpy as np
 from scipy.interpolate import RectBivariateSpline
 
 
-def naive_trace(x, y, x1, y1):
+def naive_trace(x0, y0, x1, y1):
     """
     Matt Terry's naive tracing method.  No promises that this is fast,
     reliable, or good.
     """
-    # TODO weird things happening at last step, negative step size
-    ix, iy = int(x), int(y)
+    NEGX = NEGY = SWAP = False
 
-    dx, dy = x1-x, y1-y
-    ij_end = int(x1), int(y1)
-    dist_left = np.sqrt(dx**2 + dy**2)
-    max_steps = 2*int(abs(dx) + abs(dy))
-    ct, st = dx/dist_left, dy/dist_left
-
-    dx = -1 if dx < 0 else 1
-    dy = -1 if dy < 0 else 1
-    # deal 1/0 issues due to ct == 0 or st == 0
-
-    path = [(ix, iy, x, y)]
-    for step in xrange(max_steps):
-        l1 = (iy+dy - y)/st
-        l2 = (ix+dx - x)/ct
-
-        if l1 < l2:
-            iy += dy
-            x += l1*ct
-            y = iy
-        else:
-            ix += dx
-            x = ix
-            y += l2*st
-        path.append((ix, iy, x, y))
-
-        if (ix, iy) == ij_end:
-            break
-    else:
-        assert False
-    path.append((ix, iy, x1, y1))
-    return path
-
-
-def trace2(x0, y0, x1, y1):
     DX = x1 - x0
-    if DX < 0:
-        return [(-i, -x, j, y) for i, x, j, y in trace2(-x0, y0, -x1, y1)]
     DY = y1 - y0
+
+    if DX < 0:
+        NEGX = True
+        x0, x1 = -x0, -x1
+        DX = -DX
     if DY < 0:
-        return [(i, x, -j, -y) for i, x, j, y in trace2(x0, -y0, x1, -y1)]
+        NEGY = True
+        y0, y1 = -y0, -y1
+        DY = -DY
     if DY > DX:
         # avoid infinite slopes by double swapping coordinates
-        return [(j, y, i, x) for i, x, j, y in trace2(y0, x0, y1, x1)]
+        x0, y0 = y0, x0
+        x1, y1 = y1, x1
+        SWAP = True
+        DX, DY = DY, DX
+
+    def order(xi_tmp, x_tmp, yi_tmp, y_tmp):
+        if NEGX:
+            xi_tmp, x_tmp = -xi_tmp, -x_tmp
+        if NEGY:
+            yi_tmp, y_tmp = -yi_tmp, -y_tmp
+        if SWAP:
+            xi_tmp, x_tmp, yi_tmp, y_tmp = yi_tmp, y_tmp, xi_tmp, x_tmp
+        return (xi_tmp, x_tmp, yi_tmp, y_tmp)
+
     m = DY/DX
     xy_end = int(x1), int(y1)
-
-    dx = 1 if DX >=0 else -1
-    dy = 1 if DY >=0 else -1
 
     x = int(floor(x0))
     fx = x0 - x
@@ -67,24 +48,23 @@ def trace2(x0, y0, x1, y1):
     y = int(floor(y0))
     fy = y0 - y
 
-    path = [(x, x+fx, y, y+fy)]
+    path = [order(x, x+fx, y, y+fy)]
     for step in xrange(2*int(abs(DX) + abs(DY))):
-        if m + fy > 1:
+        y_rise = (1-fx)*m
+        if y_rise + fy > 1:
             # step y
             fx += (1 - fy)/m  # only bad if m==0 and fy>0
-            y += dy
+            y += 1
             fy = 0.
-        else:
-            # step x
-            fy += (1-fx)*m
-            x += dx
+        else: # step x
+            fy += y_rise
+            x += 1
             fx = 0.
-        path.append((x, x+fx, y, y+fx))
+        path.append(order(x, x+fx, y, y+fx))
         if (x, y) == xy_end:
-            path.append((int(x1), x1, int(y1), y1))
+            path.append(order(int(x1), x1, int(y1), y1))
             return path
-    else:
-        assert False
+    assert False
 
 
 def bresenham_trace(x, y, x1, y1):
