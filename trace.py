@@ -72,7 +72,7 @@ def bresenham_trace(x, y, x1, y1):
     """
     http://en.wikipedia.org/wiki/Bresenham's_line_algorithm
     Bresenham, J. E. (1 January 1965). "Algorithm for computer control of a
-    digital plotter". IBM Systems Journal 4 (1): 25–30.
+    digital plotter". IBM Systems Journal 4 (1): 25-30.
     """
     x, y = int(x), int(y)
     x1, y1 = int(x1), int(y1)
@@ -107,7 +107,7 @@ def wu_trace(x, y, x1, y1):
     """
     http://en.wikipedia.org/wiki/Xiaolin_Wu's_line_algorithm
     Wu, Xiaolin (July 1991). "An efficient antialiasing technique". Computer
-    Graphics 25 (4): 143–152.
+    Graphics 25 (4): 143-152.
     """
     steep = abs(y1-y) > abs(x1-x)
     if steep:
