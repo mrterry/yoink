@@ -215,7 +215,7 @@ def bresenham_colormapping(x0, y0, x1, y1, im):
         rgb ndarray, shape=(N,3) - sequence of colors at each point in l
     """
     x_y = bresenham_trace(x0, y0, x1, y1)
-    ii, jj = zip(*x_y)
+    jj, ii = zip(*x_y)
     rgb = im[jj, ii]
     centers = np.vstack((ii, jj), dtype=float)
     centers += 0.5
