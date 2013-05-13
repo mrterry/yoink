@@ -45,6 +45,48 @@ def naive_trace(x, y, x1, y1):
     return path
 
 
+def trace2(x0, y0, x1, y1):
+    DX = x1 - x0
+    if DX < 0:
+        return [(-i, -x, j, y) for i, x, j, y in trace2(-x0, y0, -x1, y1)]
+    DY = y1 - y0
+    if DY < 0:
+        return [(i, x, -j, -y) for i, x, j, y in trace2(x0, -y0, x1, -y1)]
+    if DY > DX:
+        # avoid infinite slopes by double swapping coordinates
+        return [(j, y, i, x) for i, x, j, y in trace2(y0, x0, y1, x1)]
+    m = DY/DX
+    xy_end = int(x1), int(y1)
+
+    dx = 1 if DX >=0 else -1
+    dy = 1 if DY >=0 else -1
+
+    x = int(floor(x0))
+    fx = x0 - x
+
+    y = int(floor(y0))
+    fy = y0 - y
+
+    path = [(x, x+fx, y, y+fy)]
+    for step in xrange(2*int(abs(DX) + abs(DY))):
+        if m + fy > 1:
+            # step y
+            fx += (1 - fy)/m  # only bad if m==0 and fy>0
+            y += dy
+            fy = 0.
+        else:
+            # step x
+            fy += (1-fx)*m
+            x += dx
+            fx = 0.
+        path.append((x, x+fx, y, y+fx))
+        if (x, y) == xy_end:
+            path.append((int(x1), x1, int(y1), y1))
+            return path
+    else:
+        assert False
+
+
 def bresenham_trace(x, y, x1, y1):
     """
     http://en.wikipedia.org/wiki/Bresenham's_line_algorithm
