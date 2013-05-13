@@ -179,7 +179,7 @@ def naive_colormaping(x0, y0, x1, y1, im, order=1):
         rgb ndarray, shape=(N,3) - sequence of colors at each point in l
     """
     stuff = naive_trace(x0, y0, x1, y1)
-    jj, ii, x, y = zip(*stuff)
+    jj, x, jj, y = zip(*stuff)
     x, y = np.array(x), np.array(y)
     dx = x[-1] - x[0]
     dy = y[-1] - y[0]
