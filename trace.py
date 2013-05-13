@@ -3,6 +3,7 @@ from math import floor
 
 import numpy as np
 from scipy.interpolate import RectBivariateSpline
+from scipy.ndimage.interpolation import map_coordinates
 
 
 def naive_trace(x0, y0, x1, y1):
@@ -224,24 +225,10 @@ def bresenham_colormapping(x0, y0, x1, y1, im):
     return l, rgb
 
 
-class ColormappingSpline(object):
-    def __init__(self, im, kx=1, ky=1):
-        nj, ni, nc = im.shape
-        jrange = np.arange(nj)
-        irange = np.arange(ni)
-        # TODO may be able to do this faster with custom implementation that
-        # works on integers
-        self.r_spline = RectBivariateSpline(jrange, irange, im[:, :, 0],
-                kx=kx, ky=ky)
-        self.g_spline = RectBivariateSpline(jrange, irange, im[:, :, 1],
-                kx=kx, ky=ky)
-        self.b_spline = RectBivariateSpline(jrange, irange, im[:, :, 2],
-                kx=kx, ky=ky)
-        return
-
-    def ev(self, x, y):
-        rgb = np.emty((len(x), 3))
-        rgb[:, 0] = self.r_spline.ev(y, x)
-        rgb[:, 1] = self.g_spline.ev(y, x)
-        rgb[:, 2] = self.b_spline.ev(y, x)
-        return rgb
+def get_rgb(im, y, x, order=1):
+    im = np.asarray(im)
+    ni, nj, nc = im.shape
+    points = np.zeros((len(x), nc), dtype=im.dtype)
+    for c in range(nc):
+        points[:, c] = map_coordinates(im[:, :, c], [y, x], order=order)
+    return points
