@@ -15,6 +15,12 @@ def naive_trace(x0, y0, x1, y1):
     DX = x1 - x0
     DY = y1 - y0
 
+    if abs(DY) > abs(DX):
+        # avoid infinite slopes by double swapping coordinates
+        x0, y0 = y0, x0
+        x1, y1 = y1, x1
+        SWAP = True
+        DX, DY = DY, DX
     if DX < 0:
         NEGX = True
         x0, x1 = -x0, -x1
@@ -23,24 +29,18 @@ def naive_trace(x0, y0, x1, y1):
         NEGY = True
         y0, y1 = -y0, -y1
         DY = -DY
-    if DY > DX:
-        # avoid infinite slopes by double swapping coordinates
-        x0, y0 = y0, x0
-        x1, y1 = y1, x1
-        SWAP = True
-        DX, DY = DY, DX
 
     def order(xi_tmp, x_tmp, yi_tmp, y_tmp):
         if NEGX:
-            xi_tmp, x_tmp = -xi_tmp, -x_tmp
+            xi_tmp, x_tmp = int(-x_tmp), -x_tmp
         if NEGY:
-            yi_tmp, y_tmp = -yi_tmp, -y_tmp
+            yi_tmp, y_tmp = int(-y_tmp), -y_tmp
         if SWAP:
             xi_tmp, x_tmp, yi_tmp, y_tmp = yi_tmp, y_tmp, xi_tmp, x_tmp
         return (xi_tmp, x_tmp, yi_tmp, y_tmp)
 
     m = DY/DX
-    xy_end = int(x1), int(y1)
+    xy_end = int(floor(x1)), int(floor(y1))
 
     x = int(floor(x0))
     fx = x0 - x
@@ -60,7 +60,7 @@ def naive_trace(x0, y0, x1, y1):
             fy += y_rise
             x += 1
             fx = 0.
-        path.append(order(x, x+fx, y, y+fx))
+        path.append(order(x, x+fx, y, y+fy))
         if (x, y) == xy_end:
             path.append(order(int(x1), x1, int(y1), y1))
             return path
