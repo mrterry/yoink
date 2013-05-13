@@ -170,7 +170,7 @@ def wu_frac(x):
     return frac, 1-frac
 
 
-def naive_colormaping(x0, y0, x1, y1, spline):
+def naive_colormaping(x0, y0, x1, y1, im, order=1):
     """
     Get lineout from x0/y0 to x1/y1 with points takein from naive_trace ray
     tracing algorithm.
@@ -187,8 +187,7 @@ def naive_colormaping(x0, y0, x1, y1, spline):
         l = (x - x0)/dx
     else:
         l = (y - y0)/dy
-    rgb = spline.ev(y, x)
-    return l, rgb
+    return l, get_rgb(im, y, x, order=order)
 
 
 def equispaced_colormaping(x0, y0, x1, y1, im, N=256, order=1):
