@@ -6,12 +6,12 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 
 
-class ActiveCmap(object):
-    def __init__(self, ax, line, image):
+class DragableCmap(object):
+    def __init__(self, ax, line, source):
         self.created = False
         self.ax = ax
         self.line = line
-        self.image = image
+        self.source = source
         self.created = False
 
         self.l = None
@@ -39,7 +39,7 @@ class ActiveCmap(object):
     def update(self):
         x0, y0 = self.line.circles[0].center
         x1, y1 = self.line.circles[1].center
-        self.l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.image)
+        self.l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.source)
 
         n, ncol = self.rgb.shape
         self.im.set_data(self.rgb.reshape((n, 1, ncol)))
