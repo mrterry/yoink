@@ -2,7 +2,7 @@ from __future__ import division
 
 from trace import equispaced_colormaping
 
-from matplotlib.patches import Circle
+from matplotlib.patches import Circle, Rectangle
 from matplotlib.lines import Line2D
 from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -156,3 +156,127 @@ class DeformableLine(object):
 
         self.draw()
         return i
+
+
+class ShutterCrop(object):
+    """
+    Crop an image by dragging transparent panes over excluded region.
+    """
+    def __init__(self, ax, facecolor='grey'):
+        self.ax = ax
+        self.facecolor = facecolor
+        self.canvas = self.ax.figure.canvas
+
+        self.picked = None
+
+    def create_patches(self):
+        xlo, xhi = self.ax.get_xlim()
+        dx = xhi-xlo
+
+        ylo, yhi = self.ax.get_ylim()
+        dy = yhi - ylo
+
+        pan_width = 0.05*dx
+        pan_height = 0.05*dy
+        kw = dict(
+                facecolor=self.facecolor,
+                edgecolor='none',
+                picker=5,
+                alpha=0.5,
+                )
+        self.north = Rectangle((xlo, yhi-pan_height), dx, pan_height, **kw)
+        self.south = Rectangle((xlo, ylo), dx, pan_height, **kw)
+        self.east = Rectangle((xhi-pan_width, ylo), pan_width, dy, **kw)
+        self.west = Rectangle((xlo, ylo), pan_width, dy, **kw)
+        self.ax.add_artist(self.north)
+        self.ax.add_artist(self.south)
+        self.ax.add_artist(self.east)
+        self.ax.add_artist(self.west)
+
+    def on_pick(self, event):
+        names = ('north', 'south', 'east', 'west')
+        bars = (self.north, self.south, self.east, self.west)
+        for name, bar in zip(names, bars):
+            if event.artist is bar:
+                bounds = (
+                        bar.get_x(),
+                        bar.get_y(),
+                        bar.get_width(),
+                        bar.get_height(),
+                        )
+                click = (event.mouseevent.xdata, event.mouseevent.ydata)
+                self.picked = (bar, click, bounds)
+
+    def on_release(self, event):
+        self.picked = None
+
+    def on_motion(self, event):
+        if self.picked is None:
+            return
+        bar, (xclick, yclick), (x, y, w, h) = self.picked
+        
+        if bar is self.south:
+            new_height = h + (event.ydata-yclick)
+            self.south.set_height(new_height)
+        elif bar is self.west:
+            new_w = w + (event.xdata-xclick)
+            self.west.set_width(new_w)
+        elif bar is self.north:
+            dy = event.ydata - yclick
+            new_h = h - dy
+            new_y = y + dy
+            bar.set_height(new_h)
+            bar.set_y(new_y)
+        elif bar is self.east:
+            dx = event.xdata - xclick
+            new_w = w - dx
+            new_x = x + dx
+            bar.set_x(new_x)
+            bar.set_width(new_w)
+
+        self.canvas.draw()
+
+    def connect(self):
+        self.picker_cid = self.canvas.mpl_connect(
+                'pick_event', self.on_pick)
+        self.release_cid = self.canvas.mpl_connect(
+                'button_release_event', self.on_release)
+        self.motion_cid = self.canvas.mpl_connect(
+                'motion_notify_event', self.on_motion)
+    
+    def disconnect(self):
+        self.canvas.mpl_disconnect(self.picker_cid)
+        self.canvas.mpl_disconnect(self.release_cid)
+        self.canvas.mpl_disconnect(self.motion_cid)
+    
+        self.picker_cid = None
+        self.picker_cid = None
+        self.motion_cid = None
+
+    def get_extents(self):
+        xlo = self.west.get_x() + self.west.get_width()
+        xhi = self.east.get_x()
+
+        ylo = self.south.get_y() + self.south.get_height()
+        yhi = self.north.get_y()
+        return xlo, xhi, ylo, yhi
+
+
+def get_bounds(rect):
+    return rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height()
+
+
+class PixelCorral(object):
+    """
+    Returns the pixel grid
+    """
+    pass
+
+
+class CoordinateMapper(object):
+    """
+    Map points in pixel space to alternate axis
+    """
+    def __init__(self):
+        pass
+
