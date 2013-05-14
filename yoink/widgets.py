@@ -166,31 +166,44 @@ class ShutterCrop(object):
         self.ax = ax
         self.canvas = self.ax.figure.canvas
 
-        self.picked = None
+        self.added = False
+        self.active_pick = None
 
-    def create_patches(self):
+    def add_shutters(self,
+            dx_frac=0.05, dy_frac=0.05,
+            facecolor='gray', edgecolor='none', alpha=0.5, picker=5,
+            **rect_kw):
+
+        kw = dict(facecolor=facecolor, edgecolor=edgecolor, picker=picker,
+                alpha=alpha, **rect_kw)
+
         xlo, xhi = self.ax.get_xlim()
         dx = xhi-xlo
-
         ylo, yhi = self.ax.get_ylim()
         dy = yhi - ylo
+        width = dx_frac*dx
+        height = dy_frac*dy
 
-        pan_width = 0.05*dx
-        pan_height = 0.05*dy
-        kw = dict(
-                facecolor=self.facecolor,
-                edgecolor='none',
-                picker=5,
-                alpha=0.5,
-                )
-        self.north = Rectangle((xlo, yhi-pan_height), dx, pan_height, **kw)
-        self.south = Rectangle((xlo, ylo), dx, pan_height, **kw)
-        self.east = Rectangle((xhi-pan_width, ylo), pan_width, dy, **kw)
-        self.west = Rectangle((xlo, ylo), pan_width, dy, **kw)
+        self.north = Rectangle((xlo, yhi-height), dx, height, **kw)
+        self.south = Rectangle((xlo, ylo), dx, height, **kw)
+        self.east = Rectangle((xhi-width, ylo), width, dy, **kw)
+        self.west = Rectangle((xlo, ylo), width, dy, **kw)
+
         self.ax.add_artist(self.north)
         self.ax.add_artist(self.south)
         self.ax.add_artist(self.east)
         self.ax.add_artist(self.west)
+
+        self.added = True
+        self.connect()
+        self.canvas.draw()
+
+    def clear_shutters(self):
+        for p in [self.north, self.south, self.east, self.west]:
+            self.ax.artists.remove(p)
+        self.added = False
+        self.disconnect()
+        self.canvas.draw()
 
     def on_pick(self, event):
         names = ('north', 'south', 'east', 'west')
@@ -204,15 +217,15 @@ class ShutterCrop(object):
                         bar.get_height(),
                         )
                 click = (event.mouseevent.xdata, event.mouseevent.ydata)
-                self.picked = (bar, click, bounds)
+                self.active_pick = (bar, click, bounds)
 
     def on_release(self, event):
-        self.picked = None
+        self.active_pick = None
 
     def on_motion(self, event):
-        if self.picked is None:
+        if self.active_pick is None:
             return
-        bar, (xclick, yclick), (x, y, w, h) = self.picked
+        bar, (xclick, yclick), (x, y, w, h) = self.active_pick
         
         if bar is self.south:
             new_height = h + (event.ydata-yclick)
