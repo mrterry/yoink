@@ -11,6 +11,9 @@ import numpy as np
 
 
 class DragableCmap(object):
+    """
+    Fake colormap-like image take from the end points of a DeformableLine
+    """
     def __init__(self, ax, line, source):
         self.created = False
         self.ax = ax
@@ -55,6 +58,9 @@ class DragableCmap(object):
 
 
 class DeformableLine(object):
+    """
+    Segemented line with movable vertexes
+    """
     def __init__(self, ax, is_closed=False, max_points=None):
         self.ax = ax
         self.canvas = self.ax.figure.canvas
