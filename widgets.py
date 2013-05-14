@@ -80,22 +80,22 @@ class DeformableLine(object):
         self.connected = False
 
     def connect(self):
-        self.cidpress = self.canvas.mpl_connect(
+        self.press_cid = self.canvas.mpl_connect(
                 'button_press_event', self.on_press)
-        self.cidrelease = self.canvas.mpl_connect(
+        self.release_cid = self.canvas.mpl_connect(
                 'button_release_event', self.on_release)
-        self.cidmotion = self.canvas.mpl_connect(
+        self.motion_cid = self.canvas.mpl_connect(
                 'motion_notify_event', self.on_motion)
         self.connected = True
 
     def disconnect(self):
-        self.canvas.mpl_disconnect(self.cidpress)
-        self.canvas.mpl_disconnect(self.cidrelease)
-        self.canvas.mpl_disconnect(self.cidmotion)
+        self.canvas.mpl_disconnect(self.press_cid)
+        self.canvas.mpl_disconnect(self.release_cid)
+        self.canvas.mpl_disconnect(self.motion_cid)
 
-        self.cidpress = None
-        self.cidrelease = None
-        self.cidmotion = None
+        self.press_cid = None
+        self.release_cid = None
+        self.motion_cid = None
         self.connected = False
 
     def draw(self):
