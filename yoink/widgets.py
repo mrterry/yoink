@@ -162,9 +162,8 @@ class ShutterCrop(object):
     """
     Crop an image by dragging transparent panes over excluded region.
     """
-    def __init__(self, ax, facecolor='grey'):
+    def __init__(self, ax):
         self.ax = ax
-        self.facecolor = facecolor
         self.canvas = self.ax.figure.canvas
 
         self.picked = None
