@@ -12,7 +12,7 @@ import numpy as np
 
 class DragableCmap(object):
     """
-    Fake colormap-like image take from the end points of a DeformableLine
+    Fake colormap-like image taken from the end points of a DeformableLine
     """
     def __init__(self, ax, line, source):
         self.created = False
