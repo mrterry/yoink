@@ -19,7 +19,7 @@ def guess_corners(bw):
 
     Returns
     -------
-    corners : pixel coordinates of plot corners
+    corners : pixel coordinates of plot corners, unsorted
     outline : (m x n) ndarray of bools True -> plot area
     """
     e_map = ndimage.sobel(bw)
