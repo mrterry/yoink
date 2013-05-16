@@ -14,4 +14,3 @@ def get_corner_grid_test():
     ni, nj = 4, 5
     corners = [(1, 1), (ni-1, 1), (ni-1, nj-1), (1, nj-1)]
     get_corner_grid(corners, ni, nj)
-
