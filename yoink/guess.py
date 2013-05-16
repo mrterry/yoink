@@ -35,11 +35,12 @@ def guess_corners(bw):
     return corners, outline
 
 
-def get_angle(p1, p2):
-    return np.arctan2(p1[0]-p2[0], p1[1]-p2[1]) * 180./np.pi
+def _get_angle(p1, p2):
+    return np.arctan2(p1[0]-p2[0], p1[1]-p2[1])
 
 
 def get_angle2(corners):
+    corners = np.asarray(corners)
     order = np.argsort(corners[:, 0])
     top = corners[order[:2]]
     bot = corners[order[2:]]
@@ -48,10 +49,10 @@ def get_angle2(corners):
     left = corners[order[:2]]
     right = corners[order[2:]]
 
-    angles = [get_angle(top[0, :], top[1, :]),
-              get_angle(bot[0, :], bot[1, :]),
-              get_angle(left[0, :], left[1, :]) + 90,
-              get_angle(right[0, :], right[1, :]) + 90,
+    angles = [_get_angle(top[0, :], top[1, :]),
+              _get_angle(bot[0, :], bot[1, :]),
+              _get_angle(left[0, :], left[1, :]) + 90,
+              _get_angle(right[0, :], right[1, :]) + 90,
               ]
     angle = sum(angles) / len(angles)
     return angle
@@ -61,4 +62,3 @@ def clear_border(im, outline):
     im_fixed = im.copy()
     im_fixed[-outline] = 255
     return im_fixed
-
