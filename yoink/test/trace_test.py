@@ -1,5 +1,5 @@
 from yoink.trace import naive_trace
-from nose.tools import assert_almost_equal
+from numpy.testing import assert_almost_equal
 
 X0, Y0 = 4.2, 1.2
 
