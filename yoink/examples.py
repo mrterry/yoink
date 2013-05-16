@@ -4,6 +4,7 @@ from scipy import ndimage
 
 from yoink.widgets import KeyboardCrop
 from yoink.guess import get_corners, get_angle2, clear_border
+from yoink.data import rotated_lena, rotated_parabola
 
 try:
     from skimage.feature import corner_harris
@@ -53,7 +54,7 @@ def keyboard_crop(im):
 
 
 def lena_example():
-    im = ndimage.imread('rotated_lena.png')
+    im = rotated_lena()
 
     # find corners on grayscale image
     # use negative so that boundary is 0
@@ -81,7 +82,7 @@ def lena_example():
 
 
 def parabola_example():
-    im = ndimage.imread('rotated_parabola.png')
+    im = rotated_parabola()
 
     # find corners on grayscale image
     # use negative so that boundary is 0
