@@ -39,7 +39,11 @@ def _get_angle(p1, p2):
     return np.arctan2(p1[0]-p2[0], p1[1]-p2[1])
 
 
-def get_angle2(corners):
+def mean_rotation(corners):
+    """
+    Assuming the corners define a rectangle return the angle betwen the
+    rectangle and the x axis.
+    """
     corners = np.asarray(corners)
     order = np.argsort(corners[:, 0])
     top = corners[order[:2]]
