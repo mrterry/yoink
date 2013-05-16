@@ -3,7 +3,7 @@ import numpy as np
 from scipy import ndimage
 
 from yoink.widgets import KeyboardCrop
-from yoink.guess import get_corners, get_angle2, clear_border
+from yoink.guess import guess_corners, get_angle2, clear_border
 from yoink.data import rotated_lena, rotated_parabola
 
 try:
@@ -42,7 +42,7 @@ def lena_example():
     bw = im[:, :, 0]
     bw = 255 - bw
 
-    corners, outline = get_corners(bw)
+    corners, outline = guess_corners(bw)
     angle = get_angle2(corners) * 180./np.pi
     im2 = clear_border(im, outline)
     im2 = ndimage.rotate(im, angle, reshape=False, mode='nearest')
@@ -70,7 +70,7 @@ def parabola_example():
     bw = im[:, :, 0]
     bw = 255 - bw
 
-    corners, outline = get_corners(bw)
+    corners, outline = guess_corners(bw)
     angle = get_angle2(corners)
     im2 = clear_border(im, outline)
     im2 = ndimage.rotate(im, angle, reshape=False, mode='nearest')
