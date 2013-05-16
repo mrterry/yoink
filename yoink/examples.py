@@ -12,25 +12,6 @@ except ImportError:
     from yoink.mini_skimage import corner_harris
 
 
-def make_lenafig():
-    from skimage.data import lena
-    im = lena()
-    plt.imshow(im)
-    plt.xticks([])
-    plt.yticks([])
-    plt.savefig('temp.png', dpi=500)
-
-
-def make_rotated_lenafig():
-    im = ndimage.imread('temp.png')
-    im = ndimage.rotate(im, -15.3, cval=255)
-    plt.subplot(111, frameon=False)
-    plt.imshow(im)
-    plt.xticks([])
-    plt.yticks([])
-    plt.savefig('rotated_lena.png', dpi=400)
-
-
 def keyboard_crop(im):
     corners = corner_harris(im)
     lim = {
