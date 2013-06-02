@@ -48,12 +48,6 @@ class DragableCmap(object):
         cax.yaxis.tick_right()
         cax.xaxis.set_visible(False)
         self.update()
-    
-    def creation_callback(self):
-        if self.created or len(self.line.circles) != 2:
-            return
-        self.create()
-        self.line.callbacks.append(self.update)
 
     def update(self):
         if len(self.line.circles) != 2:
