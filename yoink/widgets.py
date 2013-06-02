@@ -89,6 +89,8 @@ class DeformableLine(object):
         self.connected = True
 
     def disconnect(self):
+        if not self.connected:
+            return
         self.canvas.mpl_disconnect(self.press_cid)
         self.canvas.mpl_disconnect(self.release_cid)
         self.canvas.mpl_disconnect(self.motion_cid)
@@ -96,6 +98,7 @@ class DeformableLine(object):
         self.press_cid = None
         self.release_cid = None
         self.motion_cid = None
+
         self.connected = False
 
     def draw(self):
@@ -139,9 +142,12 @@ class DeformableLine(object):
         if len(self.circles) == self.max_points:
             return None
 
+        i = self.add_point(event.xdata, event.ydata)
+        return i
+
+    def add_point(self, x, y):
         # new circle
         i = len(self.circles)
-        x, y = event.xdata, event.ydata
         circle = Circle((x, y), radius=5, alpha=0.5)
         self.circles.append(circle)
         self.ax.add_artist(circle)
@@ -153,7 +159,6 @@ class DeformableLine(object):
             self.xs.append(self.xs[0])
             self.ys.append(self.ys[0])
         self.line.set_data(self.xs, self.ys)
-
         self.draw()
         return i
 
