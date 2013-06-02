@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+
+from collections import OrderedDict
+
+import matplotlib.pyplot as plt
+from matplotlib.widgets import RadioButtons, Button
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+#from matplotlib.gridspec import GridSpec
+
+from yoink.widgets import ShutterCrop, DragableCmap
+from yoink.textbox import TextBox
+from yoink.data import test_img
+
+
+class NothingWidget(object):
+    def connect(self):
+        pass
+    def disconnect(self):
+        pass
+
+
+#import argparse
+#parser = argparse.ArgumentParser(
+#        description='Yoink colored data from an image')
+#parser.add_argument('image')
+
+#args = parser.parse_args()
+#img_path = args.image
+
+#fig = plt.figure()
+#img_ax = fig.add_subplot(121)
+#divider = make_axes_locatable(img_ax)
+#cmap_ax = divider.append_axes('right', size='5%', pad=0.5)
+#select_ax = fig.add_subplot(122)
+
+fig = plt.figure()
+img_ax = plt.subplot2grid((3, 3), (0, 0), colspan=3, rowspan=2)
+select_ax = plt.subplot2grid((3, 3), (2, 0))
+dump_ax = plt.subplot2grid((3, 3), (2, 1))
+lim_ax = plt.subplot2grid((3, 3), (2, 2))
+divider = make_axes_locatable(img_ax)
+cmap_ax = divider.append_axes('right', size='5%', pad=0.5)
+
+
+#im = plt.imread(img_path)
+im = test_img()
+img_ax.imshow(im)
+
+
+shutter_crop = ShutterCrop(img_ax)
+cmap_img = DragableCmap(img_ax, cmap_ax, im)
+dump_button = Button(dump_ax, 'Dump to file')
+cmap_low = TextBox(lim_ax, '0.0')
+
+
+def dump(mode='npz'):
+    assert mode in ('npz', 'txt')
+    pass
+
+
+states = OrderedDict()
+states['Do nothing'] = NothingWidget()
+states['Crop Image'] = shutter_crop
+states['Select Colorbar'] = cmap_img
+
+
+def toggle_state(new_state):
+    assert new_state in states
+    for k in states:
+        if k == new_state:
+            continue
+        states[k].disconnect()
+    states[new_state].connect()
+
+
+select_radio = RadioButtons(select_ax,
+        labels=states.keys(),
+        active=0,
+        )
+select_radio.on_clicked(toggle_state)
+
+plt.show()
