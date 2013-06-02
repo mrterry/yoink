@@ -220,7 +220,6 @@ class ShutterCrop(object):
     def show_hide(self, onoff):
         for p in [self.north, self.south, self.east, self.west]:
             p.set_visible(onoff)
-        print 'draw'
         self.canvas.draw()
 
     def on_pick(self, event):
