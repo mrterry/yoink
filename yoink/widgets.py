@@ -14,39 +14,37 @@ class DragableCmap(object):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
     """
-    def __init__(self, ax, source):
+    def __init__(self, select_ax, cmap_ax, source):
         self.created = False
-        self.ax = ax
+        self.select_ax = select_ax
+        self.cmap_ax = cmap_ax
 
-        self.line = DeformableLine(ax, max_points=2)  # TODO default points
+        self.line = DeformableLine(select_ax, max_points=2)
         self.source = source
         self.created = False
 
         self.l = None
         self.rgb = None
 
-        xl, xr = ax.get_xlim()
+        xl, xr = select_ax.get_xlim()
         dx = xr - xl
-        yb, yt = ax.get_ylim()
+        yb, yt = select_ax.get_ylim()
         dy = yt - yb
-        
+
         self.line.add_point(xl + 0.25*dx, yb + 0.25*dy)
         self.line.add_point(xl + 0.75*dx, yb + 0.75*dy)
+
         self.create()
         self.line.callbacks.append(self.update)
-
 
     def create(self):
         self.created = True
 
-        divider = make_axes_locatable(self.ax)
-        cax = divider.append_axes('right', size='5%', pad=0.5)
-
         rgb = np.zeros((2, 1, 4))
-        self.im = cax.imshow(rgb,
+        self.im = self.cmap_ax.imshow(rgb,
                 aspect='auto', origin='lower', extent=[0, 1, 0, 1])
-        cax.yaxis.tick_right()
-        cax.xaxis.set_visible(False)
+        self.cmap_ax.yaxis.tick_right()
+        self.cmap_ax.xaxis.set_visible(False)
         self.update()
 
     def update(self):
