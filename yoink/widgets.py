@@ -85,7 +85,7 @@ class DeformableLine(object):
         self.circles = []
 
         self.is_closed = is_closed
-        self.max_points = max_points 
+        self.max_points = max_points
 
         self.callbacks = []
         self.moving_ci = None
@@ -235,7 +235,7 @@ class ShutterCrop(object):
         if self.active_pick is None:
             return
         bar, (xclick, yclick), (x, y, w, h) = self.active_pick
-        
+
         if bar is self.south:
             new_height = h + (event.ydata-yclick)
             self.south.set_height(new_height)
@@ -270,7 +270,7 @@ class ShutterCrop(object):
                 'motion_notify_event', self.on_motion)
 
         self.connected = True
-    
+
     def disconnect(self):
         self.show_hide(False)
         if not self.connected:
@@ -278,7 +278,7 @@ class ShutterCrop(object):
         self.canvas.mpl_disconnect(self.picker_cid)
         self.canvas.mpl_disconnect(self.release_cid)
         self.canvas.mpl_disconnect(self.motion_cid)
-    
+
         self.picker_cid = None
         self.picker_cid = None
         self.motion_cid = None
