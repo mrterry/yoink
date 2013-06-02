@@ -14,15 +14,27 @@ class DragableCmap(object):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
     """
-    def __init__(self, ax, line, source):
+    def __init__(self, ax, source):
         self.created = False
         self.ax = ax
-        self.line = line
+
+        self.line = DeformableLine(ax, max_points=2)  # TODO default points
         self.source = source
         self.created = False
 
         self.l = None
         self.rgb = None
+
+        xl, xr = ax.get_xlim()
+        dx = xr - xl
+        yb, yt = ax.get_ylim()
+        dy = yt - yb
+        
+        self.line.add_point(xl + 0.25*dx, yb + 0.25*dy)
+        self.line.add_point(xl + 0.75*dx, yb + 0.75*dy)
+        self.create()
+        self.line.callbacks.append(self.update)
+
 
     def create(self):
         self.created = True
@@ -44,6 +56,8 @@ class DragableCmap(object):
         self.line.callbacks.append(self.update)
 
     def update(self):
+        if len(self.line.circles) != 2:
+            return
         x0, y0 = self.line.circles[0].center
         x1, y1 = self.line.circles[1].center
         self.l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.source)
@@ -55,6 +69,12 @@ class DragableCmap(object):
         assert None not in (self.l, self.rgb)
         seq = [(x, col) for x, col in zip(self.l, self.rgb)]
         return LinearSegmentedColormap.from_list(name, seq, **kwargs)
+
+    def connect(self):
+        self.line.connect()
+
+    def disconnect(self):
+        self.line.disconnect()
 
 
 class DeformableLine(object):
