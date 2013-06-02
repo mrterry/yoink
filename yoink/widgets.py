@@ -162,20 +162,15 @@ class ShutterCrop(object):
     """
     Crop an image by dragging transparent panes over excluded region.
     """
-    def __init__(self, ax):
-        self.ax = ax
-        self.canvas = self.ax.figure.canvas
-
-        self.added = False
-        self.active_pick = None
-
-    def add_shutters(self,
+    def __init__(self, ax,
             dx_frac=0.05, dy_frac=0.05,
             facecolor='gray', edgecolor='none', alpha=0.5, picker=5,
             **rect_kw):
+        self.ax = ax
+        self.canvas = self.ax.figure.canvas
 
-        kw = dict(facecolor=facecolor, edgecolor=edgecolor, picker=picker,
-                alpha=alpha, **rect_kw)
+        self.active_pick = None
+        self.connected = False
 
         xlo, xhi = self.ax.get_xlim()
         dx = xhi-xlo
@@ -184,25 +179,23 @@ class ShutterCrop(object):
         width = dx_frac*dx
         height = dy_frac*dy
 
+        kw = dict(facecolor=facecolor, edgecolor=edgecolor, picker=picker,
+                alpha=alpha, **rect_kw)
         self.north = Rectangle((xlo, yhi-height), dx, height, **kw)
         self.south = Rectangle((xlo, ylo), dx, height, **kw)
         self.east = Rectangle((xhi-width, ylo), width, dy, **kw)
         self.west = Rectangle((xlo, ylo), width, dy, **kw)
+        self.show_hide(False)
 
         self.ax.add_artist(self.north)
         self.ax.add_artist(self.south)
         self.ax.add_artist(self.east)
         self.ax.add_artist(self.west)
 
-        self.added = True
-        self.connect()
-        self.canvas.draw()
-
-    def clear_shutters(self):
+    def show_hide(self, onoff):
         for p in [self.north, self.south, self.east, self.west]:
-            self.ax.artists.remove(p)
-        self.added = False
-        self.disconnect()
+            p.set_visible(onoff)
+        print 'draw'
         self.canvas.draw()
 
     def on_pick(self, event):
@@ -249,14 +242,23 @@ class ShutterCrop(object):
         self.canvas.draw()
 
     def connect(self):
+        self.show_hide(True)
+        if self.connected:
+            return
+
         self.picker_cid = self.canvas.mpl_connect(
                 'pick_event', self.on_pick)
         self.release_cid = self.canvas.mpl_connect(
                 'button_release_event', self.on_release)
         self.motion_cid = self.canvas.mpl_connect(
                 'motion_notify_event', self.on_motion)
+
+        self.connected = True
     
     def disconnect(self):
+        self.show_hide(False)
+        if not self.connected:
+            return
         self.canvas.mpl_disconnect(self.picker_cid)
         self.canvas.mpl_disconnect(self.release_cid)
         self.canvas.mpl_disconnect(self.motion_cid)
@@ -264,6 +266,7 @@ class ShutterCrop(object):
         self.picker_cid = None
         self.picker_cid = None
         self.motion_cid = None
+        self.connected = False
 
     def get_extents(self):
         xlo = self.west.get_x() + self.west.get_width()
