@@ -315,6 +315,8 @@ class KeyboardCrop(Widget):
         self.ax2.imshow(im, **kwargs)
         self.ax3.imshow(im, **kwargs)
         self.ax4.imshow(im, **kwargs)
+
+        self.cids = [self.canvas.mpl_connect('key_press_event', self._press)]
         self.update_limits()
 
     def update_limits(self):
@@ -324,7 +326,8 @@ class KeyboardCrop(Widget):
         self.ax3.set_ylim(self.crop['south']-self.height, self.crop['south'])
         self.canvas.draw()
 
-    def on_press(self, event):
+    @if_attentive
+    def _press(self, event):
         key = event.key
         if key is 'enter':
             return
@@ -333,14 +336,6 @@ class KeyboardCrop(Widget):
             if key in effects:
                 self.crop[edge] += effects[key]
         self.update_limits()
-
-    def connect(self):
-        self.press_cid = self.canvas.mpl_connect(
-                'key_press_event', self.on_press)
-
-    def disconnect(self):
-        self.canvas.mpl_disconnect(self.press_cid)
-        self.press_cid = None
 
     def get_edges(self):
         return [self.crop[key] for key in ('south', 'east', 'north', 'west')]
