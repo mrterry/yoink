@@ -318,14 +318,10 @@ class KeyboardCrop(Widget):
         self.update_limits()
 
     def update_limits(self):
-        self.ax1.set_xlim(
-                self.crop['west'],     self.crop['west']+self.width)  # 1 3
-        self.ax2.set_xlim(
-                self.crop['east']-self.width,  self.crop['east'])     # 2 4
-        self.ax1.set_ylim(
-                self.crop['north'],    self.crop['north']+self.height)  # 1 2
-        self.ax3.set_ylim(
-                self.crop['south']-self.height, self.crop['south'])     # 3 4
+        self.ax1.set_xlim(self.crop['west'], self.crop['west']+self.width)
+        self.ax2.set_xlim(self.crop['east']-self.width, self.crop['east'])
+        self.ax1.set_ylim(self.crop['north'], self.crop['north']+self.height)
+        self.ax3.set_ylim(self.crop['south']-self.height, self.crop['south'])
         self.canvas.draw()
 
     def on_press(self, event):
