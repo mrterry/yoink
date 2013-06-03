@@ -201,8 +201,11 @@ class ShutterCrop(AxesWidget):
         self.visible = True
 
         self.active_pick = None
-        self.connected = False
 
+        kw = dict(facecolor=facecolor, edgecolor=edgecolor, picker=picker,
+                alpha=alpha, **rect_kw)
+        self._make_rects(dx_frac, dy_frac, kw)
+    def _make_rects(self, dx_frac, dy_frac, kw):
         xlo, xhi = self.ax.get_xlim()
         dx = xhi-xlo
         ylo, yhi = self.ax.get_ylim()
