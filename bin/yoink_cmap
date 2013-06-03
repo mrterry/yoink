@@ -13,9 +13,9 @@ from yoink.data import test_img
 
 
 class NothingWidget(object):
-    def connect(self):
-        pass
-    def disconnect(self):
+    active = False
+
+    def set_visible(self, vis):
         pass
 
 
@@ -27,20 +27,20 @@ class NothingWidget(object):
 #args = parser.parse_args()
 #img_path = args.image
 
-#fig = plt.figure()
-#img_ax = fig.add_subplot(121)
-#divider = make_axes_locatable(img_ax)
-#cmap_ax = divider.append_axes('right', size='5%', pad=0.5)
-#select_ax = fig.add_subplot(122)
+
+def make_axes(fig):
+    img_ax = plt.subplot2grid((3, 3), (0, 0), colspan=3, rowspan=2)
+    divider = make_axes_locatable(img_ax)
+    cmap_ax = divider.append_axes('right', size='5%', pad=0.5)
+
+    select_ax = plt.subplot2grid((3, 3), (2, 0))
+    dump_ax = plt.subplot2grid((3, 3), (2, 1))
+    lim_ax = plt.subplot2grid((3, 3), (2, 2))
+    return img_ax, cmap_ax, (select_ax, dump_ax, lim_ax)
+    
 
 fig = plt.figure()
-img_ax = plt.subplot2grid((3, 3), (0, 0), colspan=3, rowspan=2)
-select_ax = plt.subplot2grid((3, 3), (2, 0))
-dump_ax = plt.subplot2grid((3, 3), (2, 1))
-lim_ax = plt.subplot2grid((3, 3), (2, 2))
-divider = make_axes_locatable(img_ax)
-cmap_ax = divider.append_axes('right', size='5%', pad=0.5)
-
+img_ax, cmap_ax, (select_ax, dump_ax, lim_ax) = make_axes(fig)
 
 #im = plt.imread(img_path)
 im = test_img()
@@ -69,8 +69,11 @@ def toggle_state(new_state):
     for k in states:
         if k == new_state:
             continue
-        states[k].disconnect()
-    states[new_state].connect()
+        states[k].active = False
+        states[k].set_visible(False)
+    states[new_state].active = True
+    states[new_state].set_visible(True)
+toggle_state(states.keys()[0])
 
 
 select_radio = RadioButtons(select_ax,
