@@ -1,5 +1,7 @@
 from __future__ import division
 
+from functools import wraps
+
 import numpy as np
 from matplotlib.patches import Circle, Rectangle
 from matplotlib.lines import Line2D
@@ -7,6 +9,14 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 
 from yoink.trace import equispaced_colormaping
+
+
+def if_attentive(f):
+    @wraps(f)
+    def wrapper(self, event):
+        if not self.ignore(event):
+            return f(self, event)
+    return wrapper
 
 
 class DragableCmap(object):
