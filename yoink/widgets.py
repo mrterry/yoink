@@ -25,9 +25,10 @@ class DragableCmap(Widget):
     Fake colormap-like image taken from the end points of a DeformableLine
     """
     def __init__(self, select_ax, cmap_ax, source):
-        self.created = False
         self.select_ax = select_ax
         self.cmap_ax = cmap_ax
+        self._active = True
+        self.visible = True
 
         self.line = DeformableLine(select_ax, max_points=2)
         self.source = source
@@ -69,8 +70,18 @@ class DragableCmap(Widget):
         seq = [(x, col) for x, col in zip(self.l, self.rgb)]
         return LinearSegmentedColormap.from_list(name, seq, **kwargs)
 
-    def connect(self):
-        self.line.connect()
+    @property
+    def active(self):
+        return self._active
+
+    @active.setter
+    def active(self, active):
+        self._active = self.line.active = active
+
+    def set_visible(self, vis):
+        self.visible = vis
+        self.line.set_visible(vis)
+        self.draw()
 
     def draw(self):
         self.select_ax.figure.canvas.draw()
