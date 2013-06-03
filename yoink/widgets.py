@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib.patches import Circle, Rectangle
 from matplotlib.lines import Line2D
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.widgets import Widget, AxesWidget
 import matplotlib.pyplot as plt
 
 from yoink.trace import equispaced_colormaping
@@ -30,7 +31,6 @@ class DragableCmap(Widget):
 
         self.line = DeformableLine(select_ax, max_points=2)
         self.source = source
-        self.created = False
 
         self.l = None
         self.rgb = None
@@ -39,16 +39,13 @@ class DragableCmap(Widget):
         dx = xr - xl
         yb, yt = select_ax.get_ylim()
         dy = yt - yb
-
         self.line.add_point(xl + 0.25*dx, yb + 0.25*dy)
         self.line.add_point(xl + 0.75*dx, yb + 0.75*dy)
 
-        self.create()
+        self._create_cmap()
         self.line.callbacks.append(self.update)
 
-    def create(self):
-        self.created = True
-
+    def _create_cmap(self):
         rgb = np.zeros((2, 1, 4))
         self.im = self.cmap_ax.imshow(rgb,
                 aspect='auto', origin='lower', extent=[0, 1, 0, 1])
@@ -65,6 +62,7 @@ class DragableCmap(Widget):
 
         n, ncol = self.rgb.shape
         self.im.set_data(self.rgb.reshape((n, 1, ncol)))
+        self.draw()
 
     def make_cmap(self, name, **kwargs):
         assert None not in (self.l, self.rgb)
@@ -74,8 +72,9 @@ class DragableCmap(Widget):
     def connect(self):
         self.line.connect()
 
-    def disconnect(self):
-        self.line.disconnect()
+    def draw(self):
+        self.select_ax.figure.canvas.draw()
+        self.cmap_ax.figure.canvas.draw()
 
 
 class DeformableLine(AxesWidget):
