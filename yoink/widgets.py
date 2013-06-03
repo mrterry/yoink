@@ -19,7 +19,7 @@ def if_attentive(f):
     return wrapper
 
 
-class DragableCmap(object):
+class DragableCmap(Widget):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
     """
@@ -78,13 +78,13 @@ class DragableCmap(object):
         self.line.disconnect()
 
 
-class DeformableLine(object):
+class DeformableLine(AxesWidget):
     """
     Segemented line with movable vertexes
     """
     def __init__(self, ax, is_closed=False, max_points=None):
-        self.ax = ax
-        self.canvas = self.ax.figure.canvas
+        AxesWidget.__init__(self, ax)
+        self.visible = True
 
         self.xs = []
         self.ys = []
@@ -184,7 +184,7 @@ class DeformableLine(object):
         return i
 
 
-class ShutterCrop(object):
+class ShutterCrop(AxesWidget):
     """
     Crop an image by dragging transparent panes over excluded region.
     """
@@ -192,8 +192,9 @@ class ShutterCrop(object):
             dx_frac=0.05, dy_frac=0.05,
             facecolor='gray', edgecolor='none', alpha=0.5, picker=5,
             **rect_kw):
-        self.ax = ax
-        self.canvas = self.ax.figure.canvas
+        self.rects = {}  # AxesWidget sets active=True, so rects needs to exist
+        AxesWidget.__init__(self, ax)
+        self.visible = True
 
         self.active_pick = None
         self.connected = False
@@ -302,7 +303,7 @@ class ShutterCrop(object):
         return xlo, xhi, ylo, yhi
 
 
-class KeyboardCrop(object):
+class KeyboardCrop(Widget):
     """
     Keyboard driven interface to set crop an image
 
