@@ -7,7 +7,6 @@ from matplotlib.patches import Circle, Rectangle
 from matplotlib.lines import Line2D
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.widgets import Widget, AxesWidget
-import matplotlib.pyplot as plt
 
 from yoink.trace import equispaced_colormaping
 
@@ -205,6 +204,11 @@ class ShutterCrop(AxesWidget):
         kw = dict(facecolor=facecolor, edgecolor=edgecolor, picker=picker,
                 alpha=alpha, **rect_kw)
         self._make_rects(dx_frac, dy_frac, kw)
+
+        self.connect_event('pick_event', self._pick),
+        self.connect_event('button_release_event', self._release),
+        self.connect_event('motion_notify_event', self._motion),
+
     def _make_rects(self, dx_frac, dy_frac, kw):
         xlo, xhi = self.ax.get_xlim()
         dx = xhi-xlo
@@ -221,9 +225,10 @@ class ShutterCrop(AxesWidget):
         for k, r in self.rects.iteritems():
             self.ax.add_artist(r)
 
-    def show_hide(self, onoff):
-        for p in [self.north, self.south, self.east, self.west]:
-            p.set_visible(onoff)
+    def set_visible(self, vis):
+        self.visible = vis
+        for r in self.rects.values():
+            r.set_visible(vis)
         self.canvas.draw()
 
     def get_extents(self):
@@ -236,41 +241,44 @@ class ShutterCrop(AxesWidget):
         yhi = self.rects['north'].get_y()
         return xlo, xhi, ylo, yhi
 
-    def on_pick(self, event):
-        names = ('north', 'south', 'east', 'west')
-        bars = (self.north, self.south, self.east, self.west)
-        for name, bar in zip(names, bars):
-            if event.artist is bar:
+    @if_attentive
+    def _pick(self, event):
+        for k in self.rects:
+            r = self.rects[k]
+            if event.artist is r:
                 bounds = (
-                        bar.get_x(),
-                        bar.get_y(),
-                        bar.get_width(),
-                        bar.get_height(),
+                        r.get_x(),
+                        r.get_y(),
+                        r.get_width(),
+                        r.get_height(),
                         )
                 click = (event.mouseevent.xdata, event.mouseevent.ydata)
-                self.active_pick = (bar, click, bounds)
+                self.active_pick = (r, click, bounds)
+                return
 
-    def on_release(self, event):
+    @if_attentive
+    def _release(self, event):
         self.active_pick = None
 
-    def on_motion(self, event):
+    @if_attentive
+    def _motion(self, event):
         if self.active_pick is None:
             return
         bar, (xclick, yclick), (x, y, w, h) = self.active_pick
 
-        if bar is self.south:
+        if bar is self.rects['south']:
             new_height = h + (event.ydata-yclick)
-            self.south.set_height(new_height)
-        elif bar is self.west:
+            bar.set_height(new_height)
+        elif bar is self.rects['west']:
             new_w = w + (event.xdata-xclick)
-            self.west.set_width(new_w)
-        elif bar is self.north:
+            bar.set_width(new_w)
+        elif bar is self.rects['north']:
             dy = event.ydata - yclick
             new_h = h - dy
             new_y = y + dy
             bar.set_height(new_h)
             bar.set_y(new_y)
-        elif bar is self.east:
+        elif bar is self.rects['east']:
             dx = event.xdata - xclick
             new_w = w - dx
             new_x = x + dx
@@ -278,33 +286,6 @@ class ShutterCrop(AxesWidget):
             bar.set_width(new_w)
 
         self.canvas.draw()
-
-    def connect(self):
-        self.show_hide(True)
-        if self.connected:
-            return
-
-        self.picker_cid = self.canvas.mpl_connect(
-                'pick_event', self.on_pick)
-        self.release_cid = self.canvas.mpl_connect(
-                'button_release_event', self.on_release)
-        self.motion_cid = self.canvas.mpl_connect(
-                'motion_notify_event', self.on_motion)
-
-        self.connected = True
-
-    def disconnect(self):
-        self.show_hide(False)
-        if not self.connected:
-            return
-        self.canvas.mpl_disconnect(self.picker_cid)
-        self.canvas.mpl_disconnect(self.release_cid)
-        self.canvas.mpl_disconnect(self.motion_cid)
-
-        self.picker_cid = None
-        self.picker_cid = None
-        self.motion_cid = None
-        self.connected = False
 
 
 class KeyboardCrop(Widget):
@@ -319,6 +300,7 @@ class KeyboardCrop(Widget):
     Example usage given in keyboard_crop()
     """
     def __init__(self, im, limits, width=20, height=20, **kwargs):
+        import matplotlib.pyplot as plt
         self.im = im
         self.crop = limits
         fig, axes = plt.subplots(2, 2, sharex='col', sharey='row')
