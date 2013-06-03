@@ -44,9 +44,8 @@ img_ax, cmap_ax, (select_ax, dump_ax, lim_ax) = make_axes(fig)
 
 #im = plt.imread(img_path)
 im = test_img()
+
 img_ax.imshow(im)
-
-
 shutter_crop = ShutterCrop(img_ax)
 cmap_img = DragableCmap(img_ax, cmap_ax, im)
 dump_button = Button(dump_ax, 'Dump to file')
