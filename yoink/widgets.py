@@ -108,62 +108,15 @@ class DeformableLine(AxesWidget):
 
         self.callbacks = []
         self.moving_ci = None
-        self.connected = False
 
-    def connect(self):
-        self.press_cid = self.canvas.mpl_connect(
-                'button_press_event', self.on_press)
-        self.release_cid = self.canvas.mpl_connect(
-                'button_release_event', self.on_release)
-        self.motion_cid = self.canvas.mpl_connect(
-                'motion_notify_event', self.on_motion)
-        self.connected = True
-
-    def disconnect(self):
-        if not self.connected:
-            return
-        self.canvas.mpl_disconnect(self.press_cid)
-        self.canvas.mpl_disconnect(self.release_cid)
-        self.canvas.mpl_disconnect(self.motion_cid)
-
-        self.press_cid = None
-        self.release_cid = None
-        self.motion_cid = None
-
-        self.connected = False
+        self.connect_event('button_press_event', self._press)
+        self.connect_event('button_release_event', self._release)
+        self.connect_event('motion_notify_event', self._motion)
 
     def draw(self):
         for f in self.callbacks:
             f()
         self.canvas.draw()
-
-    def on_press(self, event):
-        ci = self.get_circle_index(event)
-        if ci is None:
-            return
-        circle = self.circles[ci]
-        x0, y0 = circle.center
-        self.moving_ci = x0, y0, event.xdata, event.ydata, ci
-
-    def on_motion(self, event):
-        if self.moving_ci is None:
-            return
-        xc, yc, xclick, yclick, ci = self.moving_ci
-
-        x, y = xc + (event.xdata-xclick), yc + (event.ydata-yclick)
-        self.circles[ci].center = (x, y)
-
-        self.xs[ci], self.ys[ci] = x, y
-        if self.is_closed and len(self.circles) == self.max_points and ci == 0:
-            self.xs[-1], self.ys[-1] = x, y
-        self.line.set_data(self.xs, self.ys)
-
-        self.draw()
-
-    def on_release(self, event):
-        if self.moving_ci:
-            self.moving_ci = None
-            self.draw()
 
     def get_circle_index(self, event):
         i = 0
@@ -192,6 +145,47 @@ class DeformableLine(AxesWidget):
         self.line.set_data(self.xs, self.ys)
         self.draw()
         return i
+
+    def set_visible(self, vis):
+        self.visible = vis
+        self.line.set_visible(vis)
+        for c in self.circles:
+            c.set_visible(vis)
+        self.draw()
+
+    def get_visible(self, vis):
+        return self.visible
+
+    @if_attentive
+    def _press(self, event):
+        ci = self.get_circle_index(event)
+        if ci is None:
+            return
+        circle = self.circles[ci]
+        x0, y0 = circle.center
+        self.moving_ci = x0, y0, event.xdata, event.ydata, ci
+
+    @if_attentive
+    def _release(self, event):
+        if self.moving_ci:
+            self.moving_ci = None
+            self.draw()
+
+    @if_attentive
+    def _motion(self, event):
+        if self.moving_ci is None:
+            return
+        xc, yc, xclick, yclick, ci = self.moving_ci
+
+        x, y = xc + (event.xdata-xclick), yc + (event.ydata-yclick)
+        self.circles[ci].center = (x, y)
+
+        self.xs[ci], self.ys[ci] = x, y
+        if self.is_closed and len(self.circles) == self.max_points and ci == 0:
+            self.xs[-1], self.ys[-1] = x, y
+        self.line.set_data(self.xs, self.ys)
+
+        self.draw()
 
 
 class ShutterCrop(AxesWidget):
