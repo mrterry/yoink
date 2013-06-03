@@ -292,25 +292,6 @@ class ShutterCrop(object):
         return xlo, xhi, ylo, yhi
 
 
-def get_bounds(rect):
-    return rect.get_x(), rect.get_y(), rect.get_width(), rect.get_height()
-
-
-class PixelCorral(object):
-    """
-    Returns the pixel grid
-    """
-    pass
-
-
-class CoordinateMapper(object):
-    """
-    Map points in pixel space to alternate axis
-    """
-    def __init__(self):
-        pass
-
-
 class KeyboardCrop(object):
     """
     Keyboard driven interface to set crop an image
