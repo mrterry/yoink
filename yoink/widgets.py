@@ -213,23 +213,28 @@ class ShutterCrop(AxesWidget):
         width = dx_frac*dx
         height = dy_frac*dy
 
-        kw = dict(facecolor=facecolor, edgecolor=edgecolor, picker=picker,
-                alpha=alpha, **rect_kw)
-        self.north = Rectangle((xlo, yhi-height), dx, height, **kw)
-        self.south = Rectangle((xlo, ylo), dx, height, **kw)
-        self.east = Rectangle((xhi-width, ylo), width, dy, **kw)
-        self.west = Rectangle((xlo, ylo), width, dy, **kw)
-        self.show_hide(False)
+        self.rects['north'] = Rectangle((xlo, yhi-height), dx, height, **kw)
+        self.rects['south'] = Rectangle((xlo, ylo), dx, height, **kw)
+        self.rects['east'] = Rectangle((xhi-width, ylo), width, dy, **kw)
+        self.rects['west'] = Rectangle((xlo, ylo), width, dy, **kw)
 
-        self.ax.add_artist(self.north)
-        self.ax.add_artist(self.south)
-        self.ax.add_artist(self.east)
-        self.ax.add_artist(self.west)
+        for k, r in self.rects.iteritems():
+            self.ax.add_artist(r)
 
     def show_hide(self, onoff):
         for p in [self.north, self.south, self.east, self.west]:
             p.set_visible(onoff)
         self.canvas.draw()
+
+    def get_extents(self):
+        west = self.rects['west']
+        xlo = west.get_x() + west.get_width()
+        xhi = self.rects['east'].get_x()
+
+        south = self.rects['south']
+        ylo = south.get_y() + south.get_height()
+        yhi = self.rects['north'].get_y()
+        return xlo, xhi, ylo, yhi
 
     def on_pick(self, event):
         names = ('north', 'south', 'east', 'west')
@@ -300,14 +305,6 @@ class ShutterCrop(AxesWidget):
         self.picker_cid = None
         self.motion_cid = None
         self.connected = False
-
-    def get_extents(self):
-        xlo = self.west.get_x() + self.west.get_width()
-        xhi = self.east.get_x()
-
-        ylo = self.south.get_y() + self.south.get_height()
-        yhi = self.north.get_y()
-        return xlo, xhi, ylo, yhi
 
 
 class KeyboardCrop(Widget):
