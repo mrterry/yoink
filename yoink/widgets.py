@@ -7,6 +7,7 @@ from matplotlib.patches import Circle, Rectangle
 from matplotlib.lines import Line2D
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.widgets import Widget, AxesWidget
+from yoink.textbox import FloatTextBox
 
 from yoink.trace import equispaced_colormaping
 
@@ -23,7 +24,7 @@ class DragableCmap(Widget):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
     """
-    def __init__(self, select_ax, cmap_ax, source):
+    def __init__(self, select_ax, cmap_ax, lo_ax, hi_ax, source):
         self.select_ax = select_ax
         self.cmap_ax = cmap_ax
         self._active = True
@@ -35,20 +36,28 @@ class DragableCmap(Widget):
         self.l = None
         self.rgb = None
 
+        self.lo_tb = FloatTextBox(lo_ax, '0.0')
+        self.hi_tb = FloatTextBox(hi_ax, '1.0')
+
+        self.lo_tb.redraw_callbacks.append(self.update)
+        self.hi_tb.redraw_callbacks.append(self.update)
+
         xl, xr = select_ax.get_xlim()
         dx = xr - xl
         yb, yt = select_ax.get_ylim()
         dy = yt - yb
-        self.line.add_point(xl + 0.25*dx, yb + 0.25*dy)
-        self.line.add_point(xl + 0.75*dx, yb + 0.75*dy)
+        self.line.add_point(xl + 0.25 * dx, yb + 0.25 * dy)
+        self.line.add_point(xl + 0.75 * dx, yb + 0.75 * dy)
 
-        self._create_cmap()
-        self.line.callbacks.append(self.update)
+        self._fill_cmap_ax()
+        self.line.redraw_callbacks.append(self.update)
 
-    def _create_cmap(self):
+    def _fill_cmap_ax(self):
         rgb = np.zeros((2, 1, 4))
         self.im = self.cmap_ax.imshow(rgb,
-                aspect='auto', origin='lower', extent=[0, 1, 0, 1])
+                                      aspect='auto',
+                                      origin='lower',
+                                      extent=[0, 1, 0, 1])
         self.cmap_ax.yaxis.tick_right()
         self.cmap_ax.xaxis.set_visible(False)
         self.update()
@@ -58,11 +67,16 @@ class DragableCmap(Widget):
             return
         x0, y0 = self.line.circles[0].center
         x1, y1 = self.line.circles[1].center
-        self.l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.source)
+        l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.source)
+
+        zlo, zhi = self.lo_tb.value, self.hi_tb.value
+        dz = zhi - zlo
+        self.l = zlo + l * dz
 
         n, ncol = self.rgb.shape
         self.im.set_data(self.rgb.reshape((n, 1, ncol)))
-        self.draw()
+        self.im.set_extent([0, 1, zlo, zhi])
+        self.redraw()
 
     def make_cmap(self, name, **kwargs):
         assert None not in (self.l, self.rgb)
@@ -77,12 +91,12 @@ class DragableCmap(Widget):
     def active(self, active):
         self._active = self.line.active = active
 
-    def set_visible(self, vis):
-        self.visible = vis
-        self.line.set_visible(vis)
-        self.draw()
+    def set_visible(self, isvisible):
+        self.visible = isvisible
+        self.line.set_visible(isvisible)
+        self.redraw()
 
-    def draw(self):
+    def redraw(self):
         self.select_ax.figure.canvas.draw()
         self.cmap_ax.figure.canvas.draw()
 
@@ -105,15 +119,15 @@ class DeformableLine(AxesWidget):
         self.is_closed = is_closed
         self.max_points = max_points
 
-        self.callbacks = []
+        self.redraw_callbacks = []
         self.moving_ci = None
 
         self.connect_event('button_press_event', self._press)
         self.connect_event('button_release_event', self._release)
         self.connect_event('motion_notify_event', self._motion)
 
-    def draw(self):
-        for f in self.callbacks:
+    def redraw(self):
+        for f in self.redraw_callbacks:
             f()
         self.canvas.draw()
 
@@ -142,17 +156,17 @@ class DeformableLine(AxesWidget):
             self.xs.append(self.xs[0])
             self.ys.append(self.ys[0])
         self.line.set_data(self.xs, self.ys)
-        self.draw()
+        self.redraw()
         return i
 
-    def set_visible(self, vis):
-        self.visible = vis
-        self.line.set_visible(vis)
+    def set_visible(self, isvisible):
+        self.visible = isvisible
+        self.line.set_visible(isvisible)
         for c in self.circles:
-            c.set_visible(vis)
-        self.draw()
+            c.set_visible(isvisible)
+        self.redraw()
 
-    def get_visible(self, vis):
+    def get_visible(self):
         return self.visible
 
     @if_attentive
@@ -168,7 +182,7 @@ class DeformableLine(AxesWidget):
     def _release(self, event):
         if self.moving_ci:
             self.moving_ci = None
-            self.draw()
+            self.redraw()
 
     @if_attentive
     def _motion(self, event):
@@ -176,7 +190,7 @@ class DeformableLine(AxesWidget):
             return
         xc, yc, xclick, yclick, ci = self.moving_ci
 
-        x, y = xc + (event.xdata-xclick), yc + (event.ydata-yclick)
+        x, y = xc + (event.xdata - xclick), yc + (event.ydata - yclick)
         self.circles[ci].center = (x, y)
 
         self.xs[ci], self.ys[ci] = x, y
@@ -184,25 +198,29 @@ class DeformableLine(AxesWidget):
             self.xs[-1], self.ys[-1] = x, y
         self.line.set_data(self.xs, self.ys)
 
-        self.draw()
+        self.redraw()
 
 
 class ShutterCrop(AxesWidget):
     """
     Crop an image by dragging transparent panes over excluded region.
     """
-    def __init__(self, ax,
-            dx_frac=0.05, dy_frac=0.05,
-            facecolor='gray', edgecolor='none', alpha=0.5, picker=5,
-            **rect_kw):
+    def __init__(self,
+                 ax,
+                 dx_frac=0.05, dy_frac=0.05,
+                 facecolor='gray', edgecolor='none', alpha=0.5, picker=5,
+                 **rect_kw):
         self.rects = {}  # AxesWidget sets active=True, so rects needs to exist
         AxesWidget.__init__(self, ax)
         self.visible = True
 
         self.active_pick = None
 
-        kw = dict(facecolor=facecolor, edgecolor=edgecolor, picker=picker,
-                alpha=alpha, **rect_kw)
+        kw = dict(facecolor=facecolor,
+                  edgecolor=edgecolor,
+                  picker=picker,
+                  alpha=alpha,
+                  **rect_kw)
         self._make_rects(dx_frac, dy_frac, kw)
 
         self.connect_event('pick_event', self._pick),
@@ -211,25 +229,28 @@ class ShutterCrop(AxesWidget):
 
     def _make_rects(self, dx_frac, dy_frac, kw):
         xlo, xhi = self.ax.get_xlim()
-        dx = xhi-xlo
+        dx = xhi - xlo
         ylo, yhi = self.ax.get_ylim()
         dy = yhi - ylo
-        width = dx_frac*dx
-        height = dy_frac*dy
+        width = dx_frac * dx
+        height = dy_frac * dy
 
-        self.rects['north'] = Rectangle((xlo, yhi-height), dx, height, **kw)
+        self.rects['north'] = Rectangle((xlo, yhi - height), dx, height, **kw)
         self.rects['south'] = Rectangle((xlo, ylo), dx, height, **kw)
-        self.rects['east'] = Rectangle((xhi-width, ylo), width, dy, **kw)
+        self.rects['east'] = Rectangle((xhi - width, ylo), width, dy, **kw)
         self.rects['west'] = Rectangle((xlo, ylo), width, dy, **kw)
 
         for k, r in self.rects.iteritems():
             self.ax.add_artist(r)
 
-    def set_visible(self, vis):
-        self.visible = vis
+    def set_visible(self, isvisible):
+        self.visible = isvisible
         for r in self.rects.values():
-            r.set_visible(vis)
+            r.set_visible(isvisible)
         self.canvas.draw()
+
+    def get_visible(self):
+        return self.visible
 
     def get_extents(self):
         west = self.rects['west']
@@ -247,11 +268,11 @@ class ShutterCrop(AxesWidget):
             r = self.rects[k]
             if event.artist is r:
                 bounds = (
-                        r.get_x(),
-                        r.get_y(),
-                        r.get_width(),
-                        r.get_height(),
-                        )
+                    r.get_x(),
+                    r.get_y(),
+                    r.get_width(),
+                    r.get_height(),
+                )
                 click = (event.mouseevent.xdata, event.mouseevent.ydata)
                 self.active_pick = (r, click, bounds)
                 return
@@ -267,10 +288,10 @@ class ShutterCrop(AxesWidget):
         bar, (xclick, yclick), (x, y, w, h) = self.active_pick
 
         if bar is self.rects['south']:
-            new_height = h + (event.ydata-yclick)
+            new_height = h + (event.ydata - yclick)
             bar.set_height(new_height)
         elif bar is self.rects['west']:
-            new_w = w + (event.xdata-xclick)
+            new_w = w + (event.xdata - xclick)
             bar.set_width(new_w)
         elif bar is self.rects['north']:
             dy = event.ydata - yclick
@@ -320,10 +341,10 @@ class KeyboardCrop(Widget):
         self.update_limits()
 
     def update_limits(self):
-        self.ax1.set_xlim(self.crop['west'], self.crop['west']+self.width)
-        self.ax2.set_xlim(self.crop['east']-self.width, self.crop['east'])
-        self.ax1.set_ylim(self.crop['north'], self.crop['north']+self.height)
-        self.ax3.set_ylim(self.crop['south']-self.height, self.crop['south'])
+        self.ax1.set_xlim(self.crop['west'], self.crop['west'] + self.width)
+        self.ax2.set_xlim(self.crop['east'] - self.width, self.crop['east'])
+        self.ax1.set_ylim(self.crop['north'], self.crop['north'] + self.height)
+        self.ax3.set_ylim(self.crop['south'] - self.height, self.crop['south'])
         self.canvas.draw()
 
     @if_attentive
