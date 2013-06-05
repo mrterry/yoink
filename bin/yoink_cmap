@@ -3,12 +3,12 @@
 from collections import OrderedDict
 
 import matplotlib.pyplot as plt
+plt.switch_backend('tkAgg')
 from matplotlib.widgets import RadioButtons, Button
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 #from matplotlib.gridspec import GridSpec
 
 from yoink.widgets import ShutterCrop, DragableCmap
-from yoink.textbox import TextBox
 from yoink.data import test_img
 
 
@@ -29,32 +29,29 @@ class NothingWidget(object):
 
 
 def make_axes(fig):
-    img_ax = plt.subplot2grid((3, 3), (0, 0), colspan=3, rowspan=2)
+    nrow, ncol = shape = 3, 4
+    img_ax = plt.subplot2grid(shape, (0, 0), colspan=ncol, rowspan=2)
     divider = make_axes_locatable(img_ax)
     cmap_ax = divider.append_axes('right', size='5%', pad=0.5)
 
-    select_ax = plt.subplot2grid((3, 3), (2, 0))
-    dump_ax = plt.subplot2grid((3, 3), (2, 1))
-    lim_ax = plt.subplot2grid((3, 3), (2, 2))
-    return img_ax, cmap_ax, (select_ax, dump_ax, lim_ax)
-    
+    row = nrow - 1
+    select_ax = plt.subplot2grid(shape, (row, 0))
+    dump_ax = plt.subplot2grid(shape, (row, 1))
+    lo_ax = plt.subplot2grid(shape, (row, 2))
+    hi_ax = plt.subplot2grid(shape, (row, 3))
+    return img_ax, cmap_ax, (select_ax, dump_ax, lo_ax, hi_ax)
+
 
 fig = plt.figure()
-img_ax, cmap_ax, (select_ax, dump_ax, lim_ax) = make_axes(fig)
+img_ax, cmap_ax, (select_ax, dump_ax, lo_ax, hi_ax) = make_axes(fig)
 
 #im = plt.imread(img_path)
 im = test_img()
 
 img_ax.imshow(im)
 shutter_crop = ShutterCrop(img_ax)
-cmap_img = DragableCmap(img_ax, cmap_ax, im)
+cmap_img = DragableCmap(img_ax, cmap_ax, lo_ax, hi_ax, im)
 dump_button = Button(dump_ax, 'Dump to file')
-cmap_low = TextBox(lim_ax, '0.0')
-
-
-def dump(mode='npz'):
-    assert mode in ('npz', 'txt')
-    pass
 
 
 states = OrderedDict()
@@ -75,10 +72,7 @@ def toggle_state(new_state):
 toggle_state(states.keys()[0])
 
 
-select_radio = RadioButtons(select_ax,
-        labels=states.keys(),
-        active=0,
-        )
+select_radio = RadioButtons(select_ax, labels=states.keys(), active=0)
 select_radio.on_clicked(toggle_state)
 
 plt.show()
