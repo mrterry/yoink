@@ -8,7 +8,7 @@ def FloatTextBox(*args, **kwargs):
 
 
 class TextBox(AxesWidget):
-    def __init__(self, ax, s='', allowed_chars=None, type=float,
+    def __init__(self, ax, s='', allowed_chars=None, type=str,
                  enter_callback=None, **text_kwargs):
         """
         Editable text box
@@ -29,8 +29,7 @@ class TextBox(AxesWidget):
             The parent axes for the widget
 
         *s* : str
-            The initial text of the TextBox.  Should be able to be coerced
-            to a float.
+            The initial text of the TextBox.
 
         *allowed_chars* : seq
             TextBox will only respond if event.key in allowed_chars.  Defaults
