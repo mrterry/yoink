@@ -1,12 +1,6 @@
 from matplotlib.widgets import AxesWidget
 
 
-def FloatTextBox(*args, **kwargs):
-    kwargs['allowed_chars'] = '0123456789.eE-+'
-    kwargs['type'] = float
-    return TextBox(*args, **kwargs)
-
-
 class TextBox(AxesWidget):
     def __init__(self, ax, s='', allowed_chars=None, type=str,
                  enter_callback=None, **text_kwargs):
@@ -183,3 +177,12 @@ class TextBox(AxesWidget):
         tx, ty = self.ax.transAxes.inverted().transform((r, b + h))
         dy = 0.5 * (ty - by)
         return [bx, tx], [by - dy, ty + dy]
+
+
+def TextBoxFloat(*args, **kwargs):
+    """
+    TextBox that produces float values
+    """
+    kwargs['allowed_chars'] = '0123456789.eE-+'
+    kwargs['type'] = float
+    return TextBox(*args, **kwargs)
