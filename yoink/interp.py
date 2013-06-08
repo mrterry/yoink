@@ -13,6 +13,10 @@ def CornerInterp(pixel_xy, data_xy):
     coefs = coefs.T
 
     def f(px, py):
+        """
+        Converts points in pixel space (px, py) to points in data
+        space
+        """
         # coerce px to array
         if not hasattr(px, '__len__'):
             px = [px]
@@ -51,7 +55,7 @@ def invert_cmap_leastsq(pix, l, colors):
         index = it.multi_index
         # use the answer from the previous iteration to guess the next answer
         guess, stuff = leastsq(residuals, guess, args=(pix[index],))
-        ans[index] = guess  
+        ans[index] = guess
         it.iternext()
 
     return ans
@@ -76,7 +80,7 @@ def invert_cmap_argmin(pix, l, colors):
         index = it.multi_index
 
         err = colors - pix[index]
-        err = np.sum(err*err, axis=1)
+        err = np.sum(err * err, axis=1)
         ans[index] = l[err.argmin()]
         it.iternext()
 
@@ -93,7 +97,7 @@ def order_corners(corners):
     assert len(corners[0]) == 2
     ordered = []
 
-    radii = [x**2 + y**2 for x, y in corners]
+    radii = [x ** 2 + y ** 2 for x, y in corners]
     i = np.argmin(radii)
     ordered.append(corners.pop(i))
 
@@ -132,10 +136,10 @@ def get_corner_grid(corners, ni, nj):
     bot_y = _midspace(bl[1], br[1], nj)
     top_y = _midspace(tl[1], tr[1], nj)
 
-    di = 1./ni
-    dj = 1./nj
-    ispan = np.arange(di/2, 1., di)
-    jspan = np.arange(dj/2, 1., dj)
+    di = 1. / ni
+    dj = 1. / nj
+    ispan = np.arange(di / 2, 1., di)
+    jspan = np.arange(dj / 2, 1., dj)
 
     x = np.empty((ni, nj))
     x[:, :] = jspan
@@ -153,6 +157,6 @@ def _midspace(start, end, n):
     """
     Cut region start/end into n regions and return the midpoint of each bin
     """
-    x = np.linspace(start, end, n+1)
+    x = np.linspace(start, end, n + 1)
     x = x[:-1] + np.diff(x)
     return x
