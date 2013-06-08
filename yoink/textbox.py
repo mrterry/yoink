@@ -1,7 +1,8 @@
 from matplotlib.widgets import AxesWidget
+from yoink.widgets import WithCallback
 
 
-class TextBox(AxesWidget):
+class TextBox(AxesWidget, WithCallback):
     def __init__(self, ax, s='', allowed_chars=None, type=str,
                  enter_callback=None, **text_kwargs):
         """
@@ -42,6 +43,7 @@ class TextBox(AxesWidget):
             Additional keywork arguments are passed on to self.ax.text()
         """
         AxesWidget.__init__(self, ax)
+        WithCallback.__init__(self)
         self.ax.set_navigate(False)
         self.ax.set_yticks([])
         self.ax.set_xticks([])
@@ -59,7 +61,6 @@ class TextBox(AxesWidget):
         self.old_callbacks = {}
 
         self.connect_event('button_press_event', self._mouse_activate)
-        self.redraw_callbacks = []
         self.redraw()
 
     @property
@@ -73,8 +74,7 @@ class TextBox(AxesWidget):
         return self._cursor
 
     def redraw(self):
-        for f in self.redraw_callbacks:
-            f()
+        self.changed()
         self.canvas.draw()
 
     def _mouse_activate(self, event):
@@ -160,6 +160,7 @@ class TextBox(AxesWidget):
             pass
         # but always change the text
         self.text.set_text(text)
+        self.changed()
 
     def _get_cursor_endpoints(self):
         # to get cursor position
