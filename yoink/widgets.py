@@ -78,12 +78,13 @@ class DragableCmap(Widget, WithCallbacks):
 
     def _fill_cmap_ax(self):
         rgb = np.zeros((2, 1, 4))
-        self.im = self.cmap_ax.imshow(rgb,
-                                      aspect='auto',
-                                      origin='lower',
-                                      extent=[0, 1, 0, 1])
+        self.cmap_im = self.cmap_ax.imshow(rgb,
+                                           aspect='auto',
+                                           origin='lower',
+                                           extent=[0, 1, 0, 1])
         self.cmap_ax.yaxis.tick_right()
         self.cmap_ax.xaxis.set_visible(False)
+        self.cmap_ax.yaxis.set_visible(True)
         self.update()
 
     def update(self):
@@ -98,8 +99,8 @@ class DragableCmap(Widget, WithCallbacks):
         self.l = zlo + l * dz
 
         n, ncol = self.rgb.shape
-        self.im.set_data(self.rgb.reshape((n, 1, ncol)))
-        self.im.set_extent([0, 1, zlo, zhi])
+        self.cmap_im.set_data(self.rgb.reshape((n, 1, ncol)))
+        self.cmap_im.set_extent([0, 1, zlo, zhi])
         self.redraw()
 
     def make_cmap(self, name, **kwargs):
