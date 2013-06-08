@@ -5,11 +5,12 @@ from collections import OrderedDict
 import matplotlib.pyplot as plt
 plt.switch_backend('tkAgg')
 from matplotlib.widgets import RadioButtons, Button
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-#from matplotlib.gridspec import GridSpec
+import numpy as np
 
+from yoink.layout import make_selector_figure, make_annotate_figure
 from yoink.widgets import ShutterCrop, DragableCmap
 from yoink.data import test_img
+from yoink.textbox import TextBoxFloat
 
 
 class NothingWidget(object):
@@ -17,6 +18,14 @@ class NothingWidget(object):
 
     def set_visible(self, vis):
         pass
+
+
+def set_extent(img, text, side):
+    def set_extent():
+        ext = list(img.get_extent())
+        ext[side] = text.value
+        img.set_extent(ext)
+    return set_extent
 
 
 #import argparse
@@ -28,36 +37,77 @@ class NothingWidget(object):
 #img_path = args.image
 
 
-def make_axes(fig):
-    nrow, ncol = shape = 3, 4
-    img_ax = plt.subplot2grid(shape, (0, 0), colspan=ncol, rowspan=2)
-    divider = make_axes_locatable(img_ax)
-    cmap_ax = divider.append_axes('right', size='5%', pad=0.5)
-
-    row = nrow - 1
-    select_ax = plt.subplot2grid(shape, (row, 0))
-    dump_ax = plt.subplot2grid(shape, (row, 1))
-    lo_ax = plt.subplot2grid(shape, (row, 2))
-    hi_ax = plt.subplot2grid(shape, (row, 3))
-    return img_ax, cmap_ax, (select_ax, dump_ax, lo_ax, hi_ax)
-
-
-fig = plt.figure()
-img_ax, cmap_ax, (select_ax, dump_ax, lo_ax, hi_ax) = make_axes(fig)
+sel_fig, sel_axes = make_selector_figure()
+ann_fig, ann_axes = make_annotate_figure()
 
 #im = plt.imread(img_path)
-im = test_img()
+pixels = test_img()
 
-img_ax.imshow(im)
-shutter_crop = ShutterCrop(img_ax)
-cmap_img = DragableCmap(img_ax, cmap_ax, lo_ax, hi_ax, im)
-dump_button = Button(dump_ax, 'Dump to file')
+# plot source data
+sel_axes['img'].imshow(pixels)
+
+# create shutters
+crop_widget = ShutterCrop(sel_axes['img'])
+
+
+def crop(pix, extent):
+    x0, x1, y0, y1 = np.array(extent, dtype=int)
+    if x1 < x0:
+        x0, x1 = x1, x0
+    if y1 < y0:
+        y0, y1 = y1, y0
+    return pix[y0:y1, x0:x1]
+
+
+# create clipped & rescaled data
+extent = crop_widget.get_extents()  # data (pixel) coordinates
+clipped = crop(pixels, extent)
+right_img = ann_axes['img'].imshow(clipped, aspect='auto')
+
+
+def update_data():
+    extent = crop_widget.get_extents()  # data (pixel) coordinates
+    clipped = crop(pixels, extent)
+    right_img.set_data(clipped)
+    right_img.figure.canvas.draw()
+
+crop_widget.add_callback(update_data)
+
+
+# separage cmap_lo & cmap_hi ?
+cmap_widget = DragableCmap(sel_axes['img'],
+                           sel_axes['cmap'],
+                           ann_axes['cmap_lo'],
+                           ann_axes['cmap_hi'],
+                           pixels)
+
+
+# Create text boxes for x-axis & y-axis limits
+# connect them to the right image so that it extents auto-update
+ext = right_img.get_extent()
+lo_x = TextBoxFloat(ann_axes['xlo'], str(ext[0]))
+hi_x = TextBoxFloat(ann_axes['xhi'], str(ext[1]))
+lo_y = TextBoxFloat(ann_axes['ylo'], str(ext[2]))
+hi_y = TextBoxFloat(ann_axes['yhi'], str(ext[3]))
+
+lo_x.add_callback(set_extent(right_img, lo_x, 0))
+hi_x.add_callback(set_extent(right_img, hi_x, 1))
+lo_y.add_callback(set_extent(right_img, lo_y, 2))
+hi_y.add_callback(set_extent(right_img, hi_y, 3))
+
+
+def dump(event):
+    print 'dumping'
+
+
+dump_button = Button(ann_axes['dump'], 'Dump to file')
+dump_button.on_clicked(dump)
 
 
 states = OrderedDict()
 states['Do nothing'] = NothingWidget()
-states['Crop Image'] = shutter_crop
-states['Select Colorbar'] = cmap_img
+states['Select Colorbar'] = cmap_widget
+states['Crop Image'] = crop_widget
 
 
 def toggle_state(new_state):
@@ -72,7 +122,7 @@ def toggle_state(new_state):
 toggle_state(states.keys()[0])
 
 
-select_radio = RadioButtons(select_ax, labels=states.keys(), active=0)
+select_radio = RadioButtons(sel_axes['select'], labels=states.keys(), active=0)
 select_radio.on_clicked(toggle_state)
 
 plt.show()
