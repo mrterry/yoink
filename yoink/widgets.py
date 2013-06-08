@@ -7,7 +7,7 @@ from matplotlib.patches import Circle, Rectangle
 from matplotlib.lines import Line2D
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.widgets import Widget, AxesWidget
-from yoink.textbox import FloatTextBox
+from yoink.textbox import TextBoxFloat
 
 from yoink.trace import equispaced_colormaping
 
@@ -20,11 +20,35 @@ def if_attentive(f):
     return wrapper
 
 
-class DragableCmap(Widget):
+class WithCallbacks(object):
+    def __init__(self):
+        self.callbacks = {}
+        self._oid = 0
+
+    def add_callback(self, func):
+        oid = self._oid
+        self.callbacks[oid] = func
+        self._oid += 1
+        return oid
+
+    def remove_callback(self, oid):
+        try:
+            del self.callbacks[oid]
+        except KeyError:
+            pass
+
+    def changed(self):
+        for f in self.callbacks.itervalues():
+            f()
+
+
+class DragableCmap(Widget, WithCallbacks):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
     """
     def __init__(self, select_ax, cmap_ax, lo_ax, hi_ax, source):
+        Widget.__init__(self)
+        WithCallbacks.__init__(self)
         self.select_ax = select_ax
         self.cmap_ax = cmap_ax
         self._active = True
@@ -36,11 +60,11 @@ class DragableCmap(Widget):
         self.l = None
         self.rgb = None
 
-        self.lo_tb = FloatTextBox(lo_ax, '0.0')
-        self.hi_tb = FloatTextBox(hi_ax, '1.0')
+        self.lo_tb = TextBoxFloat(lo_ax, '0.0')
+        self.hi_tb = TextBoxFloat(hi_ax, '1.0')
 
-        self.lo_tb.redraw_callbacks.append(self.update)
-        self.hi_tb.redraw_callbacks.append(self.update)
+        self.lo_tb.add_callback(self.update)
+        self.hi_tb.add_callback(self.update)
 
         xl, xr = select_ax.get_xlim()
         dx = xr - xl
@@ -50,7 +74,7 @@ class DragableCmap(Widget):
         self.line.add_point(xl + 0.75 * dx, yb + 0.75 * dy)
 
         self._fill_cmap_ax()
-        self.line.redraw_callbacks.append(self.update)
+        self.line.add_callback(self.update)
 
     def _fill_cmap_ax(self):
         rgb = np.zeros((2, 1, 4))
@@ -97,16 +121,18 @@ class DragableCmap(Widget):
         self.redraw()
 
     def redraw(self):
+        self.changed()
         self.select_ax.figure.canvas.draw()
         self.cmap_ax.figure.canvas.draw()
 
 
-class DeformableLine(AxesWidget):
+class DeformableLine(AxesWidget, WithCallbacks):
     """
     Segemented line with movable vertexes
     """
     def __init__(self, ax, is_closed=False, max_points=None):
         AxesWidget.__init__(self, ax)
+        WithCallbacks.__init__(self)
         self.visible = True
 
         self.xs = []
@@ -119,7 +145,6 @@ class DeformableLine(AxesWidget):
         self.is_closed = is_closed
         self.max_points = max_points
 
-        self.redraw_callbacks = []
         self.moving_ci = None
 
         self.connect_event('button_press_event', self._press)
@@ -127,8 +152,7 @@ class DeformableLine(AxesWidget):
         self.connect_event('motion_notify_event', self._motion)
 
     def redraw(self):
-        for f in self.redraw_callbacks:
-            f()
+        self.changed()
         self.canvas.draw()
 
     def get_circle_index(self, event):
@@ -201,7 +225,7 @@ class DeformableLine(AxesWidget):
         self.redraw()
 
 
-class ShutterCrop(AxesWidget):
+class ShutterCrop(AxesWidget, WithCallbacks):
     """
     Crop an image by dragging transparent panes over excluded region.
     """
@@ -212,6 +236,7 @@ class ShutterCrop(AxesWidget):
                  **rect_kw):
         self.rects = {}  # AxesWidget sets active=True, so rects needs to exist
         AxesWidget.__init__(self, ax)
+        WithCallbacks.__init__(self)
         self.visible = True
 
         self.active_pick = None
@@ -306,6 +331,7 @@ class ShutterCrop(AxesWidget):
             bar.set_x(new_x)
             bar.set_width(new_w)
 
+        self.changed()
         self.canvas.draw()
 
 
