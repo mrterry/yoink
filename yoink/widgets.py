@@ -7,8 +7,8 @@ from matplotlib.patches import Circle, Rectangle
 from matplotlib.lines import Line2D
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.widgets import Widget, AxesWidget
-from yoink.textbox import TextBoxFloat
 
+from yoink.textbox import TextBoxFloat, WithCallbacks
 from yoink.trace import equispaced_colormaping
 
 
@@ -18,28 +18,6 @@ def if_attentive(f):
         if not self.ignore(event):
             return f(self, event)
     return wrapper
-
-
-class WithCallbacks(object):
-    def __init__(self):
-        self.callbacks = {}
-        self._oid = 0
-
-    def add_callback(self, func):
-        oid = self._oid
-        self.callbacks[oid] = func
-        self._oid += 1
-        return oid
-
-    def remove_callback(self, oid):
-        try:
-            del self.callbacks[oid]
-        except KeyError:
-            pass
-
-    def changed(self):
-        for f in self.callbacks.itervalues():
-            f()
 
 
 class DragableCmap(Widget, WithCallbacks):

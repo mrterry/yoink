@@ -1,8 +1,29 @@
 from matplotlib.widgets import AxesWidget
-from yoink.widgets import WithCallback
 
 
-class TextBox(AxesWidget, WithCallback):
+class WithCallbacks(object):
+    def __init__(self):
+        self.callbacks = {}
+        self._oid = 0
+
+    def add_callback(self, func):
+        oid = self._oid
+        self.callbacks[oid] = func
+        self._oid += 1
+        return oid
+
+    def remove_callback(self, oid):
+        try:
+            del self.callbacks[oid]
+        except KeyError:
+            pass
+
+    def changed(self):
+        for f in self.callbacks.itervalues():
+            f()
+
+
+class TextBox(AxesWidget, WithCallbacks):
     def __init__(self, ax, s='', allowed_chars=None, type=str,
                  enter_callback=None, **text_kwargs):
         """
@@ -43,7 +64,7 @@ class TextBox(AxesWidget, WithCallback):
             Additional keywork arguments are passed on to self.ax.text()
         """
         AxesWidget.__init__(self, ax)
-        WithCallback.__init__(self)
+        WithCallbacks.__init__(self)
         self.ax.set_navigate(False)
         self.ax.set_yticks([])
         self.ax.set_xticks([])
