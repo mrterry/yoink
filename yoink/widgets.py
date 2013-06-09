@@ -1,6 +1,6 @@
 from __future__ import division
 
-from functools import wraps
+from functools import wraps, partial
 
 import numpy as np
 from matplotlib.patches import Circle, Rectangle
