@@ -20,6 +20,13 @@ def if_attentive(f):
     return wrapper
 
 
+class NothingWidget(object):
+    active = False
+
+    def set_visible(self, vis):
+        pass
+
+
 class DragableCmap(Widget, WithCallbacks):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
