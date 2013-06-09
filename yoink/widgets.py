@@ -356,3 +356,54 @@ class KeyboardCrop(Widget):
 
     def get_edges(self):
         return [self.crop[key] for key in ('south', 'east', 'north', 'west')]
+
+
+class ScaledCmap(Widget, WithCallbacks):
+    def __init__(self, cmap_ax, lo_ax, hi_ax, l, rgb):
+        WithCallbacks.__init__(self)
+        self.cmap_ax = cmap_ax
+
+        self.l = self.z = l
+
+        self.lo_tb = TextBoxFloat(lo_ax, str(self.z[0]))
+        self.hi_tb = TextBoxFloat(hi_ax, str(self.z[-1]))
+
+        n, nc = rgb.shape
+        self.rgb = rgb
+        self.cmap_im = self.cmap_ax.imshow(rgb.reshape((n, 1, nc)),
+                                           aspect='auto',
+                                           origin='lower',
+                                           extent=[0, 1, 0, 1])
+        self.cmap_ax.xaxis.set_visible(False)
+        self.cmap_ax.yaxis.tick_right()
+        self.cmap_ax.yaxis.set_visible(True)
+        self.update_scale()
+
+        self.lo_tb.add_callback(self.update_scale)
+        self.hi_tb.add_callback(self.update_scale)
+
+        self.l = np.linspace(0, 1, 20)
+        self.rgb = np.zeros_like(self.l)
+
+    def update_scale(self):
+        zlo, zhi = self.lo_tb.value, self.hi_tb.value
+        dz = zhi - zlo
+        self.z = zlo + self.l * dz
+        extent = [0, 1, self.z[0], self.z[-1]]
+        self.cmap_im.set_extent(extent)
+        self.cmap_im.figure.canvas.draw()
+
+    def set_color(self, l, rgb):
+        self.l = l
+        n, nc = rgb.shape
+        self.rgb = rgb
+        self.cmap_im.set_data(rgb.reshape((n, 1, nc)))
+        self.update_scale()
+        self.changed()
+
+    def make_cmap(self, name, **kwargs):
+        assert None not in (self.l, self.rgb)
+        seq = [(x, col) for x, col in zip(self.l, self.rgb)]
+        return LinearSegmentedColormap.from_list(name, seq, **kwargs)
+
+
