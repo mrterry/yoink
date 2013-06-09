@@ -31,7 +31,7 @@ class DragableColorLine(Widget, WithCallbacks):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
     """
-    def __init__(self, select_ax, cmap_ax, lo_ax, hi_ax, source):
+    def __init__(self, select_ax, cmap_ax, pixels):
         Widget.__init__(self)
         WithCallbacks.__init__(self)
         self.select_ax = select_ax
@@ -40,16 +40,8 @@ class DragableColorLine(Widget, WithCallbacks):
         self.visible = True
 
         self.line = DeformableLine(select_ax, max_points=2)
-        self.source = source
-
-        self.l = None
-        self.rgb = None
-
-        self.lo_tb = TextBoxFloat(lo_ax, '0.0')
-        self.hi_tb = TextBoxFloat(hi_ax, '1.0')
-
-        self.lo_tb.add_callback(self.update)
-        self.hi_tb.add_callback(self.update)
+        self._pixels = pixels
+        self.pixels = pixels.copy()
 
         xl, xr = select_ax.get_xlim()
         dx = xr - xl
@@ -67,9 +59,8 @@ class DragableColorLine(Widget, WithCallbacks):
                                            aspect='auto',
                                            origin='lower',
                                            extent=[0, 1, 0, 1])
-        self.cmap_ax.yaxis.tick_right()
         self.cmap_ax.xaxis.set_visible(False)
-        self.cmap_ax.yaxis.set_visible(True)
+        self.cmap_ax.yaxis.set_visible(False)
         self.update()
 
     def update(self):
@@ -77,21 +68,14 @@ class DragableColorLine(Widget, WithCallbacks):
             return
         x0, y0 = self.line.circles[0].center
         x1, y1 = self.line.circles[1].center
-        l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.source)
-
-        zlo, zhi = self.lo_tb.value, self.hi_tb.value
-        dz = zhi - zlo
-        self.l = zlo + l * dz
+        self.l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.pixels)
 
         n, ncol = self.rgb.shape
         self.cmap_im.set_data(self.rgb.reshape((n, 1, ncol)))
-        self.cmap_im.set_extent([0, 1, zlo, zhi])
-        self.redraw()
+        self.cmap_im.set_extent([0, 1, self.l[0], self.l[-1]])
 
-    def make_cmap(self, name, **kwargs):
-        assert None not in (self.l, self.rgb)
-        seq = [(x, col) for x, col in zip(self.l, self.rgb)]
-        return LinearSegmentedColormap.from_list(name, seq, **kwargs)
+        self.changed()
+        self.redraw()
 
     @property
     def active(self):
