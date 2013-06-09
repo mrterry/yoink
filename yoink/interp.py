@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import leastsq
+from scipy.spatial import cKDTree
 
 
 def CornerInterp(pixel_xy, data_xy):
@@ -70,7 +71,6 @@ def invert_cmap_argmin(pix, l, colors):
     Picks the color with the smallest error.
     Error is quadrature sum of color erros.
     """
-    pix = pix[..., :3]  # only want rgb
     shape = pix.shape
 
     ans = np.zeros(list(shape)[:-1], dtype=float)
@@ -85,6 +85,15 @@ def invert_cmap_argmin(pix, l, colors):
         it.iternext()
 
     return ans
+
+
+def invert_cmap_kdtree(pix, l, colors):
+    kd = cKDTree(colors)
+    ni, nj, nc = pix.shape
+    pix = pix.reshape((ni * nj, nc))
+    d, i = kd.query(pix)
+    i = i.reshape((ni, nj))
+    return l[i]
 
 
 def order_corners(corners):
