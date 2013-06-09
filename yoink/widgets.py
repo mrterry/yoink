@@ -27,7 +27,7 @@ class NothingWidget(object):
         pass
 
 
-class DragableCmap(Widget, WithCallbacks):
+class DragableColorLine(Widget, WithCallbacks):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
     """
