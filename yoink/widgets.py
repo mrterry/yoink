@@ -407,3 +407,54 @@ class ScaledCmap(Widget, WithCallbacks):
         return LinearSegmentedColormap.from_list(name, seq, **kwargs)
 
 
+class RecoloredWidget(object):
+    def __init__(self, ax, pixels, crop_widget):
+        self.ax = ax
+        self.pixels = pixels
+        self.image = self.ax.imshow(pixels, aspect='auto')
+        self.crop_widget = crop_widget
+
+    def make_cmap(self, cmap):
+        pass
+
+    def make_xyextent_textboxes(self, ax_xlo, ax_xhi, ax_ylo, ax_yhi):
+        """
+        Create text boxes for x-axis & y-axis limits
+        connect them to the right image so that it extents auto-update
+        """
+        ext = self.image.get_extent()
+        self.image.set_extent(ext)
+        self.textboxes = []
+        for i, ax in enumerate([ax_xlo, ax_xhi, ax_ylo, ax_yhi]):
+            tb = TextBoxFloat(ax, str(ext[i]))
+            tb.add_callback(partial(self.set_side_extent, i))
+            self.textboxes.append(tb)
+
+    def make_clim_textboxes(self, ax_lo, ax_hi):
+        pass
+
+    def set_side_extent(self, side):
+        tb = self.textboxes[side]
+        ext = list(self.image.get_extent())
+        ext[side] = tb.value
+        self.image.set_extent(ext)
+
+    def dump(self):
+        pass
+
+    def crop(self):
+        extent = self.crop_widget.get_extents()  # data (pixel) coordinates
+
+        x0, x1, y0, y1 = np.array(extent, dtype=int)
+        if x1 < x0:
+            x0, x1 = x1, x0
+        if y1 < y0:
+            y0, y1 = y1, y0
+        pix = self.pixels[y0:y1, x0:x1]
+
+        self.image.set_data(pix)
+        self.image.figure.canvas.draw()
+
+#    def digitize(self):
+#        l, rgb = self.cmap_widget.l, self.cmap_widget.rgb
+#        self.pixels = invert_cmap_argmin(self._pixels, l, rgb)
