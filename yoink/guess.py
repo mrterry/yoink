@@ -1,11 +1,9 @@
 import numpy as np
 from scipy import ndimage
 
-try:
-    from skimage.feature import corner_harris
-    from skimage.measure import approximate_polygon
-except ImportError:
-    from yoink.mini_skimage import corner_harris, approximate_polygon
+from skimage import img_as_uint
+from skimage.measure import approximate_polygon
+from skimage.feature import harris
 
 
 def guess_corners(bw):
@@ -22,21 +20,23 @@ def guess_corners(bw):
     corners : pixel coordinates of plot corners, unsorted
     outline : (m x n) ndarray of bools True -> plot area
     """
+    assert len(bw.shape) == 2
+    bw = img_as_uint(bw)
     e_map = ndimage.sobel(bw)
 
-    markers = np.zeros_like(bw)
+    markers = np.zeros(bw.shape, dtype=int)
     markers[bw < 30] = 1
     markers[bw > 150] = 2
     seg = ndimage.watershed_ift(e_map, np.asarray(markers, dtype=int))
 
-    outline = ndimage.binary_fill_holes(1-seg)
-    corners = corner_harris(np.asarray(outline, dtype=int))
+    outline = ndimage.binary_fill_holes(1 - seg)
+    corners = harris(np.asarray(outline, dtype=int))
     corners = approximate_polygon(corners, 1)
     return corners, outline
 
 
 def _get_angle(p1, p2):
-    return np.arctan2(p1[0]-p2[0], p1[1]-p2[1])
+    return np.arctan2(p1[0] - p2[0], p1[1] - p2[1])
 
 
 def mean_rotation(corners):
@@ -63,6 +63,7 @@ def mean_rotation(corners):
 
 
 def clear_border(im, outline):
+    # TODO work with float & int arrays
     im_fixed = im.copy()
     im_fixed[-outline] = 255
     return im_fixed
