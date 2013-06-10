@@ -1,28 +1,6 @@
 from matplotlib.widgets import AxesWidget
 
 
-class WithCallbacks(object):
-    def __init__(self):
-        self.observers = {}
-        self.cid = 0
-
-    def on_changed(self, func):
-        cid = self.cid
-        self.observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect(self, cid):
-        try:
-            del self.observers[cid]
-        except KeyError:
-            pass
-
-    def changed(self):
-        for func in self.observers.itervalues():
-            func()
-
-
 class TextBox(AxesWidget):
     def __init__(self, ax, s='', allowed_chars=None, type=str,
                  enter_callback=None, **text_kwargs):

@@ -30,11 +30,10 @@ def run(pixels):
                             ann_axes['cmap_hi'],
                             cmap_select.l, cmap_select.rgb)
     # update the colors in cmap_scale when you move the selector line
-    set_color = lambda: cmap_scale.set_color(cmap_select.l, cmap_select.rgb)
-    cmap_select.on_changed(set_color)
+    cmap_select.on_changed(cmap_scale.set_color)
 
     # using the shutters in crop_widget, re-plot only selected data
-    rcol_widget = RecoloredWidget(ann_axes['img'], pixels, crop_widget)
+    rcol_widget = RecoloredWidget(ann_axes['img'], pixels)
     # generate textboxes for specifying xlim, ylim
     rcol_widget.make_xyextent_textboxes(ann_axes['xlo'],
                                         ann_axes['xhi'],
@@ -42,8 +41,8 @@ def run(pixels):
                                         ann_axes['yhi'])
     # update if the shutters move
     crop_widget.on_changed(rcol_widget.crop)
-    digitize = lambda: rcol_widget.digitize(cmap_select.l, cmap_select.rgb)
-    cmap_select.on_changed(digitize)
+    # re-digitizing is expensive, so only do it when you're done dragging
+    cmap_select.on_release(rcol_widget.digitize)
 
     # button to dump teh data to a file
     dump_button = Button(ann_axes['dump'], 'Dump to file')
@@ -51,22 +50,17 @@ def run(pixels):
 
     # Radio buttons to select which Widget is active
     states = OrderedDict()
-    states = {}
     states['Do nothing'] = NothingWidget()
-    states['Do nothing2'] = NothingWidget()
     states['Select Colorbar'] = cmap_select
     states['Crop Image'] = crop_widget
 
     def toggle_state(new_state):
-        print 'toggline', new_state
         assert new_state in states
         for k in states:
             if k == new_state:
                 continue
-            print 'disabling', k
             states[k].active = False
             states[k].set_visible(False)
-        print 'enabling', new_state
         states[new_state].active = True
         states[new_state].set_visible(True)
     toggle_state(states.keys()[0])
