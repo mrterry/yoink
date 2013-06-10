@@ -3,27 +3,27 @@ from matplotlib.widgets import AxesWidget
 
 class WithCallbacks(object):
     def __init__(self):
-        self.callbacks = {}
-        self._oid = 0
+        self.observers = {}
+        self.cid = 0
 
-    def add_callback(self, func):
-        oid = self._oid
-        self.callbacks[oid] = func
-        self._oid += 1
-        return oid
+    def on_changed(self, func):
+        cid = self.cid
+        self.observers[cid] = func
+        self.cid += 1
+        return cid
 
-    def remove_callback(self, oid):
+    def disconnect(self, cid):
         try:
-            del self.callbacks[oid]
+            del self.observers[cid]
         except KeyError:
             pass
 
     def changed(self):
-        for f in self.callbacks.itervalues():
-            f()
+        for func in self.observers.itervalues():
+            func()
 
 
-class TextBox(AxesWidget, WithCallbacks):
+class TextBox(AxesWidget):
     def __init__(self, ax, s='', allowed_chars=None, type=str,
                  enter_callback=None, **text_kwargs):
         """
@@ -62,9 +62,10 @@ class TextBox(AxesWidget, WithCallbacks):
 
         *text_kwargs* :
             Additional keywork arguments are passed on to self.ax.text()
+
+        Call :meth:`on_onchanged` to connect to TextBox updates
         """
         AxesWidget.__init__(self, ax)
-        WithCallbacks.__init__(self)
         self.ax.set_navigate(False)
         self.ax.set_yticks([])
         self.ax.set_xticks([])
@@ -81,8 +82,28 @@ class TextBox(AxesWidget, WithCallbacks):
         self._cursorpos = len(self.text.get_text())
         self.old_callbacks = {}
 
+        self.cnt = 0
+        self.observers = {}
+
         self.connect_event('button_press_event', self._mouse_activate)
-        self.redraw()
+
+    def on_changed(self, func):
+        """
+        When the textbox changes self.value, call *func* with the new value.
+
+        A connection id is returned with can be used to disconnect.
+        """
+        cid = self.cnt
+        self.observers[cid] = func
+        self.cnt += 1
+        return cid
+
+    def disconnect(self, cid):
+        """remove the observer with connection id *cid*"""
+        try:
+            del self.observers[cid]
+        except KeyError:
+            pass
 
     @property
     def cursor(self):
@@ -94,12 +115,8 @@ class TextBox(AxesWidget, WithCallbacks):
             self._cursor.set_visible(False)
         return self._cursor
 
-    def redraw(self):
-        self.changed()
-        self.canvas.draw()
-
     def _mouse_activate(self, event):
-        if self.ignore(event):
+        if self.ignore(event) or not self.eventson:
             return
         if self.ax == event.inaxes:
             self.begin_text_entry()
@@ -116,7 +133,8 @@ class TextBox(AxesWidget, WithCallbacks):
             self._cid = self.canvas.mpl_connect('key_press_event',
                                                 self.keypress)
             self.cursor.set_visible(True)
-            self.redraw()
+            if self.drawon:
+                self.canvas.draw()
 
     def end_text_entry(self):
         keypress_cbs = self.canvas.callbacks.callbacks['key_press_event']
@@ -126,13 +144,14 @@ class TextBox(AxesWidget, WithCallbacks):
                 keypress_cbs[k] = self.old_callbacks.pop(k)
 
         self.cursor.set_visible(False)
-        self.redraw()
+        if self.drawon:
+            self.canvas.draw()
 
     def keypress(self, event):
         """
         Parse a keypress - only allow #'s!
         """
-        if self.ignore(event):
+        if self.ignore(event) or not self.eventson:
             return
 
         newt = t = self.text.get_text()
@@ -171,17 +190,22 @@ class TextBox(AxesWidget, WithCallbacks):
         self.set_text(newt)
         x, y = self._get_cursor_endpoints()
         self.cursor.set_xdata(x)
-        self.redraw()
+        if self.drawon:
+            self.canvas.draw()
 
     def set_text(self, text):
+        success = False
         try:
             # only try to update if there's a real value
             self.value = self.type(text)
+            success = True
         except ValueError:
             pass
         # but always change the text
         self.text.set_text(text)
-        self.changed()
+        if success and self.eventson:
+            for func in self.observers.itervalues():
+                func(self.value)
 
     def _get_cursor_endpoints(self):
         # to get cursor position

@@ -10,6 +10,7 @@ from matplotlib.widgets import Widget, AxesWidget
 
 from yoink.textbox import TextBoxFloat, WithCallbacks
 from yoink.trace import equispaced_colormaping
+from yoink.interp import invert_cmap_kdtree
 
 
 def if_attentive(f):
@@ -40,7 +41,6 @@ class DragableColorLine(Widget, WithCallbacks):
         self.visible = True
 
         self.line = DeformableLine(select_ax, max_points=2)
-        self._pixels = pixels
         self.pixels = pixels.copy()
 
         xl, xr = select_ax.get_xlim()
@@ -51,7 +51,7 @@ class DragableColorLine(Widget, WithCallbacks):
         self.line.add_point(xl + 0.75 * dx, yb + 0.75 * dy)
 
         self._fill_cmap_ax()
-        self.line.add_callback(self.update)
+        self.line.on_changed(self.update)
 
     def _fill_cmap_ax(self):
         rgb = np.zeros((2, 1, 4))
@@ -365,8 +365,10 @@ class ScaledCmap(Widget, WithCallbacks):
 
         self.l = self.z = l
 
-        self.lo_tb = TextBoxFloat(lo_ax, str(self.z[0]))
-        self.hi_tb = TextBoxFloat(hi_ax, str(self.z[-1]))
+        self.zlo = self.z[0]
+        self.zhi = self.z[-1]
+        self.lo_tb = TextBoxFloat(lo_ax, str(self.zlo))
+        self.hi_tb = TextBoxFloat(hi_ax, str(self.zhi))
 
         n, nc = rgb.shape
         self.rgb = rgb
@@ -377,18 +379,25 @@ class ScaledCmap(Widget, WithCallbacks):
         self.cmap_ax.xaxis.set_visible(False)
         self.cmap_ax.yaxis.tick_right()
         self.cmap_ax.yaxis.set_visible(True)
-        self.update_scale()
+        self.update_extent()
 
-        self.lo_tb.add_callback(self.update_scale)
-        self.hi_tb.add_callback(self.update_scale)
+        self.lo_tb.on_changed(self.update_lbound)
+        self.hi_tb.on_changed(self.update_ubound)
 
         self.l = np.linspace(0, 1, 20)
         self.rgb = np.zeros_like(self.l)
 
-    def update_scale(self):
-        zlo, zhi = self.lo_tb.value, self.hi_tb.value
-        dz = zhi - zlo
-        self.z = zlo + self.l * dz
+    def update_lbound(self, val):
+        self.zlo = val
+        self.update_extent()
+
+    def update_ubound(self, val):
+        self.zhi = val
+        self.update_extent()
+
+    def update_extent(self):
+        dz = self.zhi - self.zlo
+        self.z = self.zlo + self.l * dz
         extent = [0, 1, self.z[0], self.z[-1]]
         self.cmap_im.set_extent(extent)
         self.cmap_im.figure.canvas.draw()
@@ -398,7 +407,7 @@ class ScaledCmap(Widget, WithCallbacks):
         n, nc = rgb.shape
         self.rgb = rgb
         self.cmap_im.set_data(rgb.reshape((n, 1, nc)))
-        self.update_scale()
+        self.update_extent()
         self.changed()
 
     def make_cmap(self, name, **kwargs):
@@ -410,9 +419,11 @@ class ScaledCmap(Widget, WithCallbacks):
 class RecoloredWidget(object):
     def __init__(self, ax, pixels, crop_widget):
         self.ax = ax
-        self.pixels = pixels
+        self._pixels = pixels
+        self.pixels = pixels.copy()
         self.image = self.ax.imshow(pixels, aspect='auto')
         self.crop_widget = crop_widget
+        self.l = None
 
     def make_cmap(self, cmap):
         pass
@@ -427,16 +438,15 @@ class RecoloredWidget(object):
         self.textboxes = []
         for i, ax in enumerate([ax_xlo, ax_xhi, ax_ylo, ax_yhi]):
             tb = TextBoxFloat(ax, str(ext[i]))
-            tb.add_callback(partial(self.set_side_extent, i))
+            tb.on_changed(partial(self.set_side_extent, i))
             self.textboxes.append(tb)
 
     def make_clim_textboxes(self, ax_lo, ax_hi):
         pass
 
-    def set_side_extent(self, side):
-        tb = self.textboxes[side]
+    def set_side_extent(self, side, val):
         ext = list(self.image.get_extent())
-        ext[side] = tb.value
+        ext[side] = val
         self.image.set_extent(ext)
 
     def dump(self):
@@ -455,6 +465,12 @@ class RecoloredWidget(object):
         self.image.set_data(pix)
         self.image.figure.canvas.draw()
 
-#    def digitize(self):
-#        l, rgb = self.cmap_widget.l, self.cmap_widget.rgb
-#        self.pixels = invert_cmap_argmin(self._pixels, l, rgb)
+    def digitize(self, l, rgb):
+        if l is self.l:
+            return
+        self.l = l
+        self.pixels = invert_cmap_kdtree(self._pixels, l, rgb)
+        seq = [(x, col) for x, col in zip(l, rgb)]
+        cmap = LinearSegmentedColormap.from_list(None, seq)
+        self.image.set_cmap(cmap)
+        self.ax.figure.canvas.draw()
