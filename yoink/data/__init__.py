@@ -9,7 +9,7 @@ def rotated_lena():
 
 
 def rotated_parabola():
-    return imread(pjoin(DIR, 'rotated_lena.png'))
+    return imread(pjoin(DIR, 'rotated_parabola.png'))
 
 
 def test_img():
