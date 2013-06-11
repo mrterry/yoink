@@ -189,7 +189,7 @@ class DeformableLine(AxesWidget):
 
         self.xs = []
         self.ys = []
-        kw = line_kw if line_kw is None else {}
+        kw = line_kw if line_kw is not None else {}
         self.line = Line2D(self.xs, self.ys, **kw)
         self.ax.add_artist(self.line)
 
