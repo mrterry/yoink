@@ -37,15 +37,15 @@ class DragableColorLine(Widget):
 
     select_ax : axes
         Axes to draw the selector line on
-    cmap_ax : axes
+    cbar_ax : axes
         Axes to draw the colorbar into
     pixes : array-like (3d)
         Pixels values
     """
-    def __init__(self, select_ax, cmap_ax, pixels):
+    def __init__(self, select_ax, cbar_ax, pixels):
         Widget.__init__(self)
         self.select_ax = select_ax
-        self.cmap_ax = cmap_ax
+        self.cbar_ax = cbar_ax
         self._active = True
         self.visible = True
 
@@ -63,7 +63,7 @@ class DragableColorLine(Widget):
         self.line.add_point(xl + 0.25 * dx, yb + 0.25 * dy)
         self.line.add_point(xl + 0.75 * dx, yb + 0.75 * dy)
 
-        self._fill_cmap_ax()
+        self._fill_cbar_ax()
         self.line.on_changed(self.update)
         self.line.on_release(self.released)
 
@@ -115,14 +115,19 @@ class DragableColorLine(Widget):
         for func in self.observers.itervalues():
             func(self.l, self.rgb)
 
-    def _fill_cmap_ax(self):
-        rgb = np.zeros((2, 1, 4))
-        self.cmap_im = self.cmap_ax.imshow(rgb,
-                                           aspect='auto',
-                                           origin='lower',
-                                           extent=[0, 1, 0, 1])
-        self.cmap_ax.xaxis.set_visible(False)
-        self.cmap_ax.yaxis.set_visible(False)
+    def _fill_cbar_ax(self):
+        x = np.linspace(0, 1, 50).reshape((50, 1))
+        ax = self.cbar_ax
+
+        # Dummy image to get the colorbar
+        self._im = ax.imshow(x,
+                             extent=[0, 1, 0, 1],
+                             visible=False,
+                             aspect='auto')
+        self._im.drawon = False
+
+        from matplotlib.colorbar import colorbar_factory
+        self.cbar = colorbar_factory(ax, self._im)
         self.update()
 
     def update(self):
@@ -131,11 +136,8 @@ class DragableColorLine(Widget):
         x0, y0 = self.line.circles[0].center
         x1, y1 = self.line.circles[1].center
         self.l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.pixels)
-
-        n, ncol = self.rgb.shape
-        self.cmap_im.set_data(self.rgb.reshape((n, 1, ncol)))
-        self.cmap_im.set_extent([0, 1, self.l[0], self.l[-1]])
-
+        cmap = make_cmap(self.l, self.rgb)
+        self._im.set_cmap(cmap)
         self.redraw()
         self.changed()
 
@@ -155,7 +157,7 @@ class DragableColorLine(Widget):
     def redraw(self):
         if self.drawon:
             self.select_ax.figure.canvas.draw()
-            self.cmap_ax.figure.canvas.draw()
+            self.cbar_ax.figure.canvas.draw()
 
 
 class DeformableLine(AxesWidget):
@@ -289,14 +291,12 @@ class DeformableLine(AxesWidget):
         ci = 0
         for ci, c in enumerate(self.circles):
             if c.contains(event)[0]:
-                return ci
-        if len(self.circles) == self.max_points:
-            return None
-        ci = self.add_point(event.xdata, event.ydata)
-
-        ci = self.get_circle_index(event)
-        if ci is None:
+                break
+        else:
             return
+        if len(self.circles) < self.max_points:
+            ci = self.add_point(event.xdata, event.ydata)
+
         x0, y0 = self.xs[ci], self.ys[ci]
         self.moving_ci = x0, y0, event.xdata, event.ydata, ci
 
@@ -568,7 +568,7 @@ class ManualColorbar(AxesWidget):
 
         n, nc = rgb.shape
         self.rgb = rgb
-        self.cmap_im = self.ax.imshow(rgb.reshape((n, 1, nc)),
+        self.cbar_im = self.ax.imshow(rgb.reshape((n, 1, nc)),
                                       aspect='auto',
                                       origin='lower',
                                       extent=[0, 1, 0, 1])
@@ -621,17 +621,17 @@ class ManualColorbar(AxesWidget):
         dz = self._zmax - self._zmin
         self.z = self._zmin + self.l * dz
         extent = [0, 1, self.z[0], self.z[-1]]
-        self.cmap_im.set_extent(extent)
+        self.cbar_im.set_extent(extent)
         if self.drawon:
             self.canvas.draw()
         self.changed()
 
     def set_color(self, l, rgb):
-        """Set the scale and color for the faux-cmap"""
+        """Set the scale and color for the faux-cbar"""
         self.l = l
         n, nc = rgb.shape
         self.rgb = rgb
-        self.cmap_im.set_data(rgb.reshape((n, 1, nc)))
+        self.cbar_im.set_data(rgb.reshape((n, 1, nc)))
         self.redraw()
 
 
@@ -722,15 +722,20 @@ class RecoloredWidget(AxesWidget):
     def digitize(self, l, rgb):
         """
         Using the new scale "l" and colorsequence "rgb" translate all pixels
-        to the new scale, create a cmap with l & rgb, and redraw the image.
+        to the new scale, create a cbar with l & rgb, and redraw the image.
         """
         if l is self.l:
             return
         self.l = l
         self.pixels = invert_cmap_kdtree(self._pixels, l, rgb)
-        seq = [(x, col) for x, col in zip(l, rgb)]
-        self.cmap = LinearSegmentedColormap.from_list(None, seq)
+        self.cmap = make_cmap(l, rgb)
         self.image.set_cmap(self.cmap)
         if self.drawon:
             self.canvas.draw()
         self.changed()
+
+
+def make_cmap(l, rgb):
+    seq = [(x, col) for x, col in zip(l, rgb)]
+    cmap = LinearSegmentedColormap.from_list(None, seq)
+    return cmap
