@@ -528,11 +528,6 @@ class ScaledCmap(AxesWidget):
         self.update_extent()
         self.changed()
 
-    def make_cmap(self, name, **kwargs):
-        assert None not in (self.l, self.rgb)
-        seq = [(x, col) for x, col in zip(self.l, self.rgb)]
-        return LinearSegmentedColormap.from_list(name, seq, **kwargs)
-
 
 class RecoloredWidget(AxesWidget):
     def __init__(self, ax, pixels):
@@ -561,9 +556,6 @@ class RecoloredWidget(AxesWidget):
     def changed(self):
         for func in self.observers.itervalues():
             func()
-
-    def make_cmap(self, cmap):
-        pass
 
     def make_xyextent_textboxes(self, ax_xlo, ax_xhi, ax_ylo, ax_yhi):
         """
@@ -608,8 +600,8 @@ class RecoloredWidget(AxesWidget):
         self.l = l
         self.pixels = invert_cmap_kdtree(self._pixels, l, rgb)
         seq = [(x, col) for x, col in zip(l, rgb)]
-        cmap = LinearSegmentedColormap.from_list(None, seq)
-        self.image.set_cmap(cmap)
+        self.cmap = LinearSegmentedColormap.from_list(None, seq)
+        self.image.set_cmap(self.cmap)
         if self.drawon:
             self.canvas.draw()
         self.changed()
