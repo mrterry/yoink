@@ -31,6 +31,16 @@ class NothingWidget(object):
 class DragableColorLine(Widget):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
+
+    Parameters
+    ----------
+
+    select_ax : axes
+        Axes to draw the selector line on
+    cmap_ax : axes
+        Axes to draw the colorbar into
+    pixes : array-like (3d)
+        Pixels values
     """
     def __init__(self, select_ax, cmap_ax, pixels):
         Widget.__init__(self)
@@ -58,34 +68,50 @@ class DragableColorLine(Widget):
         self.line.on_release(self.released)
 
     def on_release(self, func):
+        """
+        When the DragableColorLine finishes moving, call *func* with the new
+        path and colors.
+
+        A connection id is returned which can be used to disconnect.
+        """
         cid = self.cid
         self.release_observers[cid] = func
         self.cid += 1
         return cid
 
     def disconnect_release(self, cid):
+        """remove the release_observer with connection id *cid*"""
         try:
             del self.release_observers[cid]
         except KeyError:
             pass
 
     def released(self):
+        """call the release_observers"""
         for func in self.release_observers.itervalues():
             func(self.l, self.rgb)
 
     def on_changed(self, func):
+        """
+        When the DragableColorLine moves, call *func* with the new path and
+        colors.
+
+        A connection id is returned which can be used to disconnect.
+        """
         cid = self.cid
         self.observers[cid] = func
         self.cid += 1
         return cid
 
     def disconnect(self, cid):
+        """remove the observer with connection id *cid*"""
         try:
             del self.observers[cid]
         except KeyError:
             pass
 
     def changed(self):
+        """Call the observers"""
         for func in self.observers.itervalues():
             func(self.l, self.rgb)
 
@@ -161,34 +187,48 @@ class DeformableLine(AxesWidget):
         self.connect_event('motion_notify_event', self._motion)
 
     def on_changed(self, func):
+        """
+        When the DeformableLine moves, call *func* with no parameters.
+
+        A connection id is returned which can be used to disconnect.
+        """
         cid = self.cid
         self.observers[cid] = func
         self.cid += 1
         return cid
 
     def disconnect(self, cid):
+        """remove the observer with connection id *cid*"""
         try:
             del self.observers[cid]
         except KeyError:
             pass
 
     def changed(self):
+        """Call the observers"""
         for func in self.observers.itervalues():
             func()
 
     def on_release(self, func):
+        """
+        When finished moving, call *func* with no parameters.
+
+        A connection id is returned which can be used to disconnect.
+        """
         cid = self.cid
         self.release_observers[cid] = func
         self.cid += 1
         return cid
 
     def disconnect_release(self, cid):
+        """remove the release_observer with connection id *cid*"""
         try:
             del self.release_observers[cid]
         except KeyError:
             pass
 
     def released(self):
+        """Call the release_observers"""
         for func in self.release_observers.itervalues():
             func()
 
@@ -204,6 +244,7 @@ class DeformableLine(AxesWidget):
         return i
 
     def add_point(self, x, y):
+        """Add a new segment to the DeformableLine"""
         # new circle
         i = len(self.circles)
         circle = Circle((x, y), radius=5, alpha=0.5)
@@ -300,18 +341,25 @@ class ShutterCrop(AxesWidget):
         self.connect_event('motion_notify_event', self._motion),
 
     def on_changed(self, func):
+        """
+        When the ShutterCrop windows move, call *func* with the new extent.
+
+        A connection id is returned which can be used to disconnect.
+        """
         cid = self.cid
         self.observers[cid] = func
         self.cid += 1
         return cid
 
     def disconnect(self, cid):
+        """remove the observer with connection id *cid*"""
         try:
             del self.observers[cid]
         except KeyError:
             pass
 
     def changed(self):
+        """Call the observers"""
         extent = self.get_extents()  # data (pixel) coordinates
         for func in self.observers.itervalues():
             func(extent)
@@ -343,6 +391,7 @@ class ShutterCrop(AxesWidget):
         return self.visible
 
     def get_extents(self):
+        """Get the extents of the cropped image"""
         west = self.rects['west']
         xlo = west.get_x() + west.get_width()
         xhi = self.rects['east'].get_x()
@@ -494,12 +543,14 @@ class ScaledCmap(AxesWidget):
         return cid
 
     def disconnect(self, cid):
+        """remove the observer with connection id *cid*"""
         try:
             del self.observers[cid]
         except KeyError:
             pass
 
     def changed(self):
+        """Call the observers"""
         for func in self.observers.itervalues():
             func()
 
@@ -530,30 +581,50 @@ class ScaledCmap(AxesWidget):
 
 
 class RecoloredWidget(AxesWidget):
+    """
+    Widget that recolors a multichannel image using a given a scale sequence
+    and associated colors.
+
+    Paramters
+    ---------
+    ax : axes
+        Axes to draw the widget
+    pixels : 3d array
+        Source pixels to recolor
+    """
+    # TODO what to do for colors "far" from scale
     def __init__(self, ax, pixels):
         AxesWidget.__init__(self, ax)
         self._pixels = pixels
         self.pixels = pixels[:, :, 0].copy()
         self.image = self.ax.imshow(self.pixels,
-                                    aspect='auto', interpolation='none')
+                                    aspect='auto',
+                                    interpolation='none')
         self.l = None
 
         self.observers = {}
         self.cid = 0
 
     def on_changed(self, func):
+        """
+        When the RecoloredWidget changes, call *func* with no arguments.
+
+        A connection id is returned which can be used to disconnect.
+        """
         cid = self.cid
         self.observers[cid] = func
         self.cid += 1
         return cid
 
     def disconnect(self, cid):
+        """remove the observer with connection id *cid*"""
         try:
             del self.observers[cid]
         except KeyError:
             pass
 
     def changed(self):
+        """Call the observers"""
         for func in self.observers.itervalues():
             func()
 
@@ -574,6 +645,7 @@ class RecoloredWidget(AxesWidget):
         pass
 
     def set_side_extent(self, side, val):
+        """Set the cropping extent for a single side `side` to value `val`"""
         ext = list(self.image.get_extent())
         ext[side] = val
         self.image.set_extent(ext)
@@ -582,6 +654,7 @@ class RecoloredWidget(AxesWidget):
         pass
 
     def crop(self, extent):
+        """Crop self.image to the given extent"""
         x0, x1, y0, y1 = np.array(extent, dtype=int)
         if x1 < x0:
             x0, x1 = x1, x0
@@ -595,6 +668,10 @@ class RecoloredWidget(AxesWidget):
         self.changed()
 
     def digitize(self, l, rgb):
+        """
+        Using the new scale "l" and colorsequence "rgb" translate all pixels
+        to the new scale, create a cmap with l & rgb, and redraw the image.
+        """
         if l is self.l:
             return
         self.l = l
