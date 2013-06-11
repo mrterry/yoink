@@ -7,6 +7,8 @@ from matplotlib.patches import Circle, Rectangle
 from matplotlib.lines import Line2D
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.widgets import Widget, AxesWidget
+from matplotlib.colorbar import colorbar_factory
+from matplotlib.ticker import ScalarFormatter
 
 from yoink.textbox import TextBoxFloat
 from yoink.trace import equispaced_colormaping
@@ -126,8 +128,9 @@ class DragableColorLine(Widget):
                              aspect='auto')
         self._im.drawon = False
 
-        from matplotlib.colorbar import colorbar_factory
         self.cbar = colorbar_factory(ax, self._im)
+        ax.yaxis.set_visible(True)
+
         self.update()
 
     def update(self):
@@ -536,105 +539,6 @@ class KeyboardCrop(Widget):
         return [self.crop[key] for key in ('south', 'east', 'north', 'west')]
 
 
-class ManualColorbar(AxesWidget):
-    """
-    A faux-colorbar.  Draws a colorbar with the scale and colors determined
-    externally.
-
-    Parameters
-    ----------
-    ax : axes
-        axes to draw the colorbar
-    lo_ax : axes
-        axes to put the TextBoxFloat for the lower bound
-    hi_ax : axes
-        axes to put the TextBoxFloat for the upper bound
-    l : array-like (1d)
-        coordinates of the colorbar (should monotonically increase from 0 to 1
-    rgb : array-like (3d)
-    """
-    def __init__(self, ax, lo_ax, hi_ax, l, rgb):
-        AxesWidget.__init__(self, ax)
-
-        self.observers = {}
-        self.cid = 0
-
-        self.l = self.z = l
-
-        self._zmin = self.z[0]
-        self._zmax = self.z[-1]
-        self.lo_tb = TextBoxFloat(lo_ax, str(self._zmin))
-        self.hi_tb = TextBoxFloat(hi_ax, str(self._zmax))
-
-        n, nc = rgb.shape
-        self.rgb = rgb
-        self.cbar_im = self.ax.imshow(rgb.reshape((n, 1, nc)),
-                                      aspect='auto',
-                                      origin='lower',
-                                      extent=[0, 1, 0, 1])
-        self.ax.xaxis.set_visible(False)
-        self.ax.yaxis.tick_right()
-        self.ax.yaxis.set_visible(True)
-        self.redraw()
-
-        self.lo_tb.on_changed(self.set_zmin)
-        self.hi_tb.on_changed(self.set_zmax)
-
-        self.l = np.linspace(0, 1, 20)
-        self.rgb = np.zeros_like(self.l)
-
-    def on_changed(self, func):
-        """
-        When the ManualColorbar changes, call *func* with no arguments.
-
-        A connection id is returned which can be used to disconnect.
-        """
-        cid = self.cid
-        self.observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect(self, cid):
-        """remove the observer with connection id *cid*"""
-        try:
-            del self.observers[cid]
-        except KeyError:
-            pass
-
-    def changed(self):
-        """Call the observers"""
-        for func in self.observers.itervalues():
-            func()
-
-    def set_zmin(self, val):
-        """Set the lower bound on the colorbar scale"""
-        self._zmin = val
-        self.redraw()
-
-    def set_zmax(self, val):
-        """Set the upper bound on the colorbar scale"""
-        self._zmax = val
-        self.redraw()
-
-    def redraw(self):
-        """Redraw the colorbar and ticks"""
-        dz = self._zmax - self._zmin
-        self.z = self._zmin + self.l * dz
-        extent = [0, 1, self.z[0], self.z[-1]]
-        self.cbar_im.set_extent(extent)
-        if self.drawon:
-            self.canvas.draw()
-        self.changed()
-
-    def set_color(self, l, rgb):
-        """Set the scale and color for the faux-cbar"""
-        self.l = l
-        n, nc = rgb.shape
-        self.rgb = rgb
-        self.cbar_im.set_data(rgb.reshape((n, 1, nc)))
-        self.redraw()
-
-
 class RecoloredWidget(AxesWidget):
     """
     Widget that recolors a multichannel image using a given a scale sequence
@@ -654,7 +558,9 @@ class RecoloredWidget(AxesWidget):
         self.pixels = pixels[:, :, 0].copy()
         self.image = self.ax.imshow(self.pixels,
                                     aspect='auto',
-                                    interpolation='none')
+                                    interpolation='none',
+                                    vmin=0,
+                                    vmax=1)
         self.l = None
 
         self.observers = {}
@@ -702,9 +608,6 @@ class RecoloredWidget(AxesWidget):
         ext[side] = val
         self.image.set_extent(ext)
 
-    def dump(self):
-        raise NotImplemented
-
     def crop(self, extent):
         """Crop self.image to the given extent"""
         x0, x1, y0, y1 = np.array(extent, dtype=int)
@@ -739,3 +642,41 @@ def make_cmap(l, rgb):
     seq = [(x, col) for x, col in zip(l, rgb)]
     cmap = LinearSegmentedColormap.from_list(None, seq)
     return cmap
+
+
+class ScaledColorbar(AxesWidget):
+    def __init__(self, ax, im):
+        AxesWidget.__init__(self, ax)
+
+        self.cbar = colorbar_factory(ax, im)
+        self.fmt = self.cbar.formatter = OffsetFormatter()
+        self.ax.yaxis.set_visible(True)
+
+    def set_min(self, mn):
+        self.fmt.mn = mn
+        self.cbar.update_ticks()
+
+    def set_max(self, mx):
+        self.fmt.mx = mx
+        self.cbar.update_ticks()
+
+
+class OffsetFormatter(ScalarFormatter):
+    def __init__(self, *args, **kwargs):
+        ScalarFormatter.__init__(self, *args, **kwargs)
+        self.mn = 0.
+        self.mx = 1.
+
+    def __call__(self, x, pos=None):
+        dc = self.mx - self.mn
+        x = x*dc + self.mn
+        return ScalarFormatter.__call__(self, x, pos=pos)
+
+
+class Dumper(object):
+    def __init__(self, rcolor, scale_cbar):
+        self.rcolor = rcolor
+        self.scale_cbar = scale_cbar
+
+    def dump(self):
+        raise NotImplemented
