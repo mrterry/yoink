@@ -161,8 +161,23 @@ class DragableColorLine(Widget):
 class DeformableLine(AxesWidget):
     """
     Segemented line with movable vertexes
+
+    Parameters
+    ----------
+
+    ax : axes
+        Axes to draw the line on
+    is_closed : bool, optional default=False
+        Do the line endpoints connect?
+    max_points : bool, optional default=None
+        Maximum number of points allowed in line
+    line_kw : dict, optional
+        Dictionary to customize Line2D
+    circle_kw : dict, optional
+        Dictionary to customize Circles
     """
-    def __init__(self, ax, is_closed=False, max_points=None):
+    def __init__(self, ax, is_closed=False, max_points=None,
+                 line_kw=None, circle_kw=None):
         AxesWidget.__init__(self, ax)
         self.visible = True
 
@@ -172,8 +187,13 @@ class DeformableLine(AxesWidget):
 
         self.xs = []
         self.ys = []
-        self.line = Line2D(self.xs, self.ys)
+        kw = line_kw if line_kw is None else {}
+        self.line = Line2D(self.xs, self.ys, **kw)
         self.ax.add_artist(self.line)
+
+        self.circle_kw = dict(radius=5, alpha=0.5)
+        if circle_kw:
+            self.circle_kw.update(circle_kw)
 
         self.circles = []
 
@@ -235,7 +255,7 @@ class DeformableLine(AxesWidget):
     def add_point(self, x, y):
         """Add a new segment to the DeformableLine"""
         # new circle
-        i = len(self.circles)
+        i = len(self.xs)
         circle = Circle((x, y), radius=5, alpha=0.5)
         self.circles.append(circle)
         self.ax.add_artist(circle)
@@ -243,7 +263,7 @@ class DeformableLine(AxesWidget):
         self.xs.append(x)
         self.ys.append(y)
         # finish square if adding last corner
-        if self.is_closed and len(self.circles) == self.max_points:
+        if self.is_closed and len(self.xs) == self.max_points:
             self.xs.append(self.xs[0])
             self.ys.append(self.ys[0])
         self.line.set_data(self.xs, self.ys)
@@ -259,7 +279,6 @@ class DeformableLine(AxesWidget):
             c.set_visible(isvisible)
         if self.drawon:
             self.canvas.draw()
-        self.changed()
 
     def get_visible(self):
         return self.visible
@@ -278,8 +297,7 @@ class DeformableLine(AxesWidget):
         ci = self.get_circle_index(event)
         if ci is None:
             return
-        circle = self.circles[ci]
-        x0, y0 = circle.center
+        x0, y0 = self.xs[ci], self.ys[ci]
         self.moving_ci = x0, y0, event.xdata, event.ydata, ci
 
     @if_attentive
