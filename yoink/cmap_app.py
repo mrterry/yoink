@@ -23,14 +23,14 @@ def run(pixels):
     crop_widget = ShutterCrop(sel_axes['img'])
 
     # add a line to identify the colormap on the selector fig
-    cmap_select = DragableColorLine(sel_axes['img'], sel_axes['cmap'], pixels)
-    # echo the selected cmap, but now add a scale
-    cbar_widget = ManualColorbar(ann_axes['cmap'],
-                                 ann_axes['cmap_lo'],
-                                 ann_axes['cmap_hi'],
-                                 cmap_select.l, cmap_select.rgb)
+    cbar_select = DragableColorLine(sel_axes['img'], sel_axes['cbar'], pixels)
+    # echo the selected cbar, but now add a scale
+    cbar_widget = ManualColorbar(ann_axes['cbar'],
+                                 ann_axes['cbar_lo'],
+                                 ann_axes['cbar_hi'],
+                                 cbar_select.l, cbar_select.rgb)
     # update the colors in cbar_widget when you move the selector line
-    cmap_select.on_changed(cbar_widget.set_color)
+    cbar_select.on_changed(cbar_widget.set_color)
 
     # using the shutters in crop_widget, re-plot only selected data
     rcol_widget = RecoloredWidget(ann_axes['img'], pixels)
@@ -42,8 +42,8 @@ def run(pixels):
     # update if the shutters move
     crop_widget.on_changed(rcol_widget.crop)
     # re-digitizing is expensive, so only do it when you're done dragging
-    cmap_select.on_release(rcol_widget.digitize)
-    rcol_widget.digitize(cmap_select.l, cmap_select.rgb)
+    cbar_select.on_release(rcol_widget.digitize)
+    rcol_widget.digitize(cbar_select.l, cbar_select.rgb)
 
     # button to dump teh data to a file
     dump_button = Button(ann_axes['dump'], 'Dump to file')
@@ -52,7 +52,7 @@ def run(pixels):
     # Radio buttons to select which Widget is active
     states = OrderedDict()
     states['Do nothing'] = NothingWidget()
-    states['Select Colorbar'] = cmap_select
+    states['Select Colorbar'] = cbar_select
     states['Crop Image'] = crop_widget
 
     def toggle_state(new_state):
@@ -72,4 +72,4 @@ def run(pixels):
     select_radio.on_clicked(toggle_state)
 
     # Return all the widgets or they stop working.  Garbage collection problem?
-    return crop_widget, cmap_select, cbar_widget, rcol_widget, select_radio
+    return crop_widget, cbar_select, cbar_widget, rcol_widget, select_radio
