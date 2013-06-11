@@ -232,17 +232,6 @@ class DeformableLine(AxesWidget):
         for func in self.release_observers.itervalues():
             func()
 
-    def get_circle_index(self, event):
-        i = 0
-        for i, c in enumerate(self.circles):
-            if c.contains(event)[0]:
-                return i
-        if len(self.circles) == self.max_points:
-            return None
-
-        i = self.add_point(event.xdata, event.ydata)
-        return i
-
     def add_point(self, x, y):
         """Add a new segment to the DeformableLine"""
         # new circle
@@ -277,6 +266,15 @@ class DeformableLine(AxesWidget):
 
     @if_attentive
     def _press(self, event):
+        # Get the circle index
+        ci = 0
+        for ci, c in enumerate(self.circles):
+            if c.contains(event)[0]:
+                return ci
+        if len(self.circles) == self.max_points:
+            return None
+        ci = self.add_point(event.xdata, event.ydata)
+
         ci = self.get_circle_index(event)
         if ci is None:
             return
