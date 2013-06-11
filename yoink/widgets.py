@@ -703,7 +703,7 @@ class RecoloredWidget(AxesWidget):
         self.image.set_extent(ext)
 
     def dump(self):
-        pass
+        raise NotImplemented
 
     def crop(self, extent):
         """Crop self.image to the given extent"""
