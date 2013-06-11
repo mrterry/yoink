@@ -641,9 +641,6 @@ class RecoloredWidget(AxesWidget):
             tb.on_changed(partial(self.set_side_extent, i))
             self.textboxes.append(tb)
 
-    def make_clim_textboxes(self, ax_lo, ax_hi):
-        pass
-
     def set_side_extent(self, side, val):
         """Set the cropping extent for a single side `side` to value `val`"""
         ext = list(self.image.get_extent())
