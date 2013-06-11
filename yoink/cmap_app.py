@@ -17,7 +17,7 @@ def run(pixels):
     ann_fig, ann_axes = make_annotate_figure()
 
     # plot source data
-    sel_axes['img'].imshow(pixels)
+    sel_axes['img'].imshow(pixels, interpolation='none')
 
     # add shutters for cropping
     crop_widget = ShutterCrop(sel_axes['img'])
@@ -43,6 +43,7 @@ def run(pixels):
     crop_widget.on_changed(rcol_widget.crop)
     # re-digitizing is expensive, so only do it when you're done dragging
     cmap_select.on_release(rcol_widget.digitize)
+    rcol_widget.digitize(cmap_select.l, cmap_select.rgb)
 
     # button to dump teh data to a file
     dump_button = Button(ann_axes['dump'], 'Dump to file')

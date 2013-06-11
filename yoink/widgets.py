@@ -538,8 +538,9 @@ class RecoloredWidget(AxesWidget):
     def __init__(self, ax, pixels):
         AxesWidget.__init__(self, ax)
         self._pixels = pixels
-        self.pixels = pixels.copy()
-        self.image = self.ax.imshow(pixels, aspect='auto')
+        self.pixels = pixels[:, :, 0].copy()
+        self.image = self.ax.imshow(self.pixels,
+                                    aspect='auto', interpolation='none')
         self.l = None
 
         self.observers = {}
