@@ -518,7 +518,23 @@ class KeyboardCrop(Widget):
         return [self.crop[key] for key in ('south', 'east', 'north', 'west')]
 
 
-class ScaledCmap(AxesWidget):
+class ManualColorbar(AxesWidget):
+    """
+    A faux-colorbar.  Draws a colorbar with the scale and colors determined
+    externally.
+
+    Parameters
+    ----------
+    ax : axes
+        axes to draw the colorbar
+    lo_ax : axes
+        axes to put the TextBoxFloat for the lower bound
+    hi_ax : axes
+        axes to put the TextBoxFloat for the upper bound
+    l : array-like (1d)
+        coordinates of the colorbar (should monotonically increase from 0 to 1
+    rgb : array-like (3d)
+    """
     def __init__(self, ax, lo_ax, hi_ax, l, rgb):
         AxesWidget.__init__(self, ax)
 
@@ -527,10 +543,10 @@ class ScaledCmap(AxesWidget):
 
         self.l = self.z = l
 
-        self.zlo = self.z[0]
-        self.zhi = self.z[-1]
-        self.lo_tb = TextBoxFloat(lo_ax, str(self.zlo))
-        self.hi_tb = TextBoxFloat(hi_ax, str(self.zhi))
+        self._zmin = self.z[0]
+        self._zmax = self.z[-1]
+        self.lo_tb = TextBoxFloat(lo_ax, str(self._zmin))
+        self.hi_tb = TextBoxFloat(hi_ax, str(self._zmax))
 
         n, nc = rgb.shape
         self.rgb = rgb
@@ -541,15 +557,20 @@ class ScaledCmap(AxesWidget):
         self.ax.xaxis.set_visible(False)
         self.ax.yaxis.tick_right()
         self.ax.yaxis.set_visible(True)
-        self.update_extent()
+        self.redraw()
 
-        self.lo_tb.on_changed(self.update_lbound)
-        self.hi_tb.on_changed(self.update_ubound)
+        self.lo_tb.on_changed(self.set_zmin)
+        self.hi_tb.on_changed(self.set_zmax)
 
         self.l = np.linspace(0, 1, 20)
         self.rgb = np.zeros_like(self.l)
 
     def on_changed(self, func):
+        """
+        When the ManualColorbar changes, call *func* with no arguments.
+
+        A connection id is returned which can be used to disconnect.
+        """
         cid = self.cid
         self.observers[cid] = func
         self.cid += 1
@@ -567,17 +588,20 @@ class ScaledCmap(AxesWidget):
         for func in self.observers.itervalues():
             func()
 
-    def update_lbound(self, val):
-        self.zlo = val
-        self.update_extent()
+    def set_zmin(self, val):
+        """Set the lower bound on the colorbar scale"""
+        self._zmin = val
+        self.redraw()
 
-    def update_ubound(self, val):
-        self.zhi = val
-        self.update_extent()
+    def set_zmax(self, val):
+        """Set the upper bound on the colorbar scale"""
+        self._zmax = val
+        self.redraw()
 
-    def update_extent(self):
-        dz = self.zhi - self.zlo
-        self.z = self.zlo + self.l * dz
+    def redraw(self):
+        """Redraw the colorbar and ticks"""
+        dz = self._zmax - self._zmin
+        self.z = self._zmin + self.l * dz
         extent = [0, 1, self.z[0], self.z[-1]]
         self.cmap_im.set_extent(extent)
         if self.drawon:
@@ -585,12 +609,12 @@ class ScaledCmap(AxesWidget):
         self.changed()
 
     def set_color(self, l, rgb):
+        """Set the scale and color for the faux-cmap"""
         self.l = l
         n, nc = rgb.shape
         self.rgb = rgb
         self.cmap_im.set_data(rgb.reshape((n, 1, nc)))
-        self.update_extent()
-        self.changed()
+        self.redraw()
 
 
 class RecoloredWidget(AxesWidget):

@@ -4,7 +4,7 @@ from matplotlib.widgets import RadioButtons, Button
 
 from yoink.layout import make_selector_figure, make_annotate_figure
 from yoink.widgets import (ShutterCrop, DragableColorLine, NothingWidget,
-                           ScaledCmap, RecoloredWidget)
+                           ManualColorbar, RecoloredWidget)
 
 
 def run(pixels):
@@ -25,12 +25,12 @@ def run(pixels):
     # add a line to identify the colormap on the selector fig
     cmap_select = DragableColorLine(sel_axes['img'], sel_axes['cmap'], pixels)
     # echo the selected cmap, but now add a scale
-    cmap_scale = ScaledCmap(ann_axes['cmap'],
-                            ann_axes['cmap_lo'],
-                            ann_axes['cmap_hi'],
-                            cmap_select.l, cmap_select.rgb)
-    # update the colors in cmap_scale when you move the selector line
-    cmap_select.on_changed(cmap_scale.set_color)
+    cbar_widget = ManualColorbar(ann_axes['cmap'],
+                                 ann_axes['cmap_lo'],
+                                 ann_axes['cmap_hi'],
+                                 cmap_select.l, cmap_select.rgb)
+    # update the colors in cbar_widget when you move the selector line
+    cmap_select.on_changed(cbar_widget.set_color)
 
     # using the shutters in crop_widget, re-plot only selected data
     rcol_widget = RecoloredWidget(ann_axes['img'], pixels)
@@ -72,4 +72,4 @@ def run(pixels):
     select_radio.on_clicked(toggle_state)
 
     # Return all the widgets or they stop working.  Garbage collection problem?
-    return crop_widget, cmap_select, cmap_scale, rcol_widget, select_radio
+    return crop_widget, cmap_select, cbar_widget, rcol_widget, select_radio
