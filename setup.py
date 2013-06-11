@@ -8,4 +8,5 @@ setup(
     author_email='matt.terry@gmail.com',
     url='https://github.com/mrterry/yoink',
     packages=['yoink'],
+    install_requires=['numpy', 'scipy', 'skimage'],
 )
