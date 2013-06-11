@@ -313,11 +313,23 @@ class DeformableLine(AxesWidget):
 class ShutterCrop(AxesWidget):
     """
     Crop an image by dragging transparent panes over excluded region.
+
+    Parameters
+    ----------
+    ax : axes
+        Axes to draw the shutters on
+    dx_frac : float, optional, default=0.05
+        Initial fraction of view that is cropped on each side
+    **rect_kw : optional
+        Keyword args to customize the shutter `Rectangle`s
+
+    By default, shutters have:
+        facecolor='gray',
+        edgecolor='none',
+        alpha=0.5,
+        picker=5
     """
-    def __init__(self, ax,
-                 dx_frac=0.05, dy_frac=0.05,
-                 facecolor='gray', edgecolor='none', alpha=0.5, picker=5,
-                 **rect_kw):
+    def __init__(self, ax, dx_frac=0.05, **rect_kw):
         self.rects = {}  # AxesWidget sets active=True, so rects needs to exist
         AxesWidget.__init__(self, ax)
         self.visible = True
@@ -327,12 +339,14 @@ class ShutterCrop(AxesWidget):
 
         self.active_pick = None
 
-        kw = dict(facecolor=facecolor,
-                  edgecolor=edgecolor,
-                  picker=picker,
-                  alpha=alpha,
-                  **rect_kw)
-        self._make_rects(dx_frac, dy_frac, kw)
+        kw = dict(
+            facecolor='gray',
+            edgecolor='none',
+            alpha=0.5,
+            picker=5,
+        )
+        kw.update(rect_kw)
+        self._make_rects(dx_frac, kw)
 
         self.connect_event('pick_event', self._pick),
         self.connect_event('button_release_event', self._release),
@@ -362,13 +376,14 @@ class ShutterCrop(AxesWidget):
         for func in self.observers.itervalues():
             func(extent)
 
-    def _make_rects(self, dx_frac, dy_frac, kw):
+    def _make_rects(self, dx_frac, kw):
+        """Create the rectangles for each shutter"""
         xlo, xhi = self.ax.get_xlim()
         dx = xhi - xlo
         ylo, yhi = self.ax.get_ylim()
         dy = yhi - ylo
         width = dx_frac * dx
-        height = dy_frac * dy
+        height = dx_frac * dy
 
         self.rects['north'] = Rectangle((xlo, yhi - height), dx, height, **kw)
         self.rects['south'] = Rectangle((xlo, ylo), dx, height, **kw)
