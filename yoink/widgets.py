@@ -678,5 +678,21 @@ class Dumper(object):
         self.rcolor = rcolor
         self.scale_cbar = scale_cbar
 
-    def dump(self):
-        raise NotImplemented
+    def dump(self, event):
+        z = self.rcolor.image._A
+        print type(z)
+        z = np.array(z)
+
+        zmin = self.scale_cbar.fmt.mx
+        zmax = self.scale_cbar.fmt.mn
+        dz = zmax - zmin
+
+        z = zmin + dz * z
+
+        ni, nj = z.shape
+        x0, x1, y0, y1 = self.rcolor.image.get_extent()
+        x = np.linspace(x0, x1, ni+1)
+        y = np.linspace(y0, y1, nj+1)
+
+        np.savez('cmap.npz', x=x, y=y, z=z)
+        print 'saved!'

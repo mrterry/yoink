@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import RadioButtons, Button
 
 from yoink.widgets import (ShutterCrop, DragableColorLine, NothingWidget,
-                           RecoloredWidget, ScaledColorbar)
+                           RecoloredWidget, ScaledColorbar, Dumper)
 from yoink.textbox import TextBoxFloat
 
 
@@ -162,9 +162,11 @@ def run(pixels):
     cbar_select.on_release(rcol_widget.digitize)
     rcol_widget.digitize(cbar_select.l, cbar_select.rgb)
 
-    # button to dump teh data to a file
+    # button to dump the data to a file
+    dump_widget = Dumper(rcol_widget, cbar_widget)
+    widgets['dumper'] = dump_widget
     dump_button = Button(ann_axes['dump'], 'Dump to file')
-    dump_button.on_clicked(rcol_widget.dump)
+    dump_button.on_clicked(dump_widget.dump)
     widgets['dump_button'] = dump_button
 
     # Radio buttons to select which Widget is active
