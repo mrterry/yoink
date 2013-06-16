@@ -321,13 +321,14 @@ class DeformableLine(AxesWidget):
         xc, yc, xclick, yclick, ci = self.moving_ci
 
         x, y = xc + (event.xdata - xclick), yc + (event.ydata - yclick)
-        self.circles[ci].center = (x, y)
+        self.set_vertex(ci, x, y)
 
+    def set_vertex(self, ci, x, y):
+        self.circles[ci].center = (x, y)
         self.xs[ci], self.ys[ci] = x, y
         if self.is_closed and len(self.circles) == self.max_points and ci == 0:
             self.xs[-1], self.ys[-1] = x, y
         self.line.set_data(self.xs, self.ys)
-
         if self.drawon:
             self.canvas.draw()
         self.changed()
