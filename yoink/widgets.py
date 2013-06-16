@@ -141,7 +141,9 @@ class DragableColorLine(Widget):
         self.l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.pixels)
         cmap = make_cmap(self.l, self.rgb)
         self._im.set_cmap(cmap)
-        self.redraw()
+        if self.drawon:
+            self.select_ax.figure.canvas.draw()
+            self.cbar_ax.figure.canvas.draw()
         self.changed()
 
     @property
@@ -155,9 +157,6 @@ class DragableColorLine(Widget):
     def set_visible(self, isvisible):
         self.visible = isvisible
         self.line.set_visible(isvisible)
-        self.redraw()
-
-    def redraw(self):
         if self.drawon:
             self.select_ax.figure.canvas.draw()
             self.cbar_ax.figure.canvas.draw()
