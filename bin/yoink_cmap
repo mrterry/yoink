@@ -10,11 +10,12 @@ from yoink.cmap_app import run
 parser = argparse.ArgumentParser(
     description='Yoink colored data from an image')
 parser.add_argument('image')
+parser.add_argument('-o', dest='output', default='data.npz')
 
 args = parser.parse_args()
 
 
 pixels = plt.imread(args.image)
-widgets = run(pixels)
+widgets = run(pixels, args.output)
 
 plt.show()
