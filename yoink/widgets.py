@@ -632,24 +632,21 @@ class ImageDumper(object):
         self.filename = filename
 
     def dump_npz(self, event):
-        x, y, z, l, rgb = self.get_xyzlc()
+        data = self.get_data()
         print 'dumping to', self.filename
-        np.savez(self.filename, x=x, y=y, z=z)
+        np.savez(self.filename, **data)
         print 'dumped'
 
     def dump_txt(self, event):
-        x, y, z, l, rgb = self.get_xyzlc()
-
-        print 'dumping to', self.filename, + 'x.txt'
-        print 'dumping to', self.filename, + 'y.txt'
-        print 'dumping to', self.filename, + 'z.txt'
-        np.savetxt(self.filename + '.x.txt', x)
-        np.savetxt(self.filename + '.y.txt', y)
-        np.savetxt(self.filename + '.z.txt', z)
+        data = self.get_data()
+        print 'dumping to', self.filename, + '.*.txt'
+        for key, val in data:
+            np.savetxt('%s.%s.txt' % (self.filename, key), val)
         print 'dumped'
 
-    def get_xyzlc(self):
+    def get_data(self):
         # The image knows about x, y.  z should go from 0-1
+        data = {}
         z = np.array(self.image._A)
 
         ni, nj = z.shape
@@ -658,6 +655,8 @@ class ImageDumper(object):
         y = np.linspace(y0, y1, nj+1)
         if self.image.origin == 'upper':
             y = y[::-1]
+        data['x'] = x
+        data['y'] = y
 
         # The colorbar lies about the range of z (by design)
         # correct z based on what the colorbar says
@@ -665,8 +664,8 @@ class ImageDumper(object):
         zmax = self.scale_cbar.fmt.mx
         dz = zmax - zmin
         z = zmin + dz * z
+        data['z'] = z
 
-        l = self.colorline.l
-        rgb = self.colorline.rgb
-
-        return x, y, z, l, rgb
+        data['l'] = self.colorline.l
+        data['rgb'] = self.colorline.rgb
+        return data
