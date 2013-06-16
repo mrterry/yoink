@@ -316,6 +316,8 @@ class DeformableLine(AxesWidget):
     def _motion(self, event):
         if self.moving_ci is None:
             return
+        if event.inaxes is not self.ax:
+            return
         xc, yc, xclick, yclick, ci = self.moving_ci
 
         x, y = xc + (event.xdata - xclick), yc + (event.ydata - yclick)
@@ -457,6 +459,8 @@ class ShutterCrop(AxesWidget):
     @if_attentive
     def _motion(self, event):
         if self.active_pick is None:
+            return
+        if event.inaxes is not self.ax:
             return
         bar, (xclick, yclick), (x, y, w, h) = self.active_pick
 
