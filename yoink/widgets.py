@@ -580,6 +580,7 @@ class RecoloredWidget(AxesWidget):
         if l is self.l:
             return
         self.l = l
+        self.rgb = rgb
         self.pixels[:, :] = invert_cmap_kdtree(self._pixels, l, rgb)
         self.cmap = make_cmap(l, rgb)
         self.image.set_cmap(self.cmap)
