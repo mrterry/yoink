@@ -656,6 +656,8 @@ class ImageDumper(object):
         x0, x1, y0, y1 = self.image.get_extent()
         x = np.linspace(x0, x1, ni+1)
         y = np.linspace(y0, y1, nj+1)
+        if self.image.origin == 'upper':
+            y = y[::-1]
 
         # The colorbar lies about the range of z (by design)
         # correct z based on what the colorbar says
