@@ -15,11 +15,11 @@ except ImportError:
 def keyboard_crop(im):
     corners = corner_harris(im)
     lim = {
-            'west': corners[:, 1].min()-3,
-            'east': corners[:, 1].max()+3,
-            'north': corners[:, 0].max()-3,
-            'south': corners[:, 0].min()+3,
-            }
+        'west': corners[:, 1].min()-3,
+        'east': corners[:, 1].max()+3,
+        'north': corners[:, 0].max()-3,
+        'south': corners[:, 0].min()+3,
+    }
     limiter = KeyboardCrop(im, lim)
 
     limiter.edge_effects['west'] = {'left': -1, 'right': +1}

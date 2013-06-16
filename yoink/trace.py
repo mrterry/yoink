@@ -56,7 +56,7 @@ def naive_trace(x0, y0, x1, y1):
             fx += (1 - fy)/m  # only bad if m==0 and fy>0
             y += 1
             fy = 0.
-        else: # step x
+        else:  # step x
             fy += y_rise
             x += 1
             fx = 0.
@@ -92,7 +92,7 @@ def bresenham_trace(x, y, x1, y1):
         if e2 > -dy:
             err -= dy
             x += sx
-        if (x, y)  == (x1, y1):
+        if (x, y) == (x1, y1):
             break
         if e2 < dx:
             err += dx
@@ -129,9 +129,9 @@ def wu_trace(x, y, x1, y1):
 
     frac, rfrac = wu_frac(yend)
     steps = [
-            (x_px_11, y_px_11, rfrac*xgap),
-            (x_px_11, y_px_11+1, frac*xgap),
-            ]
+        (x_px_11, y_px_11, rfrac*xgap),
+        (x_px_11, y_px_11+1, frac*xgap),
+    ]
     intery = yend + grad
 
     # second endpoint
@@ -148,9 +148,9 @@ def wu_trace(x, y, x1, y1):
         intery += grad
     frac, rfrac = wu_frac(yend)
     steps += [
-            (x_px_12, y_px_12, rfrac*xgap),
-            (x_px_12, y_px_12+1, frac*xgap),
-            ]
+        (x_px_12, y_px_12, rfrac*xgap),
+        (x_px_12, y_px_12+1, frac*xgap),
+    ]
 
     if steep:
         steps = [(y, x, f) for (x, y, f) in steps]
@@ -218,7 +218,7 @@ def bresenham_colormapping(x0, y0, x1, y1, im):
     centers = np.vstack((ii, jj), dtype=float)
     centers += 0.5
     line = centers[-1] - centers[0]
-    l = np.dot(centers, line.reshape(2,1))
+    l = np.dot(centers, line.reshape(2, 1))
     return l, rgb
 
 
