@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import RadioButtons, Button
 
 from yoink.widgets import (ShutterCrop, DragableColorLine, NothingWidget,
-                           RecoloredWidget, ScaledColorbar, Dumper)
+                           RecoloredWidget, ScaledColorbar, ImageDumper)
 from yoink.textbox import TextBoxFloat
 
 
@@ -114,7 +114,7 @@ def make_annotate_figure(gut=0.04, sepx=0.05, sepy=0.04,
     return fig, axes
 
 
-def run(pixels):
+def run(pixels, path):
     """
     """
     # Return the widgets or they stop responding
@@ -126,48 +126,23 @@ def run(pixels):
     sel_fig, sel_axes = make_selector_figure()
     ann_fig, ann_axes = make_annotate_figure()
 
+    #
+    # Set up the widgets on the selection figure
+    #
     # plot source data
     sel_axes['img'].imshow(pixels, interpolation='none', vmin=0, vmax=1)
 
-    # add shutters for cropping
-    crop_widget = ShutterCrop(sel_axes['img'])
-    widgets['crop_widget'] = crop_widget
+    # add shutters for cropping, initially disabled
+    widgets['crop_widget'] = crop_widget = ShutterCrop(sel_axes['img'])
+    crop_widget.active = False
+    crop_widget.set_visible(False)
 
-    # add a line to identify the colormap on the selector fig
-    cbar_select = DragableColorLine(sel_axes['img'], sel_axes['cbar'], pixels)
-    widgets['cbar_select'] = cbar_select
-
-    # using the shutters in crop_widget, re-plot only selected data
-    rcol_widget = RecoloredWidget(ann_axes['img'], pixels)
-    widgets['rcol_widget'] = rcol_widget
-    # generate textboxes for specifying xlim, ylim
-    rcol_widget.make_xyextent_textboxes(ann_axes['xlo'],
-                                        ann_axes['xhi'],
-                                        ann_axes['ylo'],
-                                        ann_axes['yhi'])
-
-    cbar_widget = ScaledColorbar(ann_axes['cbar'], rcol_widget.image)
-    widgets['cbar_widget'] = cbar_widget
-
-    tblo = TextBoxFloat(ann_axes['cbar_lo'], '0')
-    tbhi = TextBoxFloat(ann_axes['cbar_hi'], '1')
-    tblo.on_changed(cbar_widget.set_min)
-    tbhi.on_changed(cbar_widget.set_max)
-    widgets['tb_lo'] = tblo
-    widgets['tb_hi'] = tbhi
-
-    # update if the shutters move
-    crop_widget.on_changed(rcol_widget.crop)
-    # re-digitizing is expensive, so only do it when you're done dragging
-    cbar_select.on_release(rcol_widget.digitize)
-    rcol_widget.digitize(cbar_select.l, cbar_select.rgb)
-
-    # button to dump the data to a file
-    dump_widget = Dumper(rcol_widget, cbar_widget)
-    widgets['dumper'] = dump_widget
-    dump_button = Button(ann_axes['dump'], 'Dump to file')
-    dump_button.on_clicked(dump_widget.dump)
-    widgets['dump_button'] = dump_button
+    # add a line to identify manually select the colorbar, initially disabled
+    widgets['cbar_select'] = cbar_select = DragableColorLine(sel_axes['img'],
+                                                             sel_axes['cbar'],
+                                                             pixels)
+    cbar_select.active = False
+    cbar_select.set_visible(False)
 
     # Radio buttons to select which Widget is active
     states = OrderedDict()
@@ -186,11 +161,52 @@ def run(pixels):
         states[new_state].set_visible(True)
     toggle_state(states.keys()[0])
 
-    select_radio = RadioButtons(sel_axes['select'],
-                                labels=states.keys(),
-                                active=0)
+    widgets['radio'] = select_radio = RadioButtons(sel_axes['select'],
+                                                   labels=states.keys(),
+                                                   active=0)
     select_radio.on_clicked(toggle_state)
-    widgets['radio'] = select_radio
 
-    # Return all the widgets or they stop working.  Garbage collection problem?
+    #
+    # Now set up widgets on the annotation figure
+    #
+    # We are converting a multi-color image to a scalar image.
+    # Plot that scalar image
+    widgets['rcol_widget'] = rcol_widget = RecoloredWidget(ann_axes['img'],
+                                                           pixels)
+    # fill axes with textboxes for typing in the x & y limits
+    # these set the scale of x and y
+    rcol_widget.make_xyextent_textboxes(ann_axes['xlo'],
+                                        ann_axes['xhi'],
+                                        ann_axes['ylo'],
+                                        ann_axes['yhi'])
+
+    # Crop the re-colored image when the cropping shutters move
+    crop_widget.on_changed(rcol_widget.crop)
+
+    # Draw a colorbar for the re-colored image, and set the initial cmap
+    widgets['cbar_widget'] = cbar_widget = ScaledColorbar(ann_axes['cbar'],
+                                                          rcol_widget.image)
+    rcol_widget.digitize(cbar_select.l, cbar_select.rgb)
+
+    # Re-draw the colormap when the colorbar-selector moves
+    # re-digitizing is expensive, so only do it when you release the mouse
+    cbar_select.on_release(rcol_widget.digitize)
+
+    # Create textbox widgets to manually specifying the range of z
+    widgets['tb_lo'] = tblo = TextBoxFloat(ann_axes['cbar_lo'], '0')
+    widgets['tb_hi'] = tbhi = TextBoxFloat(ann_axes['cbar_hi'], '1')
+    # If the textbox changes, propagate those changes to the colorbar ticks
+    tblo.on_changed(cbar_widget.set_min)
+    tbhi.on_changed(cbar_widget.set_max)
+
+    # Add a button to dump the data to a file
+    widgets['dump_button'] = dump_button = Button(ann_axes['dump'],
+                                                  'Dump to file')
+    widgets['dumper'] = dumper = ImageDumper(rcol_widget.image,
+                                             cbar_widget,
+                                             path)
+    dump_button.on_clicked(dumper.dump_npz)
+
+    # Return all the widgets.  If you don't, they don't respond interactively.
+    # Maybe they are getting garbage collected?
     return widgets

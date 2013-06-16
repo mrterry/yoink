@@ -673,26 +673,43 @@ class OffsetFormatter(ScalarFormatter):
         return ScalarFormatter.__call__(self, x, pos=pos)
 
 
-class Dumper(object):
-    def __init__(self, rcolor, scale_cbar):
-        self.rcolor = rcolor
+class ImageDumper(object):
+    def __init__(self, image, scale_cbar, filename):
+        self.image = image
         self.scale_cbar = scale_cbar
+        self.filename = filename
 
-    def dump(self, event):
-        z = self.rcolor.image._A
-        print type(z)
-        z = np.array(z)
+    def dump_npz(self, event):
+        x, y, z = self.get_xyz()
+        print 'dumping to', self.filename
+        np.savez(self.filename, x=x, y=y, z=z)
+        print 'dumped'
 
-        zmin = self.scale_cbar.fmt.mx
-        zmax = self.scale_cbar.fmt.mn
-        dz = zmax - zmin
+    def dump_txt(self, event):
+        x, y, z = self.get_xyz()
 
-        z = zmin + dz * z
+        print 'dumping to', self.filename, + 'x.txt'
+        print 'dumping to', self.filename, + 'y.txt'
+        print 'dumping to', self.filename, + 'z.txt'
+        np.savetxt(self.filename + '.x.txt', x)
+        np.savetxt(self.filename + '.y.txt', y)
+        np.savetxt(self.filename + '.z.txt', z)
+        print 'dumped'
+
+    def get_xyz(self):
+        # The image knows about x, y.  z should go from 0-1
+        z = np.array(self.image._A)
 
         ni, nj = z.shape
-        x0, x1, y0, y1 = self.rcolor.image.get_extent()
+        x0, x1, y0, y1 = self.image.get_extent()
         x = np.linspace(x0, x1, ni+1)
         y = np.linspace(y0, y1, nj+1)
 
-        np.savez('cmap.npz', x=x, y=y, z=z)
-        print 'saved!'
+        # The colorbar lies about the range of z (by design)
+        # correct z based on what the colorbar says
+        zmin = self.scale_cbar.fmt.mx
+        zmax = self.scale_cbar.fmt.mn
+        dz = zmax - zmin
+        z = zmin + dz * z
+
+        return x, y, z
