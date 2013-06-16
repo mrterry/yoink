@@ -625,19 +625,20 @@ class OffsetFormatter(ScalarFormatter):
 
 
 class ImageDumper(object):
-    def __init__(self, image, scale_cbar, filename):
+    def __init__(self, image, scale_cbar, colorline, filename):
         self.image = image
         self.scale_cbar = scale_cbar
+        self.colorline = colorline
         self.filename = filename
 
     def dump_npz(self, event):
-        x, y, z = self.get_xyz()
+        x, y, z, l, rgb = self.get_xyzlc()
         print 'dumping to', self.filename
         np.savez(self.filename, x=x, y=y, z=z)
         print 'dumped'
 
     def dump_txt(self, event):
-        x, y, z = self.get_xyz()
+        x, y, z, l, rgb = self.get_xyzlc()
 
         print 'dumping to', self.filename, + 'x.txt'
         print 'dumping to', self.filename, + 'y.txt'
@@ -647,7 +648,7 @@ class ImageDumper(object):
         np.savetxt(self.filename + '.z.txt', z)
         print 'dumped'
 
-    def get_xyz(self):
+    def get_xyzlc(self):
         # The image knows about x, y.  z should go from 0-1
         z = np.array(self.image._A)
 
@@ -663,4 +664,7 @@ class ImageDumper(object):
         dz = zmax - zmin
         z = zmin + dz * z
 
-        return x, y, z
+        l = self.colorline.l
+        rgb = self.colorline.rgb
+
+        return x, y, z, l, rgb

@@ -204,6 +204,7 @@ def run(pixels, path):
                                                   'Dump to file')
     widgets['dumper'] = dumper = ImageDumper(rcol_widget.image,
                                              cbar_widget,
+                                             cbar_select,
                                              path)
     dump_button.on_clicked(dumper.dump_npz)
 
