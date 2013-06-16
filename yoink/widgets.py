@@ -661,8 +661,8 @@ class ImageDumper(object):
 
         # The colorbar lies about the range of z (by design)
         # correct z based on what the colorbar says
-        zmin = self.scale_cbar.fmt.mx
-        zmax = self.scale_cbar.fmt.mn
+        zmin = self.scale_cbar.fmt.mn
+        zmax = self.scale_cbar.fmt.mx
         dz = zmax - zmin
         z = zmin + dz * z
 
