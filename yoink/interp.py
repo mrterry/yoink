@@ -88,6 +88,13 @@ def invert_cmap_argmin(pix, l, colors):
 
 
 def invert_cmap_kdtree(pix, l, colors):
+    """
+    Given a sequence of pixels, convert each to an equivalent index in the
+    color sequence l, colors
+
+    Uses a scipy.spatial.cKDTree to find the color with closest coordinates in
+    RGB space.
+    """
     kd = cKDTree(colors)
     ni, nj, nc = pix.shape
     pix = pix.reshape((ni * nj, nc))
