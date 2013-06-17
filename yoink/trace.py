@@ -165,4 +165,6 @@ def get_rgb(im, y, x, order=1):
     points = np.zeros((len(x), nc), dtype=im.dtype)
     for c in range(nc):
         points[:, c] = map_coordinates(im[:, :, c], [y, x], order=order)
+    points[0, :] = im[int(y[0]), int(x[0])]
+    points[-1, :] = im[int(y[-1]), int(x[-1])]
     return points
