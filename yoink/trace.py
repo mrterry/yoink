@@ -69,6 +69,8 @@ def naive_trace(x0, y0, x1, y1):
 
 def bresenham_trace(x, y, x1, y1):
     """
+    For a line (x, y) to (x1, y1) return the pixels that the line crosses.
+
     http://en.wikipedia.org/wiki/Bresenham's_line_algorithm
     Bresenham, J. E. (1 January 1965). "Algorithm for computer control of a
     digital plotter". IBM Systems Journal 4 (1): 25-30.
@@ -138,8 +140,11 @@ def equispaced_colormaping(x0, y0, x1, y1, im, N=256, order=1):
 def bresenham_colormapping(x0, y0, x1, y1, im):
     """
     Get lineout from x0/y0 to x1/y1 with points taken using Bresenham's ray
-    tracing algorithm.
-    Takes the image array rather than the spline fit
+    tracing algorithm.  Since Bresenham ray tracing only provides a list of
+    pixel coordiantes, this returns the distance between the each pixel and the
+    start pixel, then projected to the line between start and end.
+
+    Takes the image array
     Returns:
         l: ndarray, shape=(N,) - normalized location of colors
         rgb ndarray, shape=(N,3) - sequence of colors at each point in l
