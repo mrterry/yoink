@@ -151,11 +151,13 @@ def bresenham_colormapping(x0, y0, x1, y1, im):
     """
     x_y = bresenham_trace(x0, y0, x1, y1)
     jj, ii = zip(*x_y)
-    rgb = im[jj, ii]
-    centers = np.vstack((ii, jj))
-    centers += 0.5
+    rgb = im[ii, jj]
+
+    centers = np.vstack((ii, jj)).T
+    points = np.array(centers - centers[0], dtype=float)
     line = centers[-1] - centers[0]
-    l = np.dot(centers, line.reshape(2, 1))
+    l = np.dot(points, line)
+    l /= l[-1]
     return l, rgb
 
 
