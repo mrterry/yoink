@@ -3,7 +3,7 @@ from scipy import ndimage
 
 from skimage import img_as_uint
 from skimage.measure import approximate_polygon
-from skimage.feature import harris
+from skimage.feature import corner_harris
 
 
 def guess_corners(bw):
@@ -30,7 +30,7 @@ def guess_corners(bw):
     seg = ndimage.watershed_ift(e_map, np.asarray(markers, dtype=int))
 
     outline = ndimage.binary_fill_holes(1 - seg)
-    corners = harris(np.asarray(outline, dtype=int))
+    corners = corner_harris(np.asarray(outline, dtype=int))
     corners = approximate_polygon(corners, 1)
     return corners, outline
 
