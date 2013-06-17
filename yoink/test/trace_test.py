@@ -1,6 +1,10 @@
 from yoink.trace import naive_trace
 from numpy.testing import assert_almost_equal
 from nose.tools import ok_
+import numpy as np
+
+from yoink.trace import (equispaced_colormaping, naive_colormaping,
+                         bresenham_colormapping)
 
 X0, Y0 = 4.2, 1.2
 
@@ -67,3 +71,51 @@ def naive_trace_endpoint_test():
     yield ok_, y[0] == Y0
     yield ok_, x[-1] == X0+1
     yield ok_, y[-1] == Y0+1
+
+
+def equispaced_colormaping_test1():
+    ni, nj, nc = 2, 10, 3
+    im = np.ones((ni, nj, nc)) * np.arange(nj, dtype=float)[None, :, None]
+    x0, y0 = 0.1, 0.5
+    x1, y1 = 9.9, 0.5
+    l, c = equispaced_colormaping(x0, y0, x1, y1, im, N=20)
+    assert_almost_equal(c[:, 0], c[:, 1])
+    assert_almost_equal(c[:, 0], c[:, 2])
+    r = c[:, 0]
+
+    points = [0., 0.2, np.pi/10, 1]
+    COLORS = [0., 2.06, 3.18, 9.]
+    colors = np.interp(points, l, r)
+    assert_almost_equal(colors, COLORS, 2)
+
+
+def naive_colormaping_test1():
+    ni, nj, nc = 2, 10, 3
+    im = np.ones((ni, nj, nc)) * np.arange(nj, dtype=float)[None, :, None]
+    x0, y0 = 0.1, 0.5
+    x1, y1 = 9.9, 0.5
+    l, c = naive_colormaping(x0, y0, x1, y1, im)
+    assert_almost_equal(c[:, 0], c[:, 1])
+    assert_almost_equal(c[:, 0], c[:, 2])
+    r = c[:, 0]
+
+    points = [0., 0.2, np.pi/10, 1]
+    COLORS = [0., 2.06, 3.18, 9.]
+    colors = np.interp(points, l, r)
+    assert_almost_equal(colors, COLORS, 2)
+
+
+def bresenham_colormaping_test1():
+    ni, nj, nc = 2, 10, 3
+    im = np.ones((ni, nj, nc)) * np.arange(nj, dtype=float)[None, :, None]
+    x0, y0 = 0.1, 0.5
+    x1, y1 = 9.9, 0.5
+    l, c = bresenham_colormapping(x0, y0, x1, y1, im)
+    assert_almost_equal(c[:, 0], c[:, 1])
+    assert_almost_equal(c[:, 0], c[:, 2])
+    r = c[:, 0]
+
+    points = [0., 0.2, np.pi/10, 1]
+    COLORS = [0., 2.06, 3.18, 9.]
+    colors = np.interp(points, l, r)
+    assert_almost_equal(colors, COLORS, 2)
