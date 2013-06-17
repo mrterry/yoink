@@ -9,7 +9,7 @@ from skimage.feature import corner_harris
 def guess_corners(bw):
     """
     Infer the corners of an image using a Sobel filter to find the edges and a
-    Harris filter to find the corners.  Takes only as single color chanel.
+    Harris filter to find the corners.  Takes a single color chanel.
 
     Parameters
     ----------
