@@ -4,7 +4,7 @@ import argparse
 import matplotlib.pyplot as plt
 plt.switch_backend('tkAgg')
 
-from yoink.cmap_app import run
+from yoink.cmap_app import CmapExtractor
 
 
 parser = argparse.ArgumentParser(
@@ -16,6 +16,6 @@ args = parser.parse_args()
 
 
 pixels = plt.imread(args.image)
-widgets = run(pixels, args.output)
+widgets = CmapExtractor(pixels, args.output)
 
 plt.show()
