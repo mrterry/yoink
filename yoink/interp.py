@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 
-def invert_cmap_kdtree(pix, l, colors):
+def invert_cmap(pix, l, colors):
     """
     Given a sequence of pixels, convert each to an equivalent index in the
     color sequence l, colors

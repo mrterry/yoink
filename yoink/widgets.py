@@ -12,7 +12,7 @@ from matplotlib.ticker import ScalarFormatter
 
 from yoink.textbox import TextBoxFloat
 from yoink.trace import equispaced_colormaping
-from yoink.interp import invert_cmap_kdtree
+from yoink.interp import invert_cmap
 
 
 def if_attentive(f):
@@ -581,7 +581,7 @@ class RecoloredWidget(AxesWidget):
             return
         self.l = l
         self.rgb = rgb
-        self.pixels[:, :] = invert_cmap_kdtree(self._pixels, l, rgb)
+        self.pixels[:, :] = invert_cmap(self._pixels, l, rgb)
         self.cmap = make_cmap(l, rgb)
         self.image.set_cmap(self.cmap)
         if self.drawon:
