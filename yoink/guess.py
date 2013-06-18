@@ -3,13 +3,13 @@ from scipy import ndimage
 
 from skimage import img_as_uint
 from skimage.measure import approximate_polygon
-from skimage.feature import harris
+from skimage.feature import corner_harris
 
 
 def guess_corners(bw):
     """
     Infer the corners of an image using a Sobel filter to find the edges and a
-    Harris filter to find the corners.  Takes only as single color chanel.
+    Harris filter to find the corners.  Takes a single color chanel.
 
     Parameters
     ----------
@@ -30,7 +30,7 @@ def guess_corners(bw):
     seg = ndimage.watershed_ift(e_map, np.asarray(markers, dtype=int))
 
     outline = ndimage.binary_fill_holes(1 - seg)
-    corners = harris(np.asarray(outline, dtype=int))
+    corners = corner_harris(np.asarray(outline, dtype=int))
     corners = approximate_polygon(corners, 1)
     return corners, outline
 

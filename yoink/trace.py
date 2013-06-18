@@ -69,6 +69,8 @@ def naive_trace(x0, y0, x1, y1):
 
 def bresenham_trace(x, y, x1, y1):
     """
+    For a line (x, y) to (x1, y1) return the pixels that the line crosses.
+
     http://en.wikipedia.org/wiki/Bresenham's_line_algorithm
     Bresenham, J. E. (1 January 1965). "Algorithm for computer control of a
     digital plotter". IBM Systems Journal 4 (1): 25-30.
@@ -100,74 +102,6 @@ def bresenham_trace(x, y, x1, y1):
     else:
         assert False
     return path
-
-
-def wu_trace(x, y, x1, y1):
-    """
-    http://en.wikipedia.org/wiki/Xiaolin_Wu's_line_algorithm
-    Wu, Xiaolin (July 1991). "An efficient antialiasing technique". Computer
-    Graphics 25 (4): 143-152.
-    """
-    steep = abs(y1-y) > abs(x1-x)
-    if steep:
-        x, y = y, x
-        x1, y1 = y1, x1
-
-    if x > x1:
-        x, x1 = x1, x
-        y, y1 = y1, y
-
-    dx = x1 - x
-    dy = y1 - y
-    grad = dy/dx
-
-    # first endpoint
-    xend = x_px_11 = int(x+0.5)
-    yend = y + grad*(xend - x)
-    xgap = wu_rfpart(x + 0.5)
-    y_px_11 = int(yend)
-
-    frac, rfrac = wu_frac(yend)
-    steps = [
-        (x_px_11, y_px_11, rfrac*xgap),
-        (x_px_11, y_px_11+1, frac*xgap),
-    ]
-    intery = yend + grad
-
-    # second endpoint
-    xend = x_px_12 = int(x1+0.5)
-    yend = y1 + grad * (xend - x1)
-    xgap = wu_fpart(x1 + 0.5)
-    y_px_12 = int(yend)
-
-    # main loop
-    for x in range(x_px_11+1, x_px_12):
-        frac, rfrac = wu_frac(intery)
-        y = int(intery)
-        steps += [(x, y, rfrac), (x, y+1, frac)]
-        intery += grad
-    frac, rfrac = wu_frac(yend)
-    steps += [
-        (x_px_12, y_px_12, rfrac*xgap),
-        (x_px_12, y_px_12+1, frac*xgap),
-    ]
-
-    if steep:
-        steps = [(y, x, f) for (x, y, f) in steps]
-    return steps
-
-
-def wu_fpart(x):
-    return x - int(x)
-
-
-def wu_rfpart(x):
-    return 1 - wu_fpart(x)
-
-
-def wu_frac(x):
-    frac = wu_fpart(x)
-    return frac, 1-frac
 
 
 def naive_colormaping(x0, y0, x1, y1, im, order=1):
@@ -206,19 +140,24 @@ def equispaced_colormaping(x0, y0, x1, y1, im, N=256, order=1):
 def bresenham_colormapping(x0, y0, x1, y1, im):
     """
     Get lineout from x0/y0 to x1/y1 with points taken using Bresenham's ray
-    tracing algorithm.
-    Takes the image array rather than the spline fit
+    tracing algorithm.  Since Bresenham ray tracing only provides a list of
+    pixel coordiantes, this returns the distance between the each pixel and the
+    start pixel, then projected to the line between start and end.
+
+    Takes the image array
     Returns:
         l: ndarray, shape=(N,) - normalized location of colors
         rgb ndarray, shape=(N,3) - sequence of colors at each point in l
     """
     x_y = bresenham_trace(x0, y0, x1, y1)
     jj, ii = zip(*x_y)
-    rgb = im[jj, ii]
-    centers = np.vstack((ii, jj), dtype=float)
-    centers += 0.5
+    rgb = im[ii, jj]
+
+    centers = np.vstack((ii, jj)).T
+    points = np.array(centers - centers[0], dtype=float)
     line = centers[-1] - centers[0]
-    l = np.dot(centers, line.reshape(2, 1))
+    l = np.dot(points, line)
+    l /= l[-1]
     return l, rgb
 
 
@@ -228,4 +167,6 @@ def get_rgb(im, y, x, order=1):
     points = np.zeros((len(x), nc), dtype=im.dtype)
     for c in range(nc):
         points[:, c] = map_coordinates(im[:, :, c], [y, x], order=order)
+    points[0, :] = im[int(y[0]), int(x[0])]
+    points[-1, :] = im[int(y[-1]), int(x[-1])]
     return points

@@ -116,6 +116,18 @@ def make_annotate_figure(gut=0.04, sepx=0.05, sepy=0.04,
 
 def run(pixels, path):
     """
+    Run the app for extracting data from a pseudo-color ("false-color",
+    "colormapped") image.
+    Generates two figures: a selector figures and an annotation figure.
+
+    Parameters
+    ----------
+
+    pixels: array-like
+        The pixels for the image to extract data from
+
+    path: str
+        The filename to save data.
     """
     # Return the widgets or they stop responding
     widgets = {}
