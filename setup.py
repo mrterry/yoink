@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='yoink',
@@ -8,5 +8,5 @@ setup(
     author_email='matt.terry@gmail.com',
     url='https://github.com/mrterry/yoink',
     packages=['yoink'],
-    install_requires=['numpy', 'scipy', 'skimage'],
+    install_requires=['numpy', 'scipy', 'skimage', 'matplotlib >= 1.2'],
 )
