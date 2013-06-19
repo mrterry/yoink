@@ -85,7 +85,7 @@ class TextBox(AxesWidget):
 
     @property
     def cursor(self):
-        # macosx does not provide render objects until the first fram is done.
+        # macosx does not provide render objects until the first frame is done.
         # Lazily generating the cursor avoids issues
         if self._cursor is None:
             x, y = self._get_cursor_endpoints()  # needs a renderer
@@ -186,10 +186,21 @@ class TextBox(AxesWidget):
                 func(self.value)
 
     def _get_cursor_endpoints(self):
-        # to get cursor position
-        # change text to chars left of the cursor
+        import matplotlib as mpl
+        # to get cursor position:
+        #   1) change text to chars left of the cursor
+        #   2) if macos, redraw
+        #   3) get extent of temporary text box
+        #   4) place cursor at appropriate place
+
         text = self.text.get_text()
         self.text.set_text(text[:self._cursorpos])
+        if mpl.get_backend() == 'MacOSX':
+            # self.text can't get_window_extent() until drawn
+            # this introduces some lag, so only do it on macos
+            # apparently the GCContext gets invalidated when you set_text, so
+            # you always have to do this
+            self.canvas.draw()
         bbox = self.text.get_window_extent()
         l, b, w, h = bbox.bounds  # in pixels
         r = l + w
