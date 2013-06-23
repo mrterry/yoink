@@ -44,7 +44,8 @@ class DragableColorLine(Widget):
     pixes : array-like (3d)
         Pixels values
     """
-    def __init__(self, select_ax, cbar_ax, pixels):
+    def __init__(self, select_ax, cbar_ax, pixels,
+                 line_kw=None, circle_kw=None):
         Widget.__init__(self)
         self.select_ax = select_ax
         self.cbar_ax = cbar_ax
@@ -55,7 +56,15 @@ class DragableColorLine(Widget):
         self.release_observers = {}
         self.cid = 0
 
-        self.line = DeformableLine(select_ax, max_points=2)
+        lkw = dict(color='black', linewidth=1)
+        if line_kw is not None:
+            lkw.update(line_kw)
+        ckw = dict(alpha=0.5, radius=10)
+        if circle_kw is not None:
+            ckw.update(circle_kw)
+        self.line = DeformableLine(select_ax, max_points=2,
+                                   line_kw=lkw,
+                                   circle_kw=ckw)
         self.pixels = pixels.copy()
 
         xl, xr = select_ax.get_xlim()
@@ -195,9 +204,7 @@ class DeformableLine(AxesWidget):
         self.line = Line2D(self.xs, self.ys, **kw)
         self.ax.add_artist(self.line)
 
-        self.circle_kw = dict(radius=5, alpha=0.5)
-        if circle_kw:
-            self.circle_kw.update(circle_kw)
+        self.circle_kw = circle_kw if circle_kw is not None else {}
 
         self.circles = []
 
@@ -260,7 +267,7 @@ class DeformableLine(AxesWidget):
         """Add a new segment to the DeformableLine"""
         # new circle
         i = len(self.xs)
-        circle = Circle((x, y), radius=5, alpha=0.5)
+        circle = Circle((x, y), **self.circle_kw)
         self.circles.append(circle)
         self.ax.add_artist(circle)
 
