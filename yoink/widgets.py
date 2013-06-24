@@ -330,7 +330,7 @@ class DeformableLine(AxesWidget):
 
     @if_attentive
     def _left_press(self, event):
-        if event.button != 1:
+        if event.button != 1 or event.inaxes is not self.ax:
             return
         # Get the circle index
         for ci, c in enumerate(self.circles):
@@ -349,7 +349,7 @@ class DeformableLine(AxesWidget):
         self.moving_ci = x0, y0, event.xdata, event.ydata, ci
 
     def _right_press(self, event):
-        if event.button != 2:
+        if event.button != 2 or event.inaxes is not self.ax:
             return
         for ci, c in enumerate(self.circles):
             if c.contains(event)[0]:
