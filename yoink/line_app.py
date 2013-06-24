@@ -16,7 +16,7 @@ class LinePicker(object):
 
         self.crop_widget = ShutterCrop(self.sel_axes['img'])
         self.crop_widget.active = False
-        self.crop_widget.set_visible(False)
+        self.crop_widget.set_visible(True)
 
         line_kw = dict(linewidth=0.5, color='k', alpha=0.5)
         circle_kw = dict(radius=15, alpha=0.5)
@@ -33,6 +33,7 @@ class LinePicker(object):
     def create_selector_toggle(self):
         self.selector_widgets = OrderedDict()
         self.selector_widgets['Do nothing'] = NothingWidget()
+        self.selector_widgets['Crop'] = self.crop_widget
         self.selector_widgets['Segmented Line'] = self.seg_line
 
         self.toggle_state('Do nothing')
