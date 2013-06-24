@@ -1,3 +1,4 @@
+from __future__ import division, print_function
 from collections import OrderedDict
 
 import matplotlib.pyplot as plt
@@ -126,16 +127,16 @@ class CmapExtractor(object):
 
     def dump_npz(self):
         data = self.get_data()
-        print 'dumping to', self.path
+        print('dumping to', self.path)
         np.savez(self.path, **data)
-        print 'dumped'
+        print('dumped')
 
     def dump_txt(self):
         data = self.get_data()
-        print 'dumping to', self.path, + '.*.txt'
+        print('dumping to %s.*.txt' % self.path)
         for key, val in data:
             np.savetxt('%s.%s.txt' % (self.path, key), val)
-        print 'dumped'
+        print('dumped')
 
     def dump(self, event):
         self.dump_func()
