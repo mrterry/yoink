@@ -680,3 +680,89 @@ class OffsetFormatter(ScalarFormatter):
         dc = self.mx - self.mn
         x = x*dc + self.mn
         return ScalarFormatter.__call__(self, x, pos=pos)
+
+
+class CroppedImage(AxesWidget):
+    """
+    Widget that recolors a multichannel image using a given a scale sequence
+    and associated colors.
+
+    Paramters
+    ---------
+    ax : axes
+        Axes to draw the widget
+    pixels : 3d array
+        Source pixels to recolor
+    """
+    # TODO what to do for colors "far" from scale
+    def __init__(self, ax, pixels):
+        AxesWidget.__init__(self, ax)
+        self.pixels = pixels
+        self.image = self.ax.imshow(self.pixels,
+                                    aspect='auto',
+                                    interpolation='none',
+                                    vmin=0,
+                                    vmax=1)
+        self.l = None
+
+        self.observers = {}
+        self.cid = 0
+
+    def on_changed(self, func):
+        """
+        When the RecoloredWidget changes, call *func* with no arguments.
+
+        A connection id is returned which can be used to disconnect.
+        """
+        cid = self.cid
+        self.observers[cid] = func
+        self.cid += 1
+        return cid
+
+    def disconnect(self, cid):
+        """remove the observer with connection id *cid*"""
+        try:
+            del self.observers[cid]
+        except KeyError:
+            pass
+
+    def changed(self):
+        """Call the observers"""
+        for func in self.observers.itervalues():
+            func()
+
+    def make_xyextent_textboxes(self, ax_xlo, ax_xhi, ax_ylo, ax_yhi):
+        """
+        Create text boxes for x-axis & y-axis limits
+        connect them to the right image so that it extents auto-update
+        """
+        ext = self.image.get_extent()
+        self.image.set_extent(ext)
+        self.textboxes = []
+        for i, ax in enumerate([ax_xlo, ax_xhi, ax_ylo, ax_yhi]):
+            tb = TextBoxFloat(ax, str(ext[i]))
+            tb.on_changed(partial(self.set_side_extent, i))
+            self.textboxes.append(tb)
+
+    def set_side_extent(self, side, val):
+        """Set the cropping extent for a single side `side` to value `val`"""
+        ext = list(self.image.get_extent())
+        ext[side] = val
+        self.image.set_extent(ext)
+
+    def crop(self, extent):
+        """Crop self.image to the given extent"""
+        return
+        x0, x1, y0, y1 = np.array(extent, dtype=int)
+        if x1 < x0:
+            x0, x1 = x1, x0
+        if y1 < y0:
+            y0, y1 = y1, y0
+        self.image.set_data(self.pixels[y0:y1, x0:x1])
+
+        if self.drawon:
+            self.canvas.draw()
+        self.changed()
+
+    def interpolate(self, x, y):
+        raise NotImplemented
