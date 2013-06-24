@@ -62,7 +62,8 @@ class DragableColorLine(Widget):
         ckw = dict(alpha=0.5, radius=10)
         if circle_kw is not None:
             ckw.update(circle_kw)
-        self.line = DeformableLine(select_ax, max_points=2,
+        self.line = DeformableLine(select_ax,
+                                   grows=False, shrinks=False, max_points=2,
                                    line_kw=lkw,
                                    circle_kw=ckw)
         self.pixels = pixels.copy()
@@ -189,7 +190,8 @@ class DeformableLine(AxesWidget):
     circle_kw : dict, optional
         Dictionary to customize Circles
     """
-    def __init__(self, ax, is_closed=False, max_points=None,
+    def __init__(self, ax,
+                 is_closed=False, max_points=None, grows=True, shrinks=True,
                  line_kw=None, circle_kw=None):
         AxesWidget.__init__(self, ax)
         self.visible = True
@@ -208,14 +210,37 @@ class DeformableLine(AxesWidget):
 
         self.circles = []
 
+        self.moving_ci = None
+
         self.is_closed = is_closed
         self.max_points = max_points
 
-        self.moving_ci = None
+        self._lclick_cids = None
+        self.grows = grows
+        self.connect_event('button_press_event', self._left_press),
+        self.connect_event('button_release_event', self._release),
+        self.connect_event('motion_notify_event', self._motion),
 
-        self.connect_event('button_press_event', self._press)
-        self.connect_event('button_release_event', self._release)
-        self.connect_event('motion_notify_event', self._motion)
+        self._rclick_cids = None
+        self._can_shrink = False
+        self.shrinks = shrinks
+
+    @property
+    def shrinks(self):
+        return self._can_shrink
+
+    @shrinks.setter
+    def shrinks(self, shrinks):
+        self._can_shrink = shrinks
+
+        if shrinks and self._rclick_cids is None:
+            self._rclick_cids = [self.connect_event('button_press_event',
+                                                    self._right_press)]
+        elif not shrinks and self._rclick_cids is not None:
+            for cid in self._rclick_cids:
+                self.canvas.mpl_disconnect(cid)
+                self.cids.remove(cid)
+            self._rclick_cids = None
 
     def on_changed(self, func):
         """
@@ -283,6 +308,15 @@ class DeformableLine(AxesWidget):
         self.changed()
         return i
 
+    def remove_point(self, i):
+        self.ax.artists.remove(self.circles[i])
+        self.xs.pop(i)
+        self.ys.pop(i)
+        self.line.set_data(self.xs, self.ys)
+        if self.drawon:
+            self.canvas.draw()
+        self.changed()
+
     def set_visible(self, isvisible):
         self.visible = isvisible
         self.line.set_visible(isvisible)
@@ -295,19 +329,31 @@ class DeformableLine(AxesWidget):
         return self.visible
 
     @if_attentive
-    def _press(self, event):
+    def _left_press(self, event):
+        if event.button != 1:
+            return
         # Get the circle index
-        ci = 0
         for ci, c in enumerate(self.circles):
             if c.contains(event)[0]:
                 break
         else:
-            return
-        if len(self.circles) < self.max_points:
-            ci = self.add_point(event.xdata, event.ydata)
+            if not self.grows:
+                return
+            elif (self.max_points is None or
+                  self.max_points > len(self.circles)):
+                ci = self.add_point(event.xdata, event.ydata)
+            else:
+                return
 
         x0, y0 = self.xs[ci], self.ys[ci]
         self.moving_ci = x0, y0, event.xdata, event.ydata, ci
+
+    def _right_press(self, event):
+        if event.button != 2:
+            return
+        for ci, c in enumerate(self.circles):
+            if c.contains(event)[0]:
+                self.remove_point(ci)
 
     @if_attentive
     def _release(self, event):
@@ -338,6 +384,10 @@ class DeformableLine(AxesWidget):
         if self.drawon:
             self.canvas.draw()
         self.changed()
+
+    @property
+    def vertexes(self):
+        return self.line.get_xydata()
 
 
 class ShutterCrop(AxesWidget):
