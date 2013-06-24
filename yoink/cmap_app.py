@@ -50,7 +50,8 @@ class CmapExtractor(object):
         # add a line to identify manually select the colorbar
         self.cbar_select = DragableColorLine(self.sel_axes['img'],
                                              self.sel_axes['cbar'],
-                                             pixels)
+                                             pixels,
+                                             line_kw={'color': 'k'})
         self.cbar_select.active = False
         self.cbar_select.set_visible(False)
 
