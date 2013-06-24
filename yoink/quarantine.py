@@ -1,3 +1,4 @@
+from __future__ import division, print_function
 from matplotlib.widgets import Widget
 import matplotlib.pyplot as plt
 import numpy as np
