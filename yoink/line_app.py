@@ -1,9 +1,11 @@
 from __future__ import division, print_function
 from collections import OrderedDict
 
-from yoink.widgets import DeformableLine, ShutterCrop, NothingWidget
+from yoink.widgets import (DeformableLine, ShutterCrop, NothingWidget,
+                           CroppedImage)
 
-from matplotlib.widgets import RadioButtons
+import numpy as np
+from matplotlib.widgets import RadioButtons, Button
 import matplotlib.pyplot as plt
 
 
@@ -14,9 +16,16 @@ class LinePicker(object):
 
         self.select_image = self.sel_axes['img'].imshow(pixels)
 
-        self.crop_widget = ShutterCrop(self.sel_axes['img'])
-        self.crop_widget.active = False
-        self.crop_widget.set_visible(True)
+        self.cropper = ShutterCrop(self.sel_axes['img'])
+        self.cropper.active = False
+        self.cropper.set_visible(True)
+
+        self.cropped_img = CroppedImage(self.ann_axes['img'], pixels)
+        self.cropped_img.make_xyextent_textboxes(self.ann_axes['xlo'],
+                                                 self.ann_axes['xhi'],
+                                                 self.ann_axes['ylo'],
+                                                 self.ann_axes['yhi'])
+        self.cropper.on_changed(self.cropped_img.crop)
 
         line_kw = dict(linewidth=0.5, color='k', alpha=0.5)
         circle_kw = dict(radius=15, alpha=0.5)
@@ -25,16 +34,51 @@ class LinePicker(object):
                                        line_kw=line_kw, circle_kw=circle_kw)
         self.seg_line.active = False
         self.seg_line.set_visible(True)
+        self.seg_line_shaddow, = self.cropped_img.ax.plot([], [],
+                                                          marker='o',
+                                                          markersize=15,
+                                                          **line_kw)
+        def set_seg_shaddow():
+            print('seg')
+            self.seg_line_shaddow.set_data(self.seg_line.vertexes.T)
+            self.seg_line_shaddow.figure.canvas.draw()
+
+        self.seg_line.on_changed(set_seg_shaddow)
+
+        line_kw = dict(lw=0)
+        circle_kw = dict(radius=10, color='k')
+        self.point_picker = DeformableLine(self.sel_axes['img'],
+                                           grows=True, shrinks=True,
+                                           line_kw=line_kw,
+                                           circle_kw=circle_kw,
+                                           )
+        self.point_picker.active = False
+        self.point_picker.set_visible(True)
+        self.point_picker_shaddow, = self.cropped_img.ax.plot([], [],
+                                                              marker='o',
+                                                              markersize=10,
+                                                              **line_kw)
+        def set_point_shaddown():
+            print('shad')
+            self.point_picker_shaddow.set_data(self.point_picker.vertexes.T)
+            self.point_picker_shaddow.figure.canvas.draw()
+
+        self.point_picker.on_changed(set_point_shaddown)
 
         self.create_selector_toggle()
+
+        self.dump_button = Button(self.ann_axes['dump'], 'Dump to file')
+        self.dump_func = self.dump_npz
+        self.dump_button.on_clicked(self.dump)
 
         self.path = path
 
     def create_selector_toggle(self):
         self.selector_widgets = OrderedDict()
         self.selector_widgets['Do nothing'] = NothingWidget()
-        self.selector_widgets['Crop'] = self.crop_widget
+        self.selector_widgets['Crop'] = self.cropper
         self.selector_widgets['Segmented Line'] = self.seg_line
+        self.selector_widgets['Manual Points'] = self.point_picker
 
         self.toggle_state('Do nothing')
 
@@ -50,9 +94,7 @@ class LinePicker(object):
             if k == new_state:
                 continue
             self.selector_widgets[k].active = False
-#            self.selector_widgets[k].set_visible(False)
         self.selector_widgets[new_state].active = True
-#        self.selector_widgets[new_state].set_visible(True)
 
     def create_selector_figure(self, gut=0.04, sepx=0.01, wide=0.2, tall=0.3,
                                **ax_kwargs):
@@ -111,3 +153,26 @@ class LinePicker(object):
             axes[name] = ax
 
         return fig, axes
+
+    def get_data(self):
+        data = {}
+        data['x'] = None
+        data['y'] = None
+        raise NotImplemented
+        return data
+
+    def dump_npz(self):
+        data = self.get_data()
+        print('dumping to', self.path)
+        np.savez(self.path, **data)
+        print('dumped')
+
+    def dump_txt(self):
+        data = self.get_data()
+        print('dumping to %s.*.txt' % self.path)
+        for key, val in data:
+            np.savetxt('%s.%s.txt' % (self.path, key), val)
+        print('dumped')
+
+    def dump(self, event):
+        self.dump_func()
