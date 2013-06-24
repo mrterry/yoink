@@ -87,7 +87,7 @@ class LinePicker(object):
         axes = {}
 
         x0 = gut + wide + sepx
-        x1 = 1 - (gut + wide + sepx)
+        x1 = 1 - (gut + sepx)
 
         y0 = gut + tall + sepy
         y1 = 1 - gut
