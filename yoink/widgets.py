@@ -309,7 +309,7 @@ class DeformableLine(AxesWidget):
         return i
 
     def remove_point(self, i):
-        self.ax.artists.remove(self.circles[i])
+        self.ax.artists.remove(self.circles.pop(i))
         self.xs.pop(i)
         self.ys.pop(i)
         self.line.set_data(self.xs, self.ys)
