@@ -34,16 +34,16 @@ class LinePicker(object):
                                        line_kw=line_kw, circle_kw=circle_kw)
         self.seg_line.active = False
         self.seg_line.set_visible(True)
-        self.seg_line_shaddow, = self.cropped_img.ax.plot([], [],
-                                                          marker='o',
-                                                          markersize=15,
-                                                          **line_kw)
-        def set_seg_shaddow():
+        self.seg_line_shadow, = self.cropped_img.ax.plot([], [],
+                                                         marker='o',
+                                                         markersize=15,
+                                                         **line_kw)
+        def set_seg_shadow():
             print('seg')
-            self.seg_line_shaddow.set_data(self.seg_line.vertexes.T)
-            self.seg_line_shaddow.figure.canvas.draw()
+            self.seg_line_shadow.set_data(self.seg_line.vertexes.T)
+            self.seg_line_shadow.figure.canvas.draw()
 
-        self.seg_line.on_changed(set_seg_shaddow)
+        self.seg_line.on_changed(set_seg_shadow)
 
         line_kw = dict(lw=0)
         circle_kw = dict(radius=10, color='k')
@@ -54,16 +54,16 @@ class LinePicker(object):
                                            )
         self.point_picker.active = False
         self.point_picker.set_visible(True)
-        self.point_picker_shaddow, = self.cropped_img.ax.plot([], [],
-                                                              marker='o',
-                                                              markersize=10,
-                                                              **line_kw)
-        def set_point_shaddown():
+        self.point_picker_shadow, = self.cropped_img.ax.plot([], [],
+                                                             marker='o',
+                                                             markersize=10,
+                                                             **line_kw)
+        def set_point_shadow():
             print('shad')
-            self.point_picker_shaddow.set_data(self.point_picker.vertexes.T)
-            self.point_picker_shaddow.figure.canvas.draw()
+            self.point_picker_shadow.set_data(self.point_picker.vertexes.T)
+            self.point_picker_shadow.figure.canvas.draw()
 
-        self.point_picker.on_changed(set_point_shaddown)
+        self.point_picker.on_changed(set_point_shadow)
 
         self.create_selector_toggle()
 
