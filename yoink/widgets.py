@@ -348,6 +348,7 @@ class DeformableLine(AxesWidget):
         x0, y0 = self.xs[ci], self.ys[ci]
         self.moving_ci = x0, y0, event.xdata, event.ydata, ci
 
+    @if_attentive
     def _right_press(self, event):
         if event.button != 2 or event.inaxes is not self.ax:
             return
