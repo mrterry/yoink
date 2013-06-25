@@ -65,6 +65,12 @@ class LinePicker(object):
 
         self.point_picker.on_changed(set_point_shadow)
 
+        # the xlim/ylim may have changed due to adding the lines
+        # set xlim/ylim to the pre-lines-added state
+        extent = self.cropped_img.image.get_extent()
+        self.cropped_img.ax.set_xlim(extent[:2])
+        self.cropped_img.ax.set_ylim(extent[2:])
+
         self.create_selector_toggle()
 
         self.dump_button = Button(self.ann_axes['dump'], 'Dump to file')

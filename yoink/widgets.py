@@ -752,14 +752,9 @@ class CroppedImage(AxesWidget):
 
     def crop(self, extent):
         """Crop self.image to the given extent"""
-        return
         x0, x1, y0, y1 = np.array(extent, dtype=int)
-        if x1 < x0:
-            x0, x1 = x1, x0
-        if y1 < y0:
-            y0, y1 = y1, y0
-        self.image.set_data(self.pixels[y0:y1, x0:x1])
-
+        self.ax.set_xlim(x0, x1)
+        self.ax.set_ylim(y0, y1)
         if self.drawon:
             self.canvas.draw()
         self.changed()
