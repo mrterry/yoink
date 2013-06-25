@@ -2,7 +2,7 @@ from __future__ import division, print_function
 from collections import OrderedDict
 
 from yoink.widgets import (DeformableLine, ShutterCrop, NothingWidget,
-                           CroppedImage)
+                           CroppedImage, ShadowLine)
 
 import numpy as np
 from matplotlib.widgets import RadioButtons, Button
@@ -29,35 +29,33 @@ class LinePicker(object):
 
         line_kw = dict(linewidth=0.5, color='k', alpha=0.5)
         circle_kw = dict(radius=15, alpha=0.5)
-        self.line_picker = DeformableLine(self.sel_axes['img'],
+        self.line_manual = DeformableLine(self.sel_axes['img'],
                                           grows=True, shrinks=True,
                                           line_kw=line_kw, circle_kw=circle_kw)
-        self.line_picker.active = False
-        self.line_picker.set_visible(True)
+        self.line_manual.active = False
+        self.line_manual.set_visible(True)
 
-        self.shadow_line = ShadowLine(self.ann_axes['img'],
-                                      self.line_picker,
+        self.line_shadow = ShadowLine(self.ann_axes['img'],
+                                      self.line_manual,
                                       self.cropper,
                                       marker='o', markersize=15, **line_kw)
-        self.line_picker.on_changed(self.shadow_line.update)
-        self.cropper.on_changed(self.shadow_line.update)
+        self.cropper.on_changed(self.line_shadow.update)
 
         line_kw = dict(lw=0)
         circle_kw = dict(radius=10, color='k')
-        self.point_picker = DeformableLine(self.sel_axes['img'],
-                                           grows=True, shrinks=True,
-                                           line_kw=line_kw,
-                                           circle_kw=circle_kw,
-                                           )
-        self.point_picker.active = False
-        self.point_picker.set_visible(True)
+        self.points_manual = DeformableLine(self.sel_axes['img'],
+                                            grows=True, shrinks=True,
+                                            line_kw=line_kw,
+                                            circle_kw=circle_kw,
+                                            )
+        self.points_manual.active = False
+        self.points_manual.set_visible(True)
         # shadow data plotted in axes coordiates
-        self.shadow_points = ShadowLine(self.ann_axes['img'],
-                                        self.point_picker,
+        self.points_shadow = ShadowLine(self.ann_axes['img'],
+                                        self.points_manual,
                                         self.cropper,
                                         marker='o', markersize=10, **line_kw)
-        self.point_picker.on_changed(self.shadow_points.update)
-        self.cropper.on_changed(self.shadow_points.update)
+        self.cropper.on_changed(self.points_shadow.update)
 
         # the xlim/ylim may have changed due to adding the lines
         # set xlim/ylim to the pre-lines-added state
@@ -81,8 +79,8 @@ class LinePicker(object):
         self.selector_widgets = OrderedDict()
         self.selector_widgets['Do nothing'] = NothingWidget()
         self.selector_widgets['Crop'] = self.cropper
-        self.selector_widgets['Segmented Line'] = self.line_picker
-        self.selector_widgets['Manual Points'] = self.point_picker
+        self.selector_widgets['Segmented Line'] = self.line_manual
+        self.selector_widgets['Manual Points'] = self.points_manual
 
         self.toggle_state('Do nothing')
 

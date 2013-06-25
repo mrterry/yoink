@@ -36,6 +36,7 @@ class ShadowLine(AxesWidget):
         self.orig_line = orig_line
         self.cropper = cropper
         self.line, = ax.plot([], [], transform=self.ax.transAxes, **opts)
+        self.orig_line.on_release(self.update)
 
     def update(self, crop=None):
         x, y = self.orig_line.vertexes.T
@@ -46,7 +47,8 @@ class ShadowLine(AxesWidget):
         b = (y - y0) / (y1 - y0)
 
         self.line.set_data(a, b)
-        self.canvas.draw()
+        if self.drawon:
+            self.canvas.draw()
 
 
 class DragableColorLine(Widget):
