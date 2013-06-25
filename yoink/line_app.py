@@ -29,21 +29,18 @@ class LinePicker(object):
 
         line_kw = dict(linewidth=0.5, color='k', alpha=0.5)
         circle_kw = dict(radius=15, alpha=0.5)
-        self.seg_line = DeformableLine(self.sel_axes['img'],
-                                       grows=True, shrinks=True,
-                                       line_kw=line_kw, circle_kw=circle_kw)
-        self.seg_line.active = False
-        self.seg_line.set_visible(True)
-        self.seg_line_shadow, = self.cropped_img.ax.plot([], [],
-                                                         marker='o',
-                                                         markersize=15,
-                                                         **line_kw)
-        def set_seg_shadow():
-            print('seg')
-            self.seg_line_shadow.set_data(self.seg_line.vertexes.T)
-            self.seg_line_shadow.figure.canvas.draw()
+        self.line_picker = DeformableLine(self.sel_axes['img'],
+                                          grows=True, shrinks=True,
+                                          line_kw=line_kw, circle_kw=circle_kw)
+        self.line_picker.active = False
+        self.line_picker.set_visible(True)
 
-        self.seg_line.on_changed(set_seg_shadow)
+        self.shadow_line = ShadowLine(self.ann_axes['img'],
+                                      self.line_picker,
+                                      self.cropper,
+                                      marker='o', markersize=15, **line_kw)
+        self.line_picker.on_changed(self.shadow_line.update)
+        self.cropper.on_changed(self.shadow_line.update)
 
         line_kw = dict(lw=0)
         circle_kw = dict(radius=10, color='k')
@@ -54,19 +51,20 @@ class LinePicker(object):
                                            )
         self.point_picker.active = False
         self.point_picker.set_visible(True)
-        self.point_picker_shadow, = self.cropped_img.ax.plot([], [],
-                                                             marker='o',
-                                                             markersize=10,
-                                                             **line_kw)
-        def set_point_shadow():
-            print('shad')
-            self.point_picker_shadow.set_data(self.point_picker.vertexes.T)
-            self.point_picker_shadow.figure.canvas.draw()
-
-        self.point_picker.on_changed(set_point_shadow)
+        # shadow data plotted in axes coordiates
+        self.shadow_points = ShadowLine(self.ann_axes['img'],
+                                        self.point_picker,
+                                        self.cropper,
+                                        marker='o', markersize=10, **line_kw)
+        self.point_picker.on_changed(self.shadow_points.update)
+        self.cropper.on_changed(self.shadow_points.update)
 
         # the xlim/ylim may have changed due to adding the lines
         # set xlim/ylim to the pre-lines-added state
+        extent = self.select_image.get_extent()
+        self.select_image.axes.set_xlim(extent[:2])
+        self.select_image.axes.set_ylim(extent[2:])
+
         extent = self.cropped_img.image.get_extent()
         self.cropped_img.ax.set_xlim(extent[:2])
         self.cropped_img.ax.set_ylim(extent[2:])
@@ -83,7 +81,7 @@ class LinePicker(object):
         self.selector_widgets = OrderedDict()
         self.selector_widgets['Do nothing'] = NothingWidget()
         self.selector_widgets['Crop'] = self.cropper
-        self.selector_widgets['Segmented Line'] = self.seg_line
+        self.selector_widgets['Segmented Line'] = self.line_picker
         self.selector_widgets['Manual Points'] = self.point_picker
 
         self.toggle_state('Do nothing')

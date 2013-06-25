@@ -30,6 +30,25 @@ class NothingWidget(object):
         pass
 
 
+class ShadowLine(AxesWidget):
+    def __init__(self, ax, orig_line, cropper, **opts):
+        AxesWidget.__init__(self, ax)
+        self.orig_line = orig_line
+        self.cropper = cropper
+        self.line, = ax.plot([], [], transform=self.ax.transAxes, **opts)
+
+    def update(self, crop=None):
+        x, y = self.orig_line.vertexes.T
+        crop = self.cropper.get_extents()
+
+        x0, x1, y0, y1 = crop
+        a = (x - x0) / (x1 - x0)
+        b = (y - y0) / (y1 - y0)
+
+        self.line.set_data(a, b)
+        self.canvas.draw()
+
+
 class DragableColorLine(Widget):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
@@ -749,12 +768,19 @@ class CroppedImage(AxesWidget):
         ext = list(self.image.get_extent())
         ext[side] = val
         self.image.set_extent(ext)
+        self.ax.set_xlim(ext[:2])
+        self.ax.set_ylim(ext[2:])
 
     def crop(self, extent):
         """Crop self.image to the given extent"""
         x0, x1, y0, y1 = np.array(extent, dtype=int)
-        self.ax.set_xlim(x0, x1)
-        self.ax.set_ylim(y0, y1)
+        if x1 < x0:
+            x0, x1 = x1, x0
+        if y1 < y0:
+            y0, y1 = y1, y0
+        pix = self.pixels[y0:y1, x0:x1]
+
+        self.image.set_data(pix)
         if self.drawon:
             self.canvas.draw()
         self.changed()
