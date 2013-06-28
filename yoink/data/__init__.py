@@ -18,3 +18,8 @@ def test_img():
 
 def square_lena():
     return imread(pjoin(DIR, 'square_lena.png'))
+
+
+def yosemite():
+    return imread(pjoin(DIR, 'yosemite.png'))
+
