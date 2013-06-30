@@ -8,5 +8,9 @@ setup(
     author_email='matt.terry@gmail.com',
     url='https://github.com/mrterry/yoink',
     packages=['yoink'],
+    package_data={'yoink': ['data/*.png']},
+    scripts=['bin/yoink_cmap',
+             'bin/yoink_points',
+             ],
     install_requires=['numpy', 'scipy', 'scikit-image', 'matplotlib >= 1.2'],
 )
