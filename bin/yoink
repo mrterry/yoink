@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+import argparse
+import matplotlib.pyplot as plt
+from yoink.cmap_app import CmapExtractor
+from yoink.line_app import LinePicker
+
+parser = argparse.ArgumentParser(
+    description='Yoink colored data from an image')
+parser.add_argument('image',
+                    help='Image file to yoink data from. jpg, png, gif, etc',
+                    )
+
+parser.add_argument('--output', '-o',
+                    default='data.npz',
+                    help=('Filename for data dumps.  *.npz go to numpy dumps,'
+                          'otherwise dump to text files i.e. output.?.txt'
+                          ),
+                    )
+
+parser.add_argument('--xscale', '-x',
+                    choices=['linear', 'log'],
+                    default='linear',
+                    help='Type of scale for x-axis.  Must be in %(choices)s',
+                    )
+parser.add_argument('--yscale', '-y',
+                    choices=['linear', 'log'],
+                    default='linear',
+                    help='Type of scale for y-axis.  Must be in %(choices)s',
+                    )
+
+image_choices = {'image', 'pcolor', 'cmap'}
+line_choices = {'line'}
+parser.add_argument('--plottype', '-p',
+                    choices=image_choices + line_choices,
+                    default='image',
+                    help='Type of plot to yoink data from')
+
+args = parser.parse_args()
+
+
+if 'log' in (args.xscale, args.yscale):
+    raise NotImplemented('log scaling not implemented yet')
+
+
+pixels = plt.imread(args.image)
+
+if args.plottype in line_choices:
+    extractor = LinePicker(pixels, args.output)
+elif args.plottype in image_choices:
+    extractor = CmapExtractor(pixels, args.output)
+
+plt.show()
