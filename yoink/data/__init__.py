@@ -12,8 +12,8 @@ def rotated_parabola():
     return imread(pjoin(DIR, 'rotated_parabola.png'))
 
 
-def test_img():
-    return imread(pjoin(DIR, 'test_img.png'))
+def test_cmap():
+    return imread(pjoin(DIR, 'test_cmap.png'))
 
 
 def square_lena():
