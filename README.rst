@@ -11,11 +11,11 @@ a colorbar.  In theory all the needed information is there, it is just not
 particularly convenient.
 
 Yoink provides scripts to yoink the data out of rasterized images as well as a
-set of matplotlib-based widgets that assist in doing so.
+set of backend independent matplotlib widgets that assist in doing so.
 
-Yoink does not require exotic dependencies, only `numpy`, `scipy`, and
-`matplotlib`.  (planned) If `scikit-image` is available, yoink can guess the
-cropping and rotation of a figure.
+Yoink does not require exotic dependencies, only `python 2.7`, `numpy`,
+`scipy`, and `matplotlib`.  (planned) If `scikit-image` is available, yoink can
+guess the cropping and rotation of a figure.
 
 The easiest way to use yoink is to use the executables `yoink_cmap` and
 `yoink_points` (planned).
