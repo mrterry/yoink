@@ -56,53 +56,53 @@ class CmapExtractor(object):
         # generate layout of figures and axes
         # there should be two figures: one for (sub)selecting data
         # and another for annotating that data with numbers
-        self.sel_fig, self.sel_axes = self.create_selector_figure()
-        self.ann_fig, self.ann_axes = self.create_annotate_figure()
+        sel_axes = self.create_selector_axes()
+        ann_axes = self.create_annotate_axes()
 
         #
         # Set up the widgets on the selection figure
         #
         # plot source data
-        self.select_image = self.sel_axes['img'].imshow(pixels,
-                                                        interpolation='none',
-                                                        vmin=0,
-                                                        vmax=1)
+        self.select_image = sel_axes['img'].imshow(pixels,
+                                                   interpolation='none',
+                                                   vmin=0,
+                                                   vmax=1)
 
         # add shutters for cropping, initially disabled
-        self.crop_widget = ShutterCrop(self.sel_axes['img'])
+        self.crop_widget = ShutterCrop(sel_axes['img'])
         self.crop_widget.active = False
         self.crop_widget.set_visible(False)
 
         # add a line to identify manually select the colorbar
-        self.cbar_select = DragableColorLine(self.sel_axes['img'],
-                                             self.sel_axes['cbar'],
+        self.cbar_select = DragableColorLine(sel_axes['img'],
+                                             sel_axes['cbar'],
                                              pixels,
                                              line_kw={'color': 'k'})
         self.cbar_select.active = False
         self.cbar_select.set_visible(False)
 
         # Radio buttons to select which Widget is active
-        self.create_selector_toggle()
+        self.create_selector_toggle(sel_axes['select'])
 
         #
         # Now set up widgets on the annotation figure
         #
         # We are converting a multi-color image to a scalar image.
         # Plot that scalar image
-        self.rcol_widget = RecoloredWidget(self.ann_axes['img'], pixels)
+        self.rcol_widget = RecoloredWidget(ann_axes['img'], pixels)
         self.rcol_image = self.rcol_widget.image
         # fill axes with textboxes for typing in the x & y limits
         # these set the scale of x and y
-        self.rcol_widget.make_xyextent_textboxes(self.ann_axes['xlo'],
-                                                 self.ann_axes['xhi'],
-                                                 self.ann_axes['ylo'],
-                                                 self.ann_axes['yhi'])
+        self.rcol_widget.make_xyextent_textboxes(ann_axes['xlo'],
+                                                 ann_axes['xhi'],
+                                                 ann_axes['ylo'],
+                                                 ann_axes['yhi'])
 
         # Crop the re-colored image when the cropping shutters move
         self.crop_widget.on_changed(self.rcol_widget.crop)
 
         # Draw a colorbar for the re-colored image, and set the initial cmap
-        self.cbar_widget = ScaledColorbar(self.ann_axes['cbar'],
+        self.cbar_widget = ScaledColorbar(ann_axes['cbar'],
                                           self.rcol_widget.image)
         self.rcol_widget.digitize(self.cbar_select.l, self.cbar_select.rgb)
 
@@ -110,18 +110,19 @@ class CmapExtractor(object):
         # re-digitizing is expensive, so only do it when you release the mouse
         self.cbar_select.on_release(self.rcol_widget.digitize)
 
-        self.create_cbar_textboxes()  # colorbar text boxes
+        # colorbar text boxes
+        self.create_cbar_textboxes(ann_axes['cbar_lo'], ann_axes['cbar_hi'])
 
         # Add a button to dump the data to a file
-        self.dump_button = Button(self.ann_axes['dump'], 'Dump to file')
+        self.dump_button = Button(ann_axes['dump'], 'Dump to file')
         self.dump_func = self.dump_npz
         self.dump_button.on_clicked(self.dump)
 
-    def create_cbar_textboxes(self):
+    def create_cbar_textboxes(self, lo_ax, hi_ax):
         """Create textbox widgets to manually specifying the range of z"""
         self.textboxes = {}
-        clo = TextBoxFloat(self.ann_axes['cbar_lo'], '0')
-        chi = TextBoxFloat(self.ann_axes['cbar_hi'], '1')
+        clo = TextBoxFloat(lo_ax, '0')
+        chi = TextBoxFloat(hi_ax, '1')
         # If the textbox changes, propagate those changes to the colorbar ticks
         clo.on_changed(self.cbar_widget.set_min)
         chi.on_changed(self.cbar_widget.set_max)
@@ -139,7 +140,7 @@ class CmapExtractor(object):
         self.selector_widgets[new_state].active = True
         self.selector_widgets[new_state].set_visible(True)
 
-    def create_selector_toggle(self):
+    def create_selector_toggle(self, select_ax):
         self.selector_widgets = OrderedDict()
         self.selector_widgets['Do nothing'] = NothingWidget()
         self.selector_widgets['Select Colorbar'] = self.cbar_select
@@ -147,7 +148,7 @@ class CmapExtractor(object):
 
         self.toggle_state('Do nothing')
 
-        self.select_radio = RadioButtons(self.sel_axes['select'],
+        self.select_radio = RadioButtons(select_ax,
                                          labels=self.selector_widgets.keys(),
                                          active=0)
         self.select_radio.on_clicked(self.toggle_state)
@@ -194,8 +195,8 @@ class CmapExtractor(object):
         data['rgb'] = self.cbar_select.rgb
         return data
 
-    def create_selector_figure(self, gut=0.04, sepx=0.01, wide=0.2, tall=0.3,
-                               dx_cbar=0.05, **ax_kwargs):
+    def create_selector_axes(self, gut=0.04, sepx=0.01, wide=0.2, tall=0.3,
+                             dx_cbar=0.05, **ax_kwargs):
         fig = plt.figure()
         axes = {}
 
@@ -226,11 +227,11 @@ class CmapExtractor(object):
         select.xaxis.set_visible(False)
         axes['select'] = select
 
-        return fig, axes
+        return axes
 
-    def create_annotate_figure(self, gut=0.04, sepx=0.05, sepy=0.04,
-                               wide=0.09, tall=0.06, dx_cbar=0.05,
-                               **ax_kwargs):
+    def create_annotate_axes(self, gut=0.04, sepx=0.05, sepy=0.04,
+                             wide=0.09, tall=0.06, dx_cbar=0.05,
+                             **ax_kwargs):
         fig = plt.figure()
         axes = {}
 
@@ -260,4 +261,4 @@ class CmapExtractor(object):
             ax.xaxis.set_visible(False)
             axes[name] = ax
 
-        return fig, axes
+        return axes
