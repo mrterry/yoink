@@ -56,13 +56,26 @@ class DragableColorLine(Widget):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
 
+    Parameters
+    ----------
+    select_ax : axes
+        Axes to draw the selector line on
+    cbar_ax : axes
+        Axes to draw the colorbar into
+    pixels : array-like (3d)
+        ndarray to pick colors from
+    line_kw : dict, optional
+        keyword args to pass to Line2D
+    circle_kw : dict, optional
+        keyword args to pass to Circle
+
     Attributes
     ----------
     select_ax : axes
         Axes to draw the selector line on
     cbar_ax : axes
         Axes to draw the colorbar into
-    pixes : array-like (3d)
+    pixels : array-like (3d)
         Pixels values
     line : DeformableLine
         Segmented line
@@ -206,22 +219,37 @@ class DeformableLine(AxesWidget):
     """
     Segemented line with movable vertexes
 
+    Parameters
+    ----------
+    ax : axes
+        Axes to draw the line on
+    is_closed : bool, optional default=False
+        Do the line endpoints connect?
+    max_points : int, optional default=None
+        Maximum number of points allowed in line
+    grows : bool, optional
+        May the line add segments
+    shrinks : bool, optional
+        May the line shed segments
+    line_kw : dict, optional
+        Dictionary to customize Line2D
+    circle_kw : dict, optional
+        Dictionary to customize Circles
+
     Attributes
     ----------
     ax : axes
         Axes to draw the line on
     is_closed : bool, optional default=False
         Do the line endpoints connect?
-    max_points : bool, optional default=None
+    max_points : int | None
         Maximum number of points allowed in line
-    line_kw : dict, optional
-        Dictionary to customize Line2D
-    circle_kw : dict, optional
-        Dictionary to customize Circles
     grows : bool
         May the line add segments
     shrinks : bool
         May the line shed segments
+    circle_kw : dict
+        Dictionary to customize Circles
     """
     def __init__(self, ax,
                  is_closed=False, max_points=None, grows=True, shrinks=True,
@@ -236,8 +264,7 @@ class DeformableLine(AxesWidget):
         self.xs = []
         self.ys = []
         kw = line_kw if line_kw is not None else {}
-        self.line = Line2D(self.xs, self.ys, **kw)
-        self.ax.add_artist(self.line)
+        self.line, = self.ax.plot(self.xs, self.ys, **kw)
 
         self.circle_kw = circle_kw if circle_kw is not None else {}
 
@@ -250,13 +277,15 @@ class DeformableLine(AxesWidget):
 
         self._lclick_cids = None
         self.grows = grows
+
+        self._can_shrink = False
+        self.shrinks = shrinks
+
         self.connect_event('button_press_event', self._left_press),
         self.connect_event('button_release_event', self._release),
         self.connect_event('motion_notify_event', self._motion),
 
         self._rclick_cids = None
-        self._can_shrink = False
-        self.shrinks = shrinks
 
     @property
     def shrinks(self):
@@ -428,6 +457,20 @@ class ShutterCrop(AxesWidget):
     """
     Crop an image by dragging transparent panes over excluded region.
 
+    Parameters
+    ----------
+    dx_frac : float, optional, default=0.05
+        Initial fraction of view that is cropped on each side
+
+    **rect_kw : optional
+        Keyword args to customize the shutter `Rectangle`s
+
+    By default, shutters have:
+        facecolor='gray',
+        edgecolor='none',
+        alpha=0.5,
+        picker=5
+
     Attributes
     ----------
     ax : axes
@@ -436,19 +479,6 @@ class ShutterCrop(AxesWidget):
         Dictionary of Rectangles
     """
     def __init__(self, ax, dx_frac=0.05, **rect_kw):
-        """
-        dx_frac : float
-        Initial fraction of view that is cropped on each side
-
-        **rect_kw : optional
-            Keyword args to customize the shutter `Rectangle`s
-
-        By default, shutters have:
-            facecolor='gray',
-            edgecolor='none',
-            alpha=0.5,
-            picker=5
-        """
         self.rects = {}  # AxesWidget sets active=True, so rects needs to exist
         AxesWidget.__init__(self, ax)
         self.visible = True
@@ -594,6 +624,13 @@ class RecoloredWidget(AxesWidget):
     Widget that recolors a multichannel image using a given a scale sequence
     and associated colors.
 
+    Parameters
+    ----------
+    ax : axes
+        Axes to draw the widget
+    pixels : 3d array
+        Source pixels to recolor
+
     Attributes
     ----------
     ax : axes
@@ -701,6 +738,13 @@ class ScaledColorbar(AxesWidget):
     """
     Colorbar with manually specified extrema
 
+    Parameters
+    ----------
+    ax : axes
+        parent axes
+    im : ScalarMappable
+        ScalarMappable to draw a colorbar for
+
     Attributes
     ----------
     cbar : matplotlib Colorbar
@@ -729,6 +773,13 @@ class OffsetFormatter(ScalarFormatter):
     child of matplotlib.ScalarFormatter to make it easy to set the numerical
     limits of the colorbar
 
+    Parameters
+    ----------
+    *args : optional
+        positional arguments to forward to ScalarFormatter
+    *kwargs : optional
+        keyword arguments to forward to ScalarFormatter
+
     Attributes
     ----------
     mn : number
@@ -751,6 +802,13 @@ class CroppedImage(AxesWidget):
     """
     Widget that recolors a multichannel image using a given a scale sequence
     and associated colors.
+
+    Parameters
+    ----------
+    ax : axes
+        Axes to draw the widget
+    pixels : 3d array
+        Source pixels to recolor
 
     Attributes
     ----------
@@ -832,6 +890,3 @@ class CroppedImage(AxesWidget):
         if self.drawon:
             self.canvas.draw()
         self.changed()
-
-    def interpolate(self, x, y):
-        raise NotImplemented

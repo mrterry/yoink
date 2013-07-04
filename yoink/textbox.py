@@ -1,48 +1,53 @@
+"""TextBox widget.  This is inteded for inclusion in matplotlib, but copied
+here until that day arrives."""
 from matplotlib.widgets import AxesWidget
 
 
 class TextBox(AxesWidget):
-    def __init__(self, ax, s='', allowed_chars=None, type=str,
-                 enter_callback=None, **text_kwargs):
-        """
-        Editable text box
+    """Editable text box
 
-        Creates a mouse-click callback such that clicking on the text box will
-        activate the cursor.
+    Creates a mouse-click callback such that clicking on the text box will
+    activate the cursor.
 
-        *WARNING* Activating a textbox will remove all other key-press
-        bindings! They'll be stored in TextBox.old_callbacks and restored
-        when TextBox.end_text_entry() is called.
+    *WARNING* Activating a textbox will remove all other key-press
+    bindings! They'll be stored in TextBox.old_callbacks and restored
+    when TextBox.end_text_entry() is called.
 
-        The default widget assumes only numerical data and will not
-        allow text entry besides numerical characters and ('e','-','.')
+    The default widget assumes only numerical data and will not
+    allow text entry besides numerical characters and ('e','-','.')
 
-        Parameters
-        ----------
-        *ax* : :class:`matplotlib.axes.Axes`
-            The parent axes for the widget
+    Use :meth:`on_changed` to connect to TextBox updates
 
-        *s* : str
-            The initial text of the TextBox.
+    Parameters
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The parent axes for the widget
+    s : str
+        The initial text of the TextBox.
+    allowed_chars : sequence, optional
+        sequence of characters that are valid TextBox text
+        Defaults to None, which accepts anything.
+    type : type, optional, default=str
+        Construct self.value using this type.  self.value is only updated
+        if self.type(<text>) succeeds.
+    **text_kwargs : dict
+        Additional keyword arguments are passed on to self.ax.text()
 
-        *allowed_chars* : seq
-            TextBox will only respond if event.key in allowed_chars.  Defaults
-            to None, which accepts anything.
-
-        *type* : type
-            Construct self.value using this type.  self.value is only updated
-            if self.type(<text>) succeeds.
-
-        *enter_callback* : function
-            A function of one argument that will be called with
-            TextBox.value passed in as the only argument when enter is
-            pressed
-
-        *text_kwargs* :
-            Additional keywork arguments are passed on to self.ax.text()
-
-        Call :meth:`on_onchanged` to connect to TextBox updates
-        """
+    Attributes
+    ----------
+    ax : :class:`matplotlib.axes.Axes`
+        The parent axes for the widget
+    type : callable
+        callable that is used to set self.value
+    allowed_chars
+        TextBox will only respond if event.key in allowed_chars.  Defaults
+        to None, which accepts anything.
+    value : value
+        Current value of the textbox.
+    text : Text artist
+        The Text artist that TextBox modifies
+    """
+    def __init__(self, ax, s='', allowed_chars=None, type=str, **text_kwargs):
         AxesWidget.__init__(self, ax)
         self.ax.set_navigate(False)
         self.ax.set_yticks([])
@@ -126,9 +131,7 @@ class TextBox(AxesWidget):
             self.canvas.draw()
 
     def keypress(self, event):
-        """
-        Parse a keypress - only allow #'s!
-        """
+        """Parse a keypress and update the value if possible"""
         if self.ignore(event) or not self.eventson:
             return
 
@@ -172,6 +175,7 @@ class TextBox(AxesWidget):
             self.canvas.draw()
 
     def set_text(self, text):
+        """Set the text"""
         success = False
         try:
             # only try to update if there's a real value
@@ -215,6 +219,7 @@ class TextBox(AxesWidget):
 
 
 class TextBoxFloat(TextBox):
+    """TextBox for floating point numbers"""
     def __init__(self, *args, **kwargs):
         kwargs['allowed_chars'] = '0123456789.eE-+'
         kwargs['type'] = float

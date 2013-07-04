@@ -11,36 +11,27 @@ import matplotlib.pyplot as plt
 
 class LinePicker(object):
     """
+    Parameters
+    ----------
+    pixels
+    path
+
     Attributes
     ----------
     sel_fig
-
     sel_axes
-
     ann_fig
-
     ann_axes
-
     select_image
-
     cropper
-
     cropped_img
-
     line_manual
-
     line_shadow
-
     points_manual
-
     points_shadow
-
     select_iamge
-
     dump_button
-
     dump_func
-
     path
 
     """
