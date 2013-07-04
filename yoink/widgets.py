@@ -278,14 +278,13 @@ class DeformableLine(AxesWidget):
         self._lclick_cids = None
         self.grows = grows
 
+        self._rclick_cids = None
         self._can_shrink = False
         self.shrinks = shrinks
 
         self.connect_event('button_press_event', self._left_press),
         self.connect_event('button_release_event', self._release),
         self.connect_event('motion_notify_event', self._motion),
-
-        self._rclick_cids = None
 
     @property
     def shrinks(self):
