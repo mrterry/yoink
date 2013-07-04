@@ -1,10 +1,9 @@
+"""Backend independent widgets."""
 from __future__ import division, print_function
-
 from functools import wraps, partial
 
 import numpy as np
 from matplotlib.patches import Circle, Rectangle
-from matplotlib.lines import Line2D
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.widgets import Widget, AxesWidget
 from matplotlib.colorbar import colorbar_factory
@@ -31,6 +30,8 @@ class NothingWidget(object):
 
 
 class ShadowLine(AxesWidget):
+    """
+    """
     def __init__(self, ax, orig_line, cropper, **opts):
         AxesWidget.__init__(self, ax)
         self.orig_line = orig_line
@@ -55,15 +56,18 @@ class DragableColorLine(Widget):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
 
-    Parameters
+    Attributes
     ----------
-
     select_ax : axes
         Axes to draw the selector line on
     cbar_ax : axes
         Axes to draw the colorbar into
     pixes : array-like (3d)
         Pixels values
+    line : DeformableLine
+        Segmented line
+    pixels :  ndarray
+        pixels pull colors from
     """
     def __init__(self, select_ax, cbar_ax, pixels,
                  line_kw=None, circle_kw=None):
@@ -149,6 +153,7 @@ class DragableColorLine(Widget):
             func(self.l, self.rgb)
 
     def _fill_cbar_ax(self):
+        """Put a colorbar-like image in the axes"""
         x = np.linspace(0, 1, 50).reshape((50, 1))
         ax = self.cbar_ax
 
@@ -165,6 +170,7 @@ class DragableColorLine(Widget):
         self.update()
 
     def update(self):
+        """update the properties of the line, redraw, and trigger observers"""
         if len(self.line.circles) != 2:
             return
         x0, y0 = self.line.circles[0].center
@@ -179,13 +185,16 @@ class DragableColorLine(Widget):
 
     @property
     def active(self):
+        """Return whether the widget is active"""
         return self._active
 
     @active.setter
     def active(self, active):
+        """Set whether the widget is active"""
         self._active = self.line.active = active
 
     def set_visible(self, isvisible):
+        """Set whether the widget is visible"""
         self.visible = isvisible
         self.line.set_visible(isvisible)
         if self.drawon:
@@ -197,9 +206,8 @@ class DeformableLine(AxesWidget):
     """
     Segemented line with movable vertexes
 
-    Parameters
+    Attributes
     ----------
-
     ax : axes
         Axes to draw the line on
     is_closed : bool, optional default=False
@@ -210,6 +218,10 @@ class DeformableLine(AxesWidget):
         Dictionary to customize Line2D
     circle_kw : dict, optional
         Dictionary to customize Circles
+    grows : bool
+        May the line add segments
+    shrinks : bool
+        May the line shed segments
     """
     def __init__(self, ax,
                  is_closed=False, max_points=None, grows=True, shrinks=True,
@@ -416,22 +428,27 @@ class ShutterCrop(AxesWidget):
     """
     Crop an image by dragging transparent panes over excluded region.
 
-    Parameters
+    Attributes
     ----------
     ax : axes
         Axes to draw the shutters on
-    dx_frac : float, optional, default=0.05
-        Initial fraction of view that is cropped on each side
-    **rect_kw : optional
-        Keyword args to customize the shutter `Rectangle`s
-
-    By default, shutters have:
-        facecolor='gray',
-        edgecolor='none',
-        alpha=0.5,
-        picker=5
+    rects : dict
+        Dictionary of Rectangles
     """
     def __init__(self, ax, dx_frac=0.05, **rect_kw):
+        """
+        dx_frac : float
+        Initial fraction of view that is cropped on each side
+
+        **rect_kw : optional
+            Keyword args to customize the shutter `Rectangle`s
+
+        By default, shutters have:
+            facecolor='gray',
+            edgecolor='none',
+            alpha=0.5,
+            picker=5
+        """
         self.rects = {}  # AxesWidget sets active=True, so rects needs to exist
         AxesWidget.__init__(self, ax)
         self.visible = True
@@ -496,6 +513,7 @@ class ShutterCrop(AxesWidget):
             self.ax.add_artist(r)
 
     def set_visible(self, isvisible):
+        """Make the widget (in)visible"""
         self.visible = isvisible
         for r in self.rects.values():
             r.set_visible(isvisible)
@@ -503,6 +521,7 @@ class ShutterCrop(AxesWidget):
             self.canvas.draw()
 
     def get_visible(self):
+        """Return whether the widget is visible"""
         return self.visible
 
     def get_extents(self):
@@ -533,10 +552,12 @@ class ShutterCrop(AxesWidget):
 
     @if_attentive
     def _release(self, event):
+        """Callback for to stop monitoring a picked artist"""
         self.active_pick = None
 
     @if_attentive
     def _motion(self, event):
+        """Callback to move a picked artist"""
         if self.active_pick is None:
             return
         if event.inaxes is not self.ax:
@@ -573,12 +594,13 @@ class RecoloredWidget(AxesWidget):
     Widget that recolors a multichannel image using a given a scale sequence
     and associated colors.
 
-    Paramters
-    ---------
+    Attributes
+    ----------
     ax : axes
         Axes to draw the widget
     pixels : 3d array
         Source pixels to recolor
+    image : matplotlib.Image
     """
     # TODO what to do for colors "far" from scale
     def __init__(self, ax, pixels):
@@ -669,12 +691,23 @@ class RecoloredWidget(AxesWidget):
 
 
 def make_cmap(l, rgb):
+    """Make a colormap from the sequence of distances & colors"""
     seq = [(x, col) for x, col in zip(l, rgb)]
     cmap = LinearSegmentedColormap.from_list(None, seq)
     return cmap
 
 
 class ScaledColorbar(AxesWidget):
+    """
+    Colorbar with manually specified extrema
+
+    Attributes
+    ----------
+    cbar : matplotlib Colorbar
+        colorbar
+    fmt : matplotlib formatter
+        colorbar text formatter
+    """
     def __init__(self, ax, im):
         AxesWidget.__init__(self, ax)
 
@@ -692,6 +725,17 @@ class ScaledColorbar(AxesWidget):
 
 
 class OffsetFormatter(ScalarFormatter):
+    """
+    child of matplotlib.ScalarFormatter to make it easy to set the numerical
+    limits of the colorbar
+
+    Attributes
+    ----------
+    mn : number
+        scale minimum
+    mx : number
+        scale maximum
+    """
     def __init__(self, *args, **kwargs):
         ScalarFormatter.__init__(self, *args, **kwargs)
         self.mn = 0.
@@ -708,12 +752,14 @@ class CroppedImage(AxesWidget):
     Widget that recolors a multichannel image using a given a scale sequence
     and associated colors.
 
-    Paramters
-    ---------
+    Attributes
+    ----------
     ax : axes
         Axes to draw the widget
     pixels : 3d array
         Source pixels to recolor
+    image : matplotlib image
+        The image displayed on the axes
     """
     # TODO what to do for colors "far" from scale
     def __init__(self, ax, pixels):

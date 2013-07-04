@@ -1,3 +1,4 @@
+"""Find the pixels between two endpoints"""
 from __future__ import division, print_function
 from math import floor
 
@@ -108,9 +109,14 @@ def naive_colormaping(x0, y0, x1, y1, im, order=1):
     """
     Get lineout from x0/y0 to x1/y1 with points takein from naive_trace ray
     tracing algorithm.
-    Returns:
-        l: ndarray, shape=(N,) - normalized location of colors
-        rgb ndarray, shape=(N,3) - sequence of colors at each point in l
+
+    Returns
+    -------
+
+    l : ndarray, shape=(N,)
+        normalized location of colors
+    rgb : ndarray, shape=(N,3)
+        sequence of colors at each point in l
     """
     stuff = naive_trace(x0, y0, x1, y1)
     jj, x, jj, y = zip(*stuff)
@@ -127,9 +133,14 @@ def naive_colormaping(x0, y0, x1, y1, im, order=1):
 def equispaced_colormaping(x0, y0, x1, y1, im, N=256, order=1):
     """
     Get lineout from x0/y0 to x1/y1 with equally spaced points.
-    Returns:
-        l: ndarray, shape=(N,) - normalized location of colors
-        rgb ndarray, shape=(N,3) - sequence of colors at each point in l
+
+    Returns
+    -------
+
+    l : ndarray, shape=(N,)
+        normalized location of colors
+    rgb : ndarray, shape=(N,3)
+        sequence of colors at each point in l
     """
     y2 = np.linspace(y0, y1, N)
     x2 = np.linspace(x0, x1, N)
@@ -145,9 +156,15 @@ def bresenham_colormapping(x0, y0, x1, y1, im):
     start pixel, then projected to the line between start and end.
 
     Takes the image array
-    Returns:
-        l: ndarray, shape=(N,) - normalized location of colors
-        rgb ndarray, shape=(N,3) - sequence of colors at each point in l
+
+    Returns
+    -------
+
+    l : ndarray, shape=(N,)
+        normalized location of colors
+    rgb : ndarray, shape=(N,3)
+        sequence of colors at each point in l
+
     """
     x_y = bresenham_trace(x0, y0, x1, y1)
     jj, ii = zip(*x_y)

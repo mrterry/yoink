@@ -10,6 +10,40 @@ import matplotlib.pyplot as plt
 
 
 class LinePicker(object):
+    """
+    Attributes
+    ----------
+    sel_fig
+
+    sel_axes
+
+    ann_fig
+
+    ann_axes
+
+    select_image
+
+    cropper
+
+    cropped_img
+
+    line_manual
+
+    line_shadow
+
+    points_manual
+
+    points_shadow
+
+    select_iamge
+
+    dump_button
+
+    dump_func
+
+    path
+
+    """
     def __init__(self, pixels, path):
         self.sel_fig, self.sel_axes = self.create_selector_figure()
         self.ann_fig, self.ann_axes = self.create_annotate_figure()

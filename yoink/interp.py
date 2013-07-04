@@ -1,4 +1,7 @@
+"""Functions for interpreting data in different contexts.  So, inverting a
+colormap, interpolating points from pixel to data coordinates, and such."""
 from __future__ import division, print_function
+
 import numpy as np
 from scipy.spatial import cKDTree
 
@@ -50,14 +53,19 @@ def get_corner_grid(corners, ni, nj):
 
     Parameters
     ----------
-    corners : list  - of x,y coordinates
-    ni : int - number of points in first index
-    nj : int - number of points in second index
+    corners : list
+        list of x,y coordinates
+    ni : int
+        number of points in first index
+    nj : int
+        number of points in second index
 
     Returns
     -------
-    x : ndarray, shpae=(ni, nj) - grid of first dimension coordinates
-    y : ndarray, shpae=(ni, nj) - grid of second dimension coordinates
+    x : ndarray, shpae=(ni, nj)
+        grid of first dimension coordinates
+    y : ndarray, shpae=(ni, nj)
+        grid of second dimension coordinates
     """
     bl, br, tr, tl = order_corners(corners)
     x = np.zeros((ni, nj))

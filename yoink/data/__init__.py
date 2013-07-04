@@ -1,3 +1,4 @@
+"""Conveniently pre-packaged images for testing."""
 from os.path import dirname, abspath, join as pjoin
 from matplotlib.image import imread
 
@@ -22,4 +23,3 @@ def square_lena():
 
 def yosemite():
     return imread(pjoin(DIR, 'yosemite.png'))
-

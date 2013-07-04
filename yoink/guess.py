@@ -1,7 +1,9 @@
+"""Functions that try to infer the placement of key things (plot border, axes
+rotation, lines on a plot, etc) in a rasterized image."""
 from __future__ import division, print_function
+
 import numpy as np
 from scipy import ndimage
-
 from skimage import img_as_uint
 from skimage.measure import approximate_polygon
 from skimage.feature import corner_harris

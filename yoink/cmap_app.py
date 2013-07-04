@@ -16,14 +16,45 @@ class CmapExtractor(object):
     "colormapped") image.
     Generates two figures: a selector figures and an annotation figure.
 
-    Parameters
+    Attributes
     ----------
 
-    pixels: array-like
+    pixels : array-like
         The pixels for the image to extract data from
 
-    path: str
+    path : str
         The filename to save data.
+
+    select_image : matplotlib.image.AxesImage
+        The image used to select data from
+
+    crop_widget : ShutterCrop widget
+        widget applied to select figure, used to set cropping for annotate fig
+
+    cbar_select : DragableColorLine widget
+        widget used for selecting the colorbar on the select figure
+
+    rcol_widget : RecoloredWidget
+        widget for drawing the original image, but cropped and with colorbar
+        applied to it
+
+    cbar_widget : ScaledColorbar widget
+        colorbar widget with manually specified limits
+
+    dump_button : matplotlib.widgets.Button
+        button widget use to trigger a dump
+
+    dump_func : function
+        function called when dump button is pressed
+
+    textboxes : dict
+        dictionary of TexBoxFloats uses to set limits on x-axis and y-axis
+
+    selector_widgets : dict
+        Dictionary of toggle-able widgets
+
+    select_radio : matplotlib.widgets.Radio
+        radio widget use to toggle active widgets
     """
     def __init__(self, pixels, path):
         self.path = path
