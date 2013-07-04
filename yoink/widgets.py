@@ -138,7 +138,7 @@ class DragableColorLine(Widget):
 
     def released(self):
         """call the release_observers"""
-        for func in self.release_observers.itervalues():
+        for func in self.release_observers.values():
             func(self.l, self.rgb)
 
     def on_changed(self, func):
@@ -162,7 +162,7 @@ class DragableColorLine(Widget):
 
     def changed(self):
         """Call the observers"""
-        for func in self.observers.itervalues():
+        for func in self.observers.values():
             func(self.l, self.rgb)
 
     def _fill_cbar_ax(self):
@@ -324,7 +324,7 @@ class DeformableLine(AxesWidget):
 
     def changed(self):
         """Call the observers"""
-        for func in self.observers.itervalues():
+        for func in self.observers.values():
             func()
 
     def on_release(self, func):
@@ -347,7 +347,7 @@ class DeformableLine(AxesWidget):
 
     def released(self):
         """Call the release_observers"""
-        for func in self.release_observers.itervalues():
+        for func in self.release_observers.values():
             func()
 
     def add_point(self, x, y):
@@ -522,7 +522,7 @@ class ShutterCrop(AxesWidget):
     def changed(self):
         """Call the observers"""
         extent = self.get_extents()  # data (pixel) coordinates
-        for func in self.observers.itervalues():
+        for func in self.observers.values():
             func(extent)
 
     def _make_rects(self, dx_frac, kw):
@@ -539,7 +539,7 @@ class ShutterCrop(AxesWidget):
         self.rects['east'] = Rectangle((xhi - width, ylo), width, dy, **kw)
         self.rects['west'] = Rectangle((xlo, ylo), width, dy, **kw)
 
-        for k, r in self.rects.iteritems():
+        for k, r in self.rects.items():
             self.ax.add_artist(r)
 
     def set_visible(self, isvisible):
@@ -674,7 +674,7 @@ class RecoloredWidget(AxesWidget):
 
     def changed(self):
         """Call the observers"""
-        for func in self.observers.itervalues():
+        for func in self.observers.values():
             func()
 
     def make_xyextent_textboxes(self, ax_xlo, ax_xhi, ax_ylo, ax_yhi):
@@ -853,7 +853,7 @@ class CroppedImage(AxesWidget):
 
     def changed(self):
         """Call the observers"""
-        for func in self.observers.itervalues():
+        for func in self.observers.values():
             func()
 
     def make_xyextent_textboxes(self, ax_xlo, ax_xhi, ax_ylo, ax_yhi):
