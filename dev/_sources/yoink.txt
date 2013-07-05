@@ -1,0 +1,90 @@
+yoink Package
+=============
+
+:mod:`yoink` Package
+--------------------
+
+.. automodule:: yoink.__init__
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`cmap_app` Module
+----------------------
+
+.. automodule:: yoink.cmap_app
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`guess` Module
+-------------------
+
+.. automodule:: yoink.guess
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`interp` Module
+--------------------
+
+.. automodule:: yoink.interp
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`line_app` Module
+----------------------
+
+.. automodule:: yoink.line_app
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`quarantine` Module
+------------------------
+
+.. automodule:: yoink.quarantine
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`skeletonize` Module
+-------------------------
+
+.. automodule:: yoink.skeletonize
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`textbox` Module
+---------------------
+
+.. automodule:: yoink.textbox
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`trace` Module
+-------------------
+
+.. automodule:: yoink.trace
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`widgets` Module
+---------------------
+
+.. automodule:: yoink.widgets
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    yoink.data
+

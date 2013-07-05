@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yoink.cmap_app &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yoink.cmap_app</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">RadioButtons</span><span class="p">,</span> <span class="n">Button</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">yoink.widgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ShutterCrop</span><span class="p">,</span> <span class="n">DragableColorLine</span><span class="p">,</span> <span class="n">NothingWidget</span><span class="p">,</span>
+                           <span class="n">RecoloredWidget</span><span class="p">,</span> <span class="n">ScaledColorbar</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">yoink.textbox</span> <span class="kn">import</span> <span class="n">TextBoxFloat</span>
+
+
+<div class="viewcode-block" id="CmapExtractor"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor">[docs]</a><span class="k">class</span> <span class="nc">CmapExtractor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run the app for extracting data from a pseudo-color (&quot;false-color&quot;,</span>
+<span class="sd">    &quot;colormapped&quot;) image.</span>
+<span class="sd">    Generates two figures: a selector figures and an annotation figure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pixels : array-like</span>
+<span class="sd">        The pixels for the image to extract data from</span>
+<span class="sd">    path : str</span>
+<span class="sd">        The filename to save data.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pixels : array-like</span>
+<span class="sd">        The pixels for the image to extract data from</span>
+<span class="sd">    path : str</span>
+<span class="sd">        The filename to save data.</span>
+<span class="sd">    select_image : matplotlib.image.AxesImage</span>
+<span class="sd">        The image used to select data from</span>
+<span class="sd">    crop_widget : ShutterCrop widget</span>
+<span class="sd">        widget applied to select figure, used to set cropping for annotate fig</span>
+<span class="sd">    cbar_select : DragableColorLine widget</span>
+<span class="sd">        widget used for selecting the colorbar on the select figure</span>
+<span class="sd">    rcol_widget : RecoloredWidget</span>
+<span class="sd">        widget for drawing the original image, but cropped and with colorbar</span>
+<span class="sd">        applied to it</span>
+<span class="sd">    cbar_widget : ScaledColorbar widget</span>
+<span class="sd">        colorbar widget with manually specified limits</span>
+<span class="sd">    dump_button : matplotlib.widgets.Button</span>
+<span class="sd">        button widget use to trigger a dump</span>
+<span class="sd">    dump_func : function</span>
+<span class="sd">        function called when dump button is pressed</span>
+<span class="sd">    textboxes : dict</span>
+<span class="sd">        dictionary of TexBoxFloats uses to set limits on x-axis and y-axis</span>
+<span class="sd">    selector_widgets : dict</span>
+<span class="sd">        Dictionary of toggle-able widgets</span>
+<span class="sd">    select_radio : matplotlib.widgets.Radio</span>
+<span class="sd">        radio widget use to toggle active widgets</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="c"># generate layout of figures and axes</span>
+        <span class="c"># there should be two figures: one for (sub)selecting data</span>
+        <span class="c"># and another for annotating that data with numbers</span>
+        <span class="n">sel_axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_selector_axes</span><span class="p">()</span>
+        <span class="n">ann_axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_annotate_axes</span><span class="p">()</span>
+
+        <span class="c">#</span>
+        <span class="c"># Set up the widgets on the selection figure</span>
+        <span class="c">#</span>
+        <span class="c"># plot source data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_image</span> <span class="o">=</span> <span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pixels</span><span class="p">,</span>
+                                                   <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span>
+                                                   <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                                   <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c"># add shutters for cropping, initially disabled</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop_widget</span> <span class="o">=</span> <span class="n">ShutterCrop</span><span class="p">(</span><span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop_widget</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop_widget</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="c"># add a line to identify manually select the colorbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span> <span class="o">=</span> <span class="n">DragableColorLine</span><span class="p">(</span><span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">],</span>
+                                             <span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;cbar&#39;</span><span class="p">],</span>
+                                             <span class="n">pixels</span><span class="p">,</span>
+                                             <span class="n">line_kw</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;color&#39;</span><span class="p">:</span> <span class="s">&#39;k&#39;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="c"># Radio buttons to select which Widget is active</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_selector_toggle</span><span class="p">(</span><span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;select&#39;</span><span class="p">])</span>
+
+        <span class="c">#</span>
+        <span class="c"># Now set up widgets on the annotation figure</span>
+        <span class="c">#</span>
+        <span class="c"># We are converting a multi-color image to a scalar image.</span>
+        <span class="c"># Plot that scalar image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span> <span class="o">=</span> <span class="n">RecoloredWidget</span><span class="p">(</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">],</span> <span class="n">pixels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rcol_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">image</span>
+        <span class="c"># fill axes with textboxes for typing in the x &amp; y limits</span>
+        <span class="c"># these set the scale of x and y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">make_xyextent_textboxes</span><span class="p">(</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;xlo&#39;</span><span class="p">],</span>
+                                                 <span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;xhi&#39;</span><span class="p">],</span>
+                                                 <span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;ylo&#39;</span><span class="p">],</span>
+                                                 <span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;yhi&#39;</span><span class="p">])</span>
+
+        <span class="c"># Crop the re-colored image when the cropping shutters move</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop_widget</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">crop</span><span class="p">)</span>
+
+        <span class="c"># Draw a colorbar for the re-colored image, and set the initial cmap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar_widget</span> <span class="o">=</span> <span class="n">ScaledColorbar</span><span class="p">(</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;cbar&#39;</span><span class="p">],</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">rgb</span><span class="p">)</span>
+
+        <span class="c"># Re-draw the colormap when the colorbar-selector moves</span>
+        <span class="c"># re-digitizing is expensive, so only do it when you release the mouse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">on_release</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">digitize</span><span class="p">)</span>
+
+        <span class="c"># colorbar text boxes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_cbar_textboxes</span><span class="p">(</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;cbar_lo&#39;</span><span class="p">],</span> <span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;cbar_hi&#39;</span><span class="p">])</span>
+
+        <span class="c"># Add a button to dump the data to a file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;dump&#39;</span><span class="p">],</span> <span class="s">&#39;Dump to file&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dump_npz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dump</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CmapExtractor.create_cbar_textboxes"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.create_cbar_textboxes">[docs]</a>    <span class="k">def</span> <span class="nf">create_cbar_textboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lo_ax</span><span class="p">,</span> <span class="n">hi_ax</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create textbox widgets to manually specifying the range of z&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textboxes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">clo</span> <span class="o">=</span> <span class="n">TextBoxFloat</span><span class="p">(</span><span class="n">lo_ax</span><span class="p">,</span> <span class="s">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">chi</span> <span class="o">=</span> <span class="n">TextBoxFloat</span><span class="p">(</span><span class="n">hi_ax</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">)</span>
+        <span class="c"># If the textbox changes, propagate those changes to the colorbar ticks</span>
+        <span class="n">clo</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cbar_widget</span><span class="o">.</span><span class="n">set_min</span><span class="p">)</span>
+        <span class="n">chi</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cbar_widget</span><span class="o">.</span><span class="n">set_max</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textboxes</span><span class="p">[</span><span class="s">&#39;cbar_lo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textboxes</span><span class="p">[</span><span class="s">&#39;cbar_hi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chi</span>
+</div>
+<div class="viewcode-block" id="CmapExtractor.toggle_state"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.toggle_state">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change the active selector widget&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">new_state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">new_state</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="n">new_state</span><span class="p">]</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="n">new_state</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CmapExtractor.create_selector_toggle"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.create_selector_toggle">[docs]</a>    <span class="k">def</span> <span class="nf">create_selector_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">select_ax</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Do nothing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">NothingWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Select Colorbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Crop Image&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop_widget</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_state</span><span class="p">(</span><span class="s">&#39;Do nothing&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_radio</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="n">select_ax</span><span class="p">,</span>
+                                         <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                                         <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_radio</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_state</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CmapExtractor.dump_npz"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.dump_npz">[docs]</a>    <span class="k">def</span> <span class="nf">dump_npz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumping to&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumped&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CmapExtractor.dump_txt"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.dump_txt">[docs]</a>    <span class="k">def</span> <span class="nf">dump_txt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumping to </span><span class="si">%s</span><span class="s">.*.txt&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.txt&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">key</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumped&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CmapExtractor.dump"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_func</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CmapExtractor.get_data"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># The rcol_image knows about x, y.  z should go from 0-1</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rcol_image</span><span class="o">.</span><span class="n">_A</span><span class="p">)</span>
+
+        <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rcol_image</span><span class="o">.</span><span class="n">get_extent</span><span class="p">()</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">ni</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">nj</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rcol_image</span><span class="o">.</span><span class="n">origin</span> <span class="o">==</span> <span class="s">&#39;upper&#39;</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+
+        <span class="c"># The colorbar lies about the range of z (by design)</span>
+        <span class="c"># correct z based on what the colorbar says</span>
+        <span class="n">zmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cbar_widget</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">mn</span>
+        <span class="n">zmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cbar_widget</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">mx</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="n">zmax</span> <span class="o">-</span> <span class="n">zmin</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">zmin</span> <span class="o">+</span> <span class="n">dz</span> <span class="o">*</span> <span class="n">z</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;l&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">l</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;rgb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">rgb</span>
+        <span class="k">return</span> <span class="n">data</span>
+</div>
+<div class="viewcode-block" id="CmapExtractor.create_selector_axes"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.create_selector_axes">[docs]</a>    <span class="k">def</span> <span class="nf">create_selector_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gut</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">sepx</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">wide</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">tall</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                             <span class="n">dx_cbar</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">):</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">gut</span> <span class="o">+</span> <span class="n">wide</span> <span class="o">+</span> <span class="n">sepx</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">gut</span> <span class="o">+</span> <span class="n">dx_cbar</span> <span class="o">+</span> <span class="n">sepx</span><span class="p">)</span>
+
+        <span class="n">y0</span> <span class="o">=</span> <span class="n">gut</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">gut</span>
+
+        <span class="n">l</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">l</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">],</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span>
+
+        <span class="n">l</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">sepx</span><span class="p">,</span> <span class="n">y0</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">dx_cbar</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span>
+        <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">l</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">],</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+        <span class="n">cbar</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">cbar</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="s">&#39;cbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cbar</span>
+
+        <span class="n">l</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gut</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">y0</span> <span class="o">+</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span>
+        <span class="n">select</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">l</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">],</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+        <span class="n">select</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">select</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="s">&#39;select&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">select</span>
+
+        <span class="k">return</span> <span class="n">axes</span>
+</div>
+<div class="viewcode-block" id="CmapExtractor.create_annotate_axes"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.create_annotate_axes">[docs]</a>    <span class="k">def</span> <span class="nf">create_annotate_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gut</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">sepx</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">sepy</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span>
+                             <span class="n">wide</span><span class="o">=</span><span class="mf">0.09</span><span class="p">,</span> <span class="n">tall</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span> <span class="n">dx_cbar</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+                             <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">):</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">gut</span> <span class="o">+</span> <span class="n">wide</span> <span class="o">+</span> <span class="n">sepx</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">gut</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="n">dx_cbar</span><span class="p">,</span> <span class="n">wide</span><span class="p">)</span> <span class="o">+</span> <span class="n">sepx</span><span class="p">)</span>
+
+        <span class="n">y0</span> <span class="o">=</span> <span class="n">gut</span> <span class="o">+</span> <span class="n">tall</span> <span class="o">+</span> <span class="n">sepy</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">gut</span>
+
+        <span class="n">l</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span>
+        <span class="n">axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">l</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">],</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+
+        <span class="n">sizes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;cbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="o">+</span><span class="n">sepx</span><span class="p">,</span> <span class="n">gut</span><span class="o">+</span><span class="n">tall</span><span class="o">+</span><span class="n">sepy</span><span class="p">,</span> <span class="n">dx_cbar</span><span class="p">,</span> <span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="o">-</span><span class="n">tall</span><span class="o">-</span><span class="n">sepy</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;cbar_lo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="o">+</span><span class="n">sepx</span><span class="p">,</span> <span class="n">gut</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;cbar_hi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="o">+</span><span class="n">sepx</span><span class="p">,</span> <span class="n">y1</span><span class="o">-</span><span class="n">tall</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;yhi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gut</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">gut</span><span class="o">-</span><span class="n">tall</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;ylo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gut</span><span class="p">,</span> <span class="n">gut</span><span class="o">+</span><span class="n">tall</span><span class="o">+</span><span class="n">sepy</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;xlo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">gut</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;xhi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">wide</span><span class="p">,</span> <span class="n">gut</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;dump&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">wide</span><span class="o">+</span><span class="n">sepx</span><span class="p">,</span> <span class="n">gut</span><span class="p">,</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">sepx</span><span class="o">+</span><span class="n">wide</span><span class="p">),</span> <span class="n">tall</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">lbwh</span> <span class="ow">in</span> <span class="n">sizes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">lbwh</span><span class="p">,</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax</span>
+
+        <span class="k">return</span> <span class="n">axes</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

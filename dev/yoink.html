@@ -1,0 +1,1775 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yoink Package &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">yoink 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="yoink-package">
+<h1>yoink Package<a class="headerlink" href="#yoink-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">yoink</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-yoink.__init__"></span><p>Yoink is a collection of tools for extracting data from rasterized images.</p>
+</div>
+<div class="section" id="module-yoink.cmap_app">
+<span id="cmap-app-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">cmap_app</span></tt> Module<a class="headerlink" href="#module-yoink.cmap_app" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="yoink.cmap_app.CmapExtractor">
+<em class="property">class </em><tt class="descclassname">yoink.cmap_app.</tt><tt class="descname">CmapExtractor</tt><big>(</big><em>pixels</em>, <em>path</em><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Run the app for extracting data from a pseudo-color (&#8220;false-color&#8221;,
+&#8220;colormapped&#8221;) image.
+Generates two figures: a selector figures and an annotation figure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>pixels</strong> : array-like</p>
+<blockquote>
+<div><p>The pixels for the image to extract data from</p>
+</div></blockquote>
+<p><strong>path</strong> : str</p>
+<blockquote class="last">
+<div><p>The filename to save data.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="23%" />
+<col width="63%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>pixels</td>
+<td>array-like</td>
+<td>The pixels for the image to extract data from</td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td>str</td>
+<td>The filename to save data.</td>
+</tr>
+<tr class="row-odd"><td>select_image</td>
+<td>matplotlib.image.AxesImage</td>
+<td>The image used to select data from</td>
+</tr>
+<tr class="row-even"><td>crop_widget</td>
+<td>ShutterCrop widget</td>
+<td>widget applied to select figure, used to set cropping for annotate fig</td>
+</tr>
+<tr class="row-odd"><td>cbar_select</td>
+<td>DragableColorLine widget</td>
+<td>widget used for selecting the colorbar on the select figure</td>
+</tr>
+<tr class="row-even"><td>rcol_widget</td>
+<td>RecoloredWidget</td>
+<td>widget for drawing the original image, but cropped and with colorbar
+applied to it</td>
+</tr>
+<tr class="row-odd"><td>cbar_widget</td>
+<td>ScaledColorbar widget</td>
+<td>colorbar widget with manually specified limits</td>
+</tr>
+<tr class="row-even"><td>dump_button</td>
+<td>matplotlib.widgets.Button</td>
+<td>button widget use to trigger a dump</td>
+</tr>
+<tr class="row-odd"><td>dump_func</td>
+<td>function</td>
+<td>function called when dump button is pressed</td>
+</tr>
+<tr class="row-even"><td>textboxes</td>
+<td>dict</td>
+<td>dictionary of TexBoxFloats uses to set limits on x-axis and y-axis</td>
+</tr>
+<tr class="row-odd"><td>selector_widgets</td>
+<td>dict</td>
+<td>Dictionary of toggle-able widgets</td>
+</tr>
+<tr class="row-even"><td>select_radio</td>
+<td>matplotlib.widgets.Radio</td>
+<td>radio widget use to toggle active widgets</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.create_annotate_axes" title="yoink.cmap_app.CmapExtractor.create_annotate_axes"><tt class="xref py py-obj docutils literal"><span class="pre">create_annotate_axes</span></tt></a>([gut,&nbsp;sepx,&nbsp;sepy,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.create_cbar_textboxes" title="yoink.cmap_app.CmapExtractor.create_cbar_textboxes"><tt class="xref py py-obj docutils literal"><span class="pre">create_cbar_textboxes</span></tt></a>(lo_ax,&nbsp;hi_ax)</td>
+<td>Create textbox widgets to manually specifying the range of z</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.create_selector_axes" title="yoink.cmap_app.CmapExtractor.create_selector_axes"><tt class="xref py py-obj docutils literal"><span class="pre">create_selector_axes</span></tt></a>([gut,&nbsp;sepx,&nbsp;wide,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.create_selector_toggle" title="yoink.cmap_app.CmapExtractor.create_selector_toggle"><tt class="xref py py-obj docutils literal"><span class="pre">create_selector_toggle</span></tt></a>(select_ax)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.dump" title="yoink.cmap_app.CmapExtractor.dump"><tt class="xref py py-obj docutils literal"><span class="pre">dump</span></tt></a>(event)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.dump_npz" title="yoink.cmap_app.CmapExtractor.dump_npz"><tt class="xref py py-obj docutils literal"><span class="pre">dump_npz</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.dump_txt" title="yoink.cmap_app.CmapExtractor.dump_txt"><tt class="xref py py-obj docutils literal"><span class="pre">dump_txt</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.get_data" title="yoink.cmap_app.CmapExtractor.get_data"><tt class="xref py py-obj docutils literal"><span class="pre">get_data</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.cmap_app.CmapExtractor.toggle_state" title="yoink.cmap_app.CmapExtractor.toggle_state"><tt class="xref py py-obj docutils literal"><span class="pre">toggle_state</span></tt></a>(new_state)</td>
+<td>Change the active selector widget</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.create_annotate_axes">
+<tt class="descname">create_annotate_axes</tt><big>(</big><em>gut=0.04</em>, <em>sepx=0.05</em>, <em>sepy=0.04</em>, <em>wide=0.09</em>, <em>tall=0.06</em>, <em>dx_cbar=0.05</em>, <em>**ax_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.create_annotate_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.create_annotate_axes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.create_cbar_textboxes">
+<tt class="descname">create_cbar_textboxes</tt><big>(</big><em>lo_ax</em>, <em>hi_ax</em><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.create_cbar_textboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.create_cbar_textboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create textbox widgets to manually specifying the range of z</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.create_selector_axes">
+<tt class="descname">create_selector_axes</tt><big>(</big><em>gut=0.04</em>, <em>sepx=0.01</em>, <em>wide=0.2</em>, <em>tall=0.3</em>, <em>dx_cbar=0.05</em>, <em>**ax_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.create_selector_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.create_selector_axes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.create_selector_toggle">
+<tt class="descname">create_selector_toggle</tt><big>(</big><em>select_ax</em><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.create_selector_toggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.create_selector_toggle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.dump">
+<tt class="descname">dump</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.dump_npz">
+<tt class="descname">dump_npz</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.dump_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.dump_npz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.dump_txt">
+<tt class="descname">dump_txt</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.dump_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.dump_txt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.get_data">
+<tt class="descname">get_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.get_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.cmap_app.CmapExtractor.toggle_state">
+<tt class="descname">toggle_state</tt><big>(</big><em>new_state</em><big>)</big><a class="reference internal" href="_modules/yoink/cmap_app.html#CmapExtractor.toggle_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.cmap_app.CmapExtractor.toggle_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the active selector widget</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-yoink.guess">
+<span id="guess-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">guess</span></tt> Module<a class="headerlink" href="#module-yoink.guess" title="Permalink to this headline">¶</a></h2>
+<p>Functions that try to infer the placement of key things (plot border, axes
+rotation, lines on a plot, etc) in a rasterized image.</p>
+<dl class="function">
+<dt id="yoink.guess.clear_border">
+<tt class="descclassname">yoink.guess.</tt><tt class="descname">clear_border</tt><big>(</big><em>im</em>, <em>outline</em><big>)</big><a class="reference internal" href="_modules/yoink/guess.html#clear_border"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.guess.clear_border" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yoink.guess.guess_corners">
+<tt class="descclassname">yoink.guess.</tt><tt class="descname">guess_corners</tt><big>(</big><em>bw</em><big>)</big><a class="reference internal" href="_modules/yoink/guess.html#guess_corners"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.guess.guess_corners" title="Permalink to this definition">¶</a></dt>
+<dd><p>Infer the corners of an image using a Sobel filter to find the edges and a
+Harris filter to find the corners.  Takes a single color chanel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>bw</strong> : (m x n) ndarray of ints</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>corners</strong> : pixel coordinates of plot corners, unsorted</p>
+<p class="last"><strong>outline</strong> : (m x n) ndarray of bools True -&gt; plot area</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.guess.mean_rotation">
+<tt class="descclassname">yoink.guess.</tt><tt class="descname">mean_rotation</tt><big>(</big><em>corners</em><big>)</big><a class="reference internal" href="_modules/yoink/guess.html#mean_rotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.guess.mean_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assuming the corners define a rectangle return the angle betwen the
+rectangle and the x axis.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-yoink.interp">
+<span id="interp-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">interp</span></tt> Module<a class="headerlink" href="#module-yoink.interp" title="Permalink to this headline">¶</a></h2>
+<p>Functions for interpreting data in different contexts.  So, inverting a
+colormap, interpolating points from pixel to data coordinates, and such.</p>
+<dl class="function">
+<dt id="yoink.interp.get_corner_grid">
+<tt class="descclassname">yoink.interp.</tt><tt class="descname">get_corner_grid</tt><big>(</big><em>corners</em>, <em>ni</em>, <em>nj</em><big>)</big><a class="reference internal" href="_modules/yoink/interp.html#get_corner_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.interp.get_corner_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get uniform grid between corners</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>corners</strong> : list</p>
+<blockquote>
+<div><p>list of x,y coordinates</p>
+</div></blockquote>
+<p><strong>ni</strong> : int</p>
+<blockquote>
+<div><p>number of points in first index</p>
+</div></blockquote>
+<p><strong>nj</strong> : int</p>
+<blockquote>
+<div><p>number of points in second index</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>x</strong> : ndarray, shpae=(ni, nj)</p>
+<blockquote>
+<div><p>grid of first dimension coordinates</p>
+</div></blockquote>
+<p><strong>y</strong> : ndarray, shpae=(ni, nj)</p>
+<blockquote class="last">
+<div><p>grid of second dimension coordinates</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.interp.invert_cmap">
+<tt class="descclassname">yoink.interp.</tt><tt class="descname">invert_cmap</tt><big>(</big><em>pix</em>, <em>l</em>, <em>colors</em><big>)</big><a class="reference internal" href="_modules/yoink/interp.html#invert_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.interp.invert_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a sequence of pixels, convert each to an equivalent index in the
+color sequence l, colors</p>
+<p>Uses a scipy.spatial.cKDTree to find the color with closest coordinates in
+RGB space.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.interp.order_corners">
+<tt class="descclassname">yoink.interp.</tt><tt class="descname">order_corners</tt><big>(</big><em>corners</em><big>)</big><a class="reference internal" href="_modules/yoink/interp.html#order_corners"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.interp.order_corners" title="Permalink to this definition">¶</a></dt>
+<dd><p>bottom-left, bottom-right, top-right, top-left
+min(x**2+y**2), argmin(y), argmax(x), left</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-yoink.line_app">
+<span id="line-app-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">line_app</span></tt> Module<a class="headerlink" href="#module-yoink.line_app" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="yoink.line_app.LinePicker">
+<em class="property">class </em><tt class="descclassname">yoink.line_app.</tt><tt class="descname">LinePicker</tt><big>(</big><em>pixels</em>, <em>path</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>pixels</strong> :</p>
+<p class="last"><strong>path</strong> :</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="57%" />
+<col width="43%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>sel_fig</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>sel_axes</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>ann_fig</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>ann_axes</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>select_image</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>cropper</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>cropped_img</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>line_manual</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>line_shadow</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>points_manual</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>points_shadow</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>select_iamge</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>dump_button</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>dump_func</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>path</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.line_app.LinePicker.create_annotate_figure" title="yoink.line_app.LinePicker.create_annotate_figure"><tt class="xref py py-obj docutils literal"><span class="pre">create_annotate_figure</span></tt></a>([gut,&nbsp;sepx,&nbsp;sepy,&nbsp;...])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.line_app.LinePicker.create_selector_figure" title="yoink.line_app.LinePicker.create_selector_figure"><tt class="xref py py-obj docutils literal"><span class="pre">create_selector_figure</span></tt></a>([gut,&nbsp;sepx,&nbsp;wide,&nbsp;tall])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.line_app.LinePicker.create_selector_toggle" title="yoink.line_app.LinePicker.create_selector_toggle"><tt class="xref py py-obj docutils literal"><span class="pre">create_selector_toggle</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.line_app.LinePicker.dump" title="yoink.line_app.LinePicker.dump"><tt class="xref py py-obj docutils literal"><span class="pre">dump</span></tt></a>(event)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.line_app.LinePicker.dump_npz" title="yoink.line_app.LinePicker.dump_npz"><tt class="xref py py-obj docutils literal"><span class="pre">dump_npz</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.line_app.LinePicker.dump_txt" title="yoink.line_app.LinePicker.dump_txt"><tt class="xref py py-obj docutils literal"><span class="pre">dump_txt</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.line_app.LinePicker.get_data" title="yoink.line_app.LinePicker.get_data"><tt class="xref py py-obj docutils literal"><span class="pre">get_data</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.line_app.LinePicker.toggle_state" title="yoink.line_app.LinePicker.toggle_state"><tt class="xref py py-obj docutils literal"><span class="pre">toggle_state</span></tt></a>(new_state)</td>
+<td>Change the active selector widget</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.line_app.LinePicker.create_annotate_figure">
+<tt class="descname">create_annotate_figure</tt><big>(</big><em>gut=0.04</em>, <em>sepx=0.05</em>, <em>sepy=0.04</em>, <em>wide=0.09</em>, <em>tall=0.06</em>, <em>**ax_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker.create_annotate_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker.create_annotate_figure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.line_app.LinePicker.create_selector_figure">
+<tt class="descname">create_selector_figure</tt><big>(</big><em>gut=0.04</em>, <em>sepx=0.01</em>, <em>wide=0.2</em>, <em>tall=0.3</em>, <em>**ax_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker.create_selector_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker.create_selector_figure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.line_app.LinePicker.create_selector_toggle">
+<tt class="descname">create_selector_toggle</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker.create_selector_toggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker.create_selector_toggle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.line_app.LinePicker.dump">
+<tt class="descname">dump</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.line_app.LinePicker.dump_npz">
+<tt class="descname">dump_npz</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker.dump_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker.dump_npz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.line_app.LinePicker.dump_txt">
+<tt class="descname">dump_txt</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker.dump_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker.dump_txt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.line_app.LinePicker.get_data">
+<tt class="descname">get_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker.get_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.line_app.LinePicker.toggle_state">
+<tt class="descname">toggle_state</tt><big>(</big><em>new_state</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LinePicker.toggle_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LinePicker.toggle_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the active selector widget</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-yoink.quarantine">
+<span id="quarantine-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">quarantine</span></tt> Module<a class="headerlink" href="#module-yoink.quarantine" title="Permalink to this headline">¶</a></h2>
+<p>Things I&#8217;m not ready to remove, but should be prevented from infecting
+things that actually work.</p>
+<dl class="class">
+<dt id="yoink.quarantine.KeyboardCrop">
+<em class="property">class </em><tt class="descclassname">yoink.quarantine.</tt><tt class="descname">KeyboardCrop</tt><big>(</big><em>im</em>, <em>limits</em>, <em>width=20</em>, <em>height=20</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/quarantine.html#KeyboardCrop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.quarantine.KeyboardCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.Widget</span></tt></p>
+<p>Keyboard driven interface to set crop an image</p>
+<p>KeyboardCrop.edge_effects is a dict that controls the keyboard interface.
+the keys are the edges effected (north/south/east/west)
+the values are dicts of keyboard-keys and how far to shift the image
+(nominally in pixels).</p>
+<p>Example usage given in keyboard_crop()</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.quarantine.KeyboardCrop.get_edges" title="yoink.quarantine.KeyboardCrop.get_edges"><tt class="xref py py-obj docutils literal"><span class="pre">get_edges</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.quarantine.KeyboardCrop.update_limits" title="yoink.quarantine.KeyboardCrop.update_limits"><tt class="xref py py-obj docutils literal"><span class="pre">update_limits</span></tt></a>()</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.quarantine.KeyboardCrop.get_edges">
+<tt class="descname">get_edges</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/quarantine.html#KeyboardCrop.get_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.quarantine.KeyboardCrop.get_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.quarantine.KeyboardCrop.update_limits">
+<tt class="descname">update_limits</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/quarantine.html#KeyboardCrop.update_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.quarantine.KeyboardCrop.update_limits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.quarantine.keyboard_crop">
+<tt class="descclassname">yoink.quarantine.</tt><tt class="descname">keyboard_crop</tt><big>(</big><em>im</em><big>)</big><a class="reference internal" href="_modules/yoink/quarantine.html#keyboard_crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.quarantine.keyboard_crop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yoink.quarantine.lena_example">
+<tt class="descclassname">yoink.quarantine.</tt><tt class="descname">lena_example</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/quarantine.html#lena_example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.quarantine.lena_example" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yoink.quarantine.parabola_example">
+<tt class="descclassname">yoink.quarantine.</tt><tt class="descname">parabola_example</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/quarantine.html#parabola_example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.quarantine.parabola_example" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-yoink.skeletonize">
+<span id="skeletonize-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">skeletonize</span></tt> Module<a class="headerlink" href="#module-yoink.skeletonize" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="yoink.skeletonize.run">
+<tt class="descclassname">yoink.skeletonize.</tt><tt class="descname">run</tt><big>(</big><em>pixels</em>, <em>path</em><big>)</big><a class="reference internal" href="_modules/yoink/skeletonize.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.skeletonize.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-yoink.textbox">
+<span id="textbox-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">textbox</span></tt> Module<a class="headerlink" href="#module-yoink.textbox" title="Permalink to this headline">¶</a></h2>
+<p>TextBox widget.  This is inteded for inclusion in matplotlib, but copied
+here until that day arrives.</p>
+<dl class="class">
+<dt id="yoink.textbox.TextBox">
+<em class="property">class </em><tt class="descclassname">yoink.textbox.</tt><tt class="descname">TextBox</tt><big>(</big><em>ax</em>, <em>s=''</em>, <em>allowed_chars=None</em>, <em>type=&lt;type 'str'&gt;</em>, <em>**text_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<p>Editable text box</p>
+<p>Creates a mouse-click callback such that clicking on the text box will
+activate the cursor.</p>
+<p><em>WARNING</em> Activating a textbox will remove all other key-press
+bindings! They&#8217;ll be stored in TextBox.old_callbacks and restored
+when TextBox.end_text_entry() is called.</p>
+<p>The default widget assumes only numerical data and will not
+allow text entry besides numerical characters and (&#8216;e&#8217;,&#8217;-&#8216;,&#8217;.&#8217;)</p>
+<p>Use <a class="reference internal" href="#yoink.textbox.TextBox.on_changed" title="yoink.textbox.TextBox.on_changed"><tt class="xref py py-meth docutils literal"><span class="pre">on_changed()</span></tt></a> to connect to TextBox updates</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ax</strong> : <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.axes.Axes</span></tt></p>
+<blockquote>
+<div><p>The parent axes for the widget</p>
+</div></blockquote>
+<p><strong>s</strong> : str</p>
+<blockquote>
+<div><p>The initial text of the TextBox.</p>
+</div></blockquote>
+<p><strong>allowed_chars</strong> : sequence, optional</p>
+<blockquote>
+<div><p>sequence of characters that are valid TextBox text
+Defaults to None, which accepts anything.</p>
+</div></blockquote>
+<p><strong>type</strong> : type, optional, default=str</p>
+<blockquote>
+<div><p>Construct self.value using this type.  self.value is only updated
+if self.type(&lt;text&gt;) succeeds.</p>
+</div></blockquote>
+<p><strong>**text_kwargs</strong> : dict</p>
+<blockquote class="last">
+<div><p>Additional keyword arguments are passed on to self.ax.text()</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="27%" />
+<col width="61%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>ax</td>
+<td><tt class="xref py py-class docutils literal"><span class="pre">matplotlib.axes.Axes</span></tt></td>
+<td>The parent axes for the widget</td>
+</tr>
+<tr class="row-even"><td>type</td>
+<td>callable</td>
+<td>callable that is used to set self.value</td>
+</tr>
+<tr class="row-odd"><td>allowed_chars</td>
+<td>&nbsp;</td>
+<td>TextBox will only respond if event.key in allowed_chars.  Defaults
+to None, which accepts anything.</td>
+</tr>
+<tr class="row-even"><td>value</td>
+<td>value</td>
+<td>Current value of the textbox.</td>
+</tr>
+<tr class="row-odd"><td>text</td>
+<td>Text artist</td>
+<td>The Text artist that TextBox modifies</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.textbox.TextBox.begin_text_entry" title="yoink.textbox.TextBox.begin_text_entry"><tt class="xref py py-obj docutils literal"><span class="pre">begin_text_entry</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">connect_event</span></tt>(event,&nbsp;callback)</td>
+<td>Connect callback with an event.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.textbox.TextBox.disconnect" title="yoink.textbox.TextBox.disconnect"><tt class="xref py py-obj docutils literal"><span class="pre">disconnect</span></tt></a>(cid)</td>
+<td>remove the observer with connection id <em>cid</em></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_events</span></tt>()</td>
+<td>Disconnect all events created by this widget.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.textbox.TextBox.disconnect_exit" title="yoink.textbox.TextBox.disconnect_exit"><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_exit</span></tt></a>(cid)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.textbox.TextBox.end_text_entry" title="yoink.textbox.TextBox.end_text_entry"><tt class="xref py py-obj docutils literal"><span class="pre">end_text_entry</span></tt></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">ignore</span></tt>(event)</td>
+<td>Return True if event should be ignored.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.textbox.TextBox.keypress" title="yoink.textbox.TextBox.keypress"><tt class="xref py py-obj docutils literal"><span class="pre">keypress</span></tt></a>(event)</td>
+<td>Parse a keypress and update the value if possible</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.textbox.TextBox.on_changed" title="yoink.textbox.TextBox.on_changed"><tt class="xref py py-obj docutils literal"><span class="pre">on_changed</span></tt></a>(func)</td>
+<td>When the textbox changes self.value, call <em>func</em> with the new value.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.textbox.TextBox.on_exit" title="yoink.textbox.TextBox.on_exit"><tt class="xref py py-obj docutils literal"><span class="pre">on_exit</span></tt></a>(func)</td>
+<td>When exiting TextBox entry, call <em>func</em> with the new value.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.textbox.TextBox.set_text" title="yoink.textbox.TextBox.set_text"><tt class="xref py py-obj docutils literal"><span class="pre">set_text</span></tt></a>(text)</td>
+<td>Set the text</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.textbox.TextBox.begin_text_entry">
+<tt class="descname">begin_text_entry</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.begin_text_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.begin_text_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="yoink.textbox.TextBox.cursor">
+<tt class="descname">cursor</tt><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.cursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.cursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.textbox.TextBox.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove the observer with connection id <em>cid</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.textbox.TextBox.disconnect_exit">
+<tt class="descname">disconnect_exit</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.disconnect_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.disconnect_exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.textbox.TextBox.end_text_entry">
+<tt class="descname">end_text_entry</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.end_text_entry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.end_text_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.textbox.TextBox.keypress">
+<tt class="descname">keypress</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.keypress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.keypress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a keypress and update the value if possible</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.textbox.TextBox.on_changed">
+<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the textbox changes self.value, call <em>func</em> with the new value.</p>
+<p>A connection id is returned with can be used to disconnect.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.textbox.TextBox.on_exit">
+<tt class="descname">on_exit</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.on_exit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.on_exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>When exiting TextBox entry, call <em>func</em> with the new value.</p>
+<p>A connection id is returned with can be used to disconnect.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.textbox.TextBox.set_text">
+<tt class="descname">set_text</tt><big>(</big><em>text</em><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBox.set_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBox.set_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the text</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.textbox.TextBoxFloat">
+<em class="property">class </em><tt class="descclassname">yoink.textbox.</tt><tt class="descname">TextBoxFloat</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/textbox.html#TextBoxFloat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.textbox.TextBoxFloat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yoink.textbox.TextBox" title="yoink.textbox.TextBox"><tt class="xref py py-class docutils literal"><span class="pre">yoink.textbox.TextBox</span></tt></a></p>
+<p>TextBox for floating point numbers</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">begin_text_entry</span></tt>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">connect_event</span></tt>(event,&nbsp;callback)</td>
+<td>Connect callback with an event.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect</span></tt>(cid)</td>
+<td>remove the observer with connection id <em>cid</em></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_events</span></tt>()</td>
+<td>Disconnect all events created by this widget.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_exit</span></tt>(cid)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">end_text_entry</span></tt>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">ignore</span></tt>(event)</td>
+<td>Return True if event should be ignored.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">keypress</span></tt>(event)</td>
+<td>Parse a keypress and update the value if possible</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">on_changed</span></tt>(func)</td>
+<td>When the textbox changes self.value, call <em>func</em> with the new value.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">on_exit</span></tt>(func)</td>
+<td>When exiting TextBox entry, call <em>func</em> with the new value.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_text</span></tt>(text)</td>
+<td>Set the text</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-yoink.trace">
+<span id="trace-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">trace</span></tt> Module<a class="headerlink" href="#module-yoink.trace" title="Permalink to this headline">¶</a></h2>
+<p>Find the pixels between two endpoints</p>
+<dl class="function">
+<dt id="yoink.trace.bresenham_colormapping">
+<tt class="descclassname">yoink.trace.</tt><tt class="descname">bresenham_colormapping</tt><big>(</big><em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em>, <em>im</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#bresenham_colormapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.bresenham_colormapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get lineout from x0/y0 to x1/y1 with points taken using Bresenham&#8217;s ray
+tracing algorithm.  Since Bresenham ray tracing only provides a list of
+pixel coordiantes, this returns the distance between the each pixel and the
+start pixel, then projected to the line between start and end.</p>
+<p>Takes the image array</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>l</strong> : ndarray, shape=(N,)</p>
+<blockquote>
+<div><p>normalized location of colors</p>
+</div></blockquote>
+<p><strong>rgb</strong> : ndarray, shape=(N,3)</p>
+<blockquote class="last">
+<div><p>sequence of colors at each point in l</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.trace.bresenham_trace">
+<tt class="descclassname">yoink.trace.</tt><tt class="descname">bresenham_trace</tt><big>(</big><em>x</em>, <em>y</em>, <em>x1</em>, <em>y1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#bresenham_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.bresenham_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a line (x, y) to (x1, y1) return the pixels that the line crosses.</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Bresenham's_line_algorithm">http://en.wikipedia.org/wiki/Bresenham&#8217;s_line_algorithm</a>
+Bresenham, J. E. (1 January 1965). &#8220;Algorithm for computer control of a
+digital plotter&#8221;. IBM Systems Journal 4 (1): 25-30.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.trace.equispaced_colormaping">
+<tt class="descclassname">yoink.trace.</tt><tt class="descname">equispaced_colormaping</tt><big>(</big><em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em>, <em>im</em>, <em>N=256</em>, <em>order=1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#equispaced_colormaping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.equispaced_colormaping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get lineout from x0/y0 to x1/y1 with equally spaced points.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>l</strong> : ndarray, shape=(N,)</p>
+<blockquote>
+<div><p>normalized location of colors</p>
+</div></blockquote>
+<p><strong>rgb</strong> : ndarray, shape=(N,3)</p>
+<blockquote class="last">
+<div><p>sequence of colors at each point in l</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.trace.get_rgb">
+<tt class="descclassname">yoink.trace.</tt><tt class="descname">get_rgb</tt><big>(</big><em>im</em>, <em>y</em>, <em>x</em>, <em>order=1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#get_rgb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.get_rgb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yoink.trace.naive_colormaping">
+<tt class="descclassname">yoink.trace.</tt><tt class="descname">naive_colormaping</tt><big>(</big><em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em>, <em>im</em>, <em>order=1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#naive_colormaping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.naive_colormaping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get lineout from x0/y0 to x1/y1 with points takein from naive_trace ray
+tracing algorithm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>l</strong> : ndarray, shape=(N,)</p>
+<blockquote>
+<div><p>normalized location of colors</p>
+</div></blockquote>
+<p><strong>rgb</strong> : ndarray, shape=(N,3)</p>
+<blockquote class="last">
+<div><p>sequence of colors at each point in l</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.trace.naive_trace">
+<tt class="descclassname">yoink.trace.</tt><tt class="descname">naive_trace</tt><big>(</big><em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#naive_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.naive_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matt Terry&#8217;s naive tracing method.  No promises that this is fast,
+reliable, or good.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-yoink.widgets">
+<span id="widgets-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">widgets</span></tt> Module<a class="headerlink" href="#module-yoink.widgets" title="Permalink to this headline">¶</a></h2>
+<p>Backend independent widgets.</p>
+<dl class="class">
+<dt id="yoink.widgets.CroppedImage">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">CroppedImage</tt><big>(</big><em>ax</em>, <em>pixels</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<p>Widget that recolors a multichannel image using a given a scale sequence
+and associated colors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ax</strong> : axes</p>
+<blockquote>
+<div><p>Axes to draw the widget</p>
+</div></blockquote>
+<p><strong>pixels</strong> : 3d array</p>
+<blockquote class="last">
+<div><p>Source pixels to recolor</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="30%" />
+<col width="58%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>ax</td>
+<td>axes</td>
+<td>Axes to draw the widget</td>
+</tr>
+<tr class="row-even"><td>pixels</td>
+<td>3d array</td>
+<td>Source pixels to recolor</td>
+</tr>
+<tr class="row-odd"><td>image</td>
+<td>matplotlib image</td>
+<td>The image displayed on the axes</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.CroppedImage.changed" title="yoink.widgets.CroppedImage.changed"><tt class="xref py py-obj docutils literal"><span class="pre">changed</span></tt></a>()</td>
+<td>Call the observers</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">connect_event</span></tt>(event,&nbsp;callback)</td>
+<td>Connect callback with an event.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.CroppedImage.crop" title="yoink.widgets.CroppedImage.crop"><tt class="xref py py-obj docutils literal"><span class="pre">crop</span></tt></a>(extent)</td>
+<td>Crop self.image to the given extent</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.CroppedImage.disconnect" title="yoink.widgets.CroppedImage.disconnect"><tt class="xref py py-obj docutils literal"><span class="pre">disconnect</span></tt></a>(cid)</td>
+<td>remove the observer with connection id <em>cid</em></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_events</span></tt>()</td>
+<td>Disconnect all events created by this widget.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">ignore</span></tt>(event)</td>
+<td>Return True if event should be ignored.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.CroppedImage.make_xyextent_textboxes" title="yoink.widgets.CroppedImage.make_xyextent_textboxes"><tt class="xref py py-obj docutils literal"><span class="pre">make_xyextent_textboxes</span></tt></a>(ax_xlo,&nbsp;ax_xhi,&nbsp;...)</td>
+<td>Create text boxes for x-axis &amp; y-axis limits</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.CroppedImage.on_changed" title="yoink.widgets.CroppedImage.on_changed"><tt class="xref py py-obj docutils literal"><span class="pre">on_changed</span></tt></a>(func)</td>
+<td>When the RecoloredWidget changes, call <em>func</em> with no arguments.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.CroppedImage.set_side_extent" title="yoink.widgets.CroppedImage.set_side_extent"><tt class="xref py py-obj docutils literal"><span class="pre">set_side_extent</span></tt></a>(side,&nbsp;val)</td>
+<td>Set the cropping extent for a single side <cite>side</cite> to value <cite>val</cite></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.widgets.CroppedImage.changed">
+<tt class="descname">changed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the observers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.CroppedImage.crop">
+<tt class="descname">crop</tt><big>(</big><em>extent</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop self.image to the given extent</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.CroppedImage.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove the observer with connection id <em>cid</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.CroppedImage.make_xyextent_textboxes">
+<tt class="descname">make_xyextent_textboxes</tt><big>(</big><em>ax_xlo</em>, <em>ax_xhi</em>, <em>ax_ylo</em>, <em>ax_yhi</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.make_xyextent_textboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.make_xyextent_textboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create text boxes for x-axis &amp; y-axis limits
+connect them to the right image so that it extents auto-update</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.CroppedImage.on_changed">
+<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the RecoloredWidget changes, call <em>func</em> with no arguments.</p>
+<p>A connection id is returned which can be used to disconnect.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.CroppedImage.set_side_extent">
+<tt class="descname">set_side_extent</tt><big>(</big><em>side</em>, <em>val</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.set_side_extent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.set_side_extent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the cropping extent for a single side <cite>side</cite> to value <cite>val</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.widgets.DeformableLine">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">DeformableLine</tt><big>(</big><em>ax</em>, <em>is_closed=False</em>, <em>max_points=None</em>, <em>grows=True</em>, <em>shrinks=True</em>, <em>line_kw=None</em>, <em>circle_kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DeformableLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DeformableLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<p>Segemented line with movable vertexes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ax</strong> : axes</p>
+<blockquote>
+<div><p>Axes to draw the line on</p>
+</div></blockquote>
+<p><strong>is_closed</strong> : bool, optional default=False</p>
+<blockquote>
+<div><p>Do the line endpoints connect?</p>
+</div></blockquote>
+<p><strong>max_points</strong> : int, optional default=None</p>
+<blockquote>
+<div><p>Maximum number of points allowed in line</p>
+</div></blockquote>
+<p><strong>grows</strong> : bool, optional</p>
+<blockquote>
+<div><p>May the line add segments</p>
+</div></blockquote>
+<p><strong>shrinks</strong> : bool, optional</p>
+<blockquote>
+<div><p>May the line shed segments</p>
+</div></blockquote>
+<p><strong>line_kw</strong> : dict, optional</p>
+<blockquote>
+<div><p>Dictionary to customize Line2D</p>
+</div></blockquote>
+<p><strong>circle_kw</strong> : dict, optional</p>
+<blockquote class="last">
+<div><p>Dictionary to customize Circles</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.widgets.DragableColorLine">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">DragableColorLine</tt><big>(</big><em>select_ax</em>, <em>cbar_ax</em>, <em>pixels</em>, <em>line_kw=None</em>, <em>circle_kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.Widget</span></tt></p>
+<p>Fake colormap-like image taken from the end points of a DeformableLine</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>select_ax</strong> : axes</p>
+<blockquote>
+<div><p>Axes to draw the selector line on</p>
+</div></blockquote>
+<p><strong>cbar_ax</strong> : axes</p>
+<blockquote>
+<div><p>Axes to draw the colorbar into</p>
+</div></blockquote>
+<p><strong>pixels</strong> : array-like (3d)</p>
+<blockquote>
+<div><p>ndarray to pick colors from</p>
+</div></blockquote>
+<p><strong>line_kw</strong> : dict, optional</p>
+<blockquote>
+<div><p>keyword args to pass to Line2D</p>
+</div></blockquote>
+<p><strong>circle_kw</strong> : dict, optional</p>
+<blockquote class="last">
+<div><p>keyword args to pass to Circle</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="26%" />
+<col width="58%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>select_ax</td>
+<td>axes</td>
+<td>Axes to draw the selector line on</td>
+</tr>
+<tr class="row-even"><td>cbar_ax</td>
+<td>axes</td>
+<td>Axes to draw the colorbar into</td>
+</tr>
+<tr class="row-odd"><td>pixels</td>
+<td>array-like (3d)</td>
+<td>Pixels values</td>
+</tr>
+<tr class="row-even"><td>line</td>
+<td>DeformableLine</td>
+<td>Segmented line</td>
+</tr>
+<tr class="row-odd"><td>pixels</td>
+<td>ndarray</td>
+<td>pixels pull colors from</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.DragableColorLine.changed" title="yoink.widgets.DragableColorLine.changed"><tt class="xref py py-obj docutils literal"><span class="pre">changed</span></tt></a>()</td>
+<td>Call the observers</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.DragableColorLine.disconnect" title="yoink.widgets.DragableColorLine.disconnect"><tt class="xref py py-obj docutils literal"><span class="pre">disconnect</span></tt></a>(cid)</td>
+<td>remove the observer with connection id <em>cid</em></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.DragableColorLine.disconnect_release" title="yoink.widgets.DragableColorLine.disconnect_release"><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_release</span></tt></a>(cid)</td>
+<td>remove the release_observer with connection id <em>cid</em></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.DragableColorLine.on_changed" title="yoink.widgets.DragableColorLine.on_changed"><tt class="xref py py-obj docutils literal"><span class="pre">on_changed</span></tt></a>(func)</td>
+<td>When the DragableColorLine moves, call <em>func</em> with the new path and</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.DragableColorLine.on_release" title="yoink.widgets.DragableColorLine.on_release"><tt class="xref py py-obj docutils literal"><span class="pre">on_release</span></tt></a>(func)</td>
+<td>When the DragableColorLine finishes moving, call <em>func</em> with the new</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.DragableColorLine.released" title="yoink.widgets.DragableColorLine.released"><tt class="xref py py-obj docutils literal"><span class="pre">released</span></tt></a>()</td>
+<td>call the release_observers</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.DragableColorLine.set_visible" title="yoink.widgets.DragableColorLine.set_visible"><tt class="xref py py-obj docutils literal"><span class="pre">set_visible</span></tt></a>(isvisible)</td>
+<td>Set whether the widget is visible</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.DragableColorLine.update" title="yoink.widgets.DragableColorLine.update"><tt class="xref py py-obj docutils literal"><span class="pre">update</span></tt></a>()</td>
+<td>update the properties of the line, redraw, and trigger observers</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="yoink.widgets.DragableColorLine.active">
+<tt class="descname">active</tt><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.active"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.active" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the widget is active</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.DragableColorLine.changed">
+<tt class="descname">changed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the observers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.DragableColorLine.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove the observer with connection id <em>cid</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.DragableColorLine.disconnect_release">
+<tt class="descname">disconnect_release</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.disconnect_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.disconnect_release" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove the release_observer with connection id <em>cid</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.DragableColorLine.on_changed">
+<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the DragableColorLine moves, call <em>func</em> with the new path and
+colors.</p>
+<p>A connection id is returned which can be used to disconnect.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.DragableColorLine.on_release">
+<tt class="descname">on_release</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.on_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.on_release" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the DragableColorLine finishes moving, call <em>func</em> with the new
+path and colors.</p>
+<p>A connection id is returned which can be used to disconnect.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.DragableColorLine.released">
+<tt class="descname">released</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.released"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.released" title="Permalink to this definition">¶</a></dt>
+<dd><p>call the release_observers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.DragableColorLine.set_visible">
+<tt class="descname">set_visible</tt><big>(</big><em>isvisible</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.set_visible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.set_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set whether the widget is visible</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.DragableColorLine.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>update the properties of the line, redraw, and trigger observers</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.widgets.NothingWidget">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">NothingWidget</tt><a class="reference internal" href="_modules/yoink/widgets.html#NothingWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.NothingWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.NothingWidget.set_visible" title="yoink.widgets.NothingWidget.set_visible"><tt class="xref py py-obj docutils literal"><span class="pre">set_visible</span></tt></a>(vis)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="yoink.widgets.NothingWidget.active">
+<tt class="descname">active</tt><em class="property"> = False</em><a class="headerlink" href="#yoink.widgets.NothingWidget.active" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.NothingWidget.set_visible">
+<tt class="descname">set_visible</tt><big>(</big><em>vis</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#NothingWidget.set_visible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.NothingWidget.set_visible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.widgets.OffsetFormatter">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">OffsetFormatter</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#OffsetFormatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.OffsetFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.ticker.ScalarFormatter</span></tt></p>
+<p>child of matplotlib.ScalarFormatter to make it easy to set the numerical
+limits of the colorbar</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>*args</strong> : optional</p>
+<blockquote>
+<div><p>positional arguments to forward to ScalarFormatter</p>
+</div></blockquote>
+<p><strong>*kwargs</strong> : optional</p>
+<blockquote class="last">
+<div><p>keyword arguments to forward to ScalarFormatter</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="29%" />
+<col width="62%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>mn</td>
+<td>number</td>
+<td>scale minimum</td>
+</tr>
+<tr class="row-even"><td>mx</td>
+<td>number</td>
+<td>scale maximum</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">create_dummy_axis</span></tt>(**kwargs)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">fix_minus</span></tt>(s)</td>
+<td>use a unicode minus rather than hyphen</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">format_data</span></tt>(value)</td>
+<td>return a formatted string representation of a number</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">format_data_short</span></tt>(value)</td>
+<td>return a short formatted string representation of a number</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">get_offset</span></tt>()</td>
+<td>Return scientific notation, plus offset</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">get_useLocale</span></tt>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">get_useOffset</span></tt>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">pprint_val</span></tt>(x)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_axis</span></tt>(axis)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_bounds</span></tt>(vmin,&nbsp;vmax)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_data_interval</span></tt>(vmin,&nbsp;vmax)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_locs</span></tt>(locs)</td>
+<td>set the locations of the ticks</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_powerlimits</span></tt>(lims)</td>
+<td>Sets size thresholds for scientific notation.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_scientific</span></tt>(b)</td>
+<td>True or False to turn scientific notation on or off</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_useLocale</span></tt>(val)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_useOffset</span></tt>(val)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">set_view_interval</span></tt>(vmin,&nbsp;vmax)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.widgets.RecoloredWidget">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">RecoloredWidget</tt><big>(</big><em>ax</em>, <em>pixels</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<p>Widget that recolors a multichannel image using a given a scale sequence
+and associated colors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ax</strong> : axes</p>
+<blockquote>
+<div><p>Axes to draw the widget</p>
+</div></blockquote>
+<p><strong>pixels</strong> : 3d array</p>
+<blockquote class="last">
+<div><p>Source pixels to recolor</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="35%" />
+<col width="52%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>ax</td>
+<td>axes</td>
+<td>Axes to draw the widget</td>
+</tr>
+<tr class="row-even"><td>pixels</td>
+<td>3d array</td>
+<td>Source pixels to recolor</td>
+</tr>
+<tr class="row-odd"><td>image</td>
+<td>matplotlib.Image</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.RecoloredWidget.changed" title="yoink.widgets.RecoloredWidget.changed"><tt class="xref py py-obj docutils literal"><span class="pre">changed</span></tt></a>()</td>
+<td>Call the observers</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">connect_event</span></tt>(event,&nbsp;callback)</td>
+<td>Connect callback with an event.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.RecoloredWidget.crop" title="yoink.widgets.RecoloredWidget.crop"><tt class="xref py py-obj docutils literal"><span class="pre">crop</span></tt></a>(extent)</td>
+<td>Crop self.image to the given extent</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.RecoloredWidget.digitize" title="yoink.widgets.RecoloredWidget.digitize"><tt class="xref py py-obj docutils literal"><span class="pre">digitize</span></tt></a>(l,&nbsp;rgb)</td>
+<td>Using the new scale &#8220;l&#8221; and colorsequence &#8220;rgb&#8221; translate all pixels</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.RecoloredWidget.disconnect" title="yoink.widgets.RecoloredWidget.disconnect"><tt class="xref py py-obj docutils literal"><span class="pre">disconnect</span></tt></a>(cid)</td>
+<td>remove the observer with connection id <em>cid</em></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_events</span></tt>()</td>
+<td>Disconnect all events created by this widget.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">ignore</span></tt>(event)</td>
+<td>Return True if event should be ignored.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.RecoloredWidget.make_xyextent_textboxes" title="yoink.widgets.RecoloredWidget.make_xyextent_textboxes"><tt class="xref py py-obj docutils literal"><span class="pre">make_xyextent_textboxes</span></tt></a>(ax_xlo,&nbsp;ax_xhi,&nbsp;...)</td>
+<td>Create text boxes for x-axis &amp; y-axis limits</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.RecoloredWidget.on_changed" title="yoink.widgets.RecoloredWidget.on_changed"><tt class="xref py py-obj docutils literal"><span class="pre">on_changed</span></tt></a>(func)</td>
+<td>When the RecoloredWidget changes, call <em>func</em> with no arguments.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.RecoloredWidget.set_side_extent" title="yoink.widgets.RecoloredWidget.set_side_extent"><tt class="xref py py-obj docutils literal"><span class="pre">set_side_extent</span></tt></a>(side,&nbsp;val)</td>
+<td>Set the cropping extent for a single side <cite>side</cite> to value <cite>val</cite></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.widgets.RecoloredWidget.changed">
+<tt class="descname">changed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the observers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.RecoloredWidget.crop">
+<tt class="descname">crop</tt><big>(</big><em>extent</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop self.image to the given extent</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.RecoloredWidget.digitize">
+<tt class="descname">digitize</tt><big>(</big><em>l</em>, <em>rgb</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.digitize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.digitize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using the new scale &#8220;l&#8221; and colorsequence &#8220;rgb&#8221; translate all pixels
+to the new scale, create a cbar with l &amp; rgb, and redraw the image.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.RecoloredWidget.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove the observer with connection id <em>cid</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.RecoloredWidget.make_xyextent_textboxes">
+<tt class="descname">make_xyextent_textboxes</tt><big>(</big><em>ax_xlo</em>, <em>ax_xhi</em>, <em>ax_ylo</em>, <em>ax_yhi</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.make_xyextent_textboxes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.make_xyextent_textboxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create text boxes for x-axis &amp; y-axis limits
+connect them to the right image so that it extents auto-update</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.RecoloredWidget.on_changed">
+<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the RecoloredWidget changes, call <em>func</em> with no arguments.</p>
+<p>A connection id is returned which can be used to disconnect.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.RecoloredWidget.set_side_extent">
+<tt class="descname">set_side_extent</tt><big>(</big><em>side</em>, <em>val</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.set_side_extent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.set_side_extent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the cropping extent for a single side <cite>side</cite> to value <cite>val</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.widgets.ScaledColorbar">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">ScaledColorbar</tt><big>(</big><em>ax</em>, <em>im</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ScaledColorbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ScaledColorbar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<p>Colorbar with manually specified extrema</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>ax</strong> : axes</p>
+<blockquote>
+<div><p>parent axes</p>
+</div></blockquote>
+<p><strong>im</strong> : ScalarMappable</p>
+<blockquote class="last">
+<div><p>ScalarMappable to draw a colorbar for</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="43%" />
+<col width="49%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>cbar</td>
+<td>matplotlib Colorbar</td>
+<td>colorbar</td>
+</tr>
+<tr class="row-even"><td>fmt</td>
+<td>matplotlib formatter</td>
+<td>colorbar text formatter</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">connect_event</span></tt>(event,&nbsp;callback)</td>
+<td>Connect callback with an event.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_events</span></tt>()</td>
+<td>Disconnect all events created by this widget.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">ignore</span></tt>(event)</td>
+<td>Return True if event should be ignored.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.ScaledColorbar.set_max" title="yoink.widgets.ScaledColorbar.set_max"><tt class="xref py py-obj docutils literal"><span class="pre">set_max</span></tt></a>(mx)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.ScaledColorbar.set_min" title="yoink.widgets.ScaledColorbar.set_min"><tt class="xref py py-obj docutils literal"><span class="pre">set_min</span></tt></a>(mn)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.widgets.ScaledColorbar.set_max">
+<tt class="descname">set_max</tt><big>(</big><em>mx</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ScaledColorbar.set_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ScaledColorbar.set_max" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.ScaledColorbar.set_min">
+<tt class="descname">set_min</tt><big>(</big><em>mn</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ScaledColorbar.set_min"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ScaledColorbar.set_min" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.widgets.ShadowLine">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">ShadowLine</tt><big>(</big><em>ax</em>, <em>orig_line</em>, <em>cropper</em>, <em>**opts</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShadowLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShadowLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">connect_event</span></tt>(event,&nbsp;callback)</td>
+<td>Connect callback with an event.</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_events</span></tt>()</td>
+<td>Disconnect all events created by this widget.</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">ignore</span></tt>(event)</td>
+<td>Return True if event should be ignored.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.ShadowLine.update" title="yoink.widgets.ShadowLine.update"><tt class="xref py py-obj docutils literal"><span class="pre">update</span></tt></a>([crop])</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.widgets.ShadowLine.update">
+<tt class="descname">update</tt><big>(</big><em>crop=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShadowLine.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShadowLine.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.widgets.ShutterCrop">
+<em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">ShutterCrop</tt><big>(</big><em>ax</em>, <em>dx_frac=0.05</em>, <em>**rect_kw</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<p>Crop an image by dragging transparent panes over excluded region.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>dx_frac</strong> : float, optional, default=0.05</p>
+<blockquote>
+<div><p>Initial fraction of view that is cropped on each side</p>
+</div></blockquote>
+<p><strong>**rect_kw</strong> : optional</p>
+<blockquote>
+<div><p>Keyword args to customize the shutter <a href="#id2"><span class="problematic" id="id3">`</span></a>Rectangle`s</p>
+</div></blockquote>
+<p><strong>By default, shutters have:</strong> :</p>
+<blockquote class="last">
+<div><p>facecolor=&#8217;gray&#8217;,
+edgecolor=&#8217;none&#8217;,
+alpha=0.5,
+picker=5</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="11%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>ax</td>
+<td>axes</td>
+<td>Axes to draw the shutters on</td>
+</tr>
+<tr class="row-even"><td>rects</td>
+<td>dict</td>
+<td>Dictionary of Rectangles</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.ShutterCrop.changed" title="yoink.widgets.ShutterCrop.changed"><tt class="xref py py-obj docutils literal"><span class="pre">changed</span></tt></a>()</td>
+<td>Call the observers</td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">connect_event</span></tt>(event,&nbsp;callback)</td>
+<td>Connect callback with an event.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.ShutterCrop.disconnect" title="yoink.widgets.ShutterCrop.disconnect"><tt class="xref py py-obj docutils literal"><span class="pre">disconnect</span></tt></a>(cid)</td>
+<td>remove the observer with connection id <em>cid</em></td>
+</tr>
+<tr class="row-even"><td><tt class="xref py py-obj docutils literal"><span class="pre">disconnect_events</span></tt>()</td>
+<td>Disconnect all events created by this widget.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.ShutterCrop.get_extents" title="yoink.widgets.ShutterCrop.get_extents"><tt class="xref py py-obj docutils literal"><span class="pre">get_extents</span></tt></a>()</td>
+<td>Get the extents of the cropped image</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.ShutterCrop.get_visible" title="yoink.widgets.ShutterCrop.get_visible"><tt class="xref py py-obj docutils literal"><span class="pre">get_visible</span></tt></a>()</td>
+<td>Return whether the widget is visible</td>
+</tr>
+<tr class="row-odd"><td><tt class="xref py py-obj docutils literal"><span class="pre">ignore</span></tt>(event)</td>
+<td>Return True if event should be ignored.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#yoink.widgets.ShutterCrop.on_changed" title="yoink.widgets.ShutterCrop.on_changed"><tt class="xref py py-obj docutils literal"><span class="pre">on_changed</span></tt></a>(func)</td>
+<td>When the ShutterCrop windows move, call <em>func</em> with the new extent.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#yoink.widgets.ShutterCrop.set_visible" title="yoink.widgets.ShutterCrop.set_visible"><tt class="xref py py-obj docutils literal"><span class="pre">set_visible</span></tt></a>(isvisible)</td>
+<td>Make the widget (in)visible</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="yoink.widgets.ShutterCrop.changed">
+<tt class="descname">changed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the observers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.ShutterCrop.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove the observer with connection id <em>cid</em></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.ShutterCrop.get_extents">
+<tt class="descname">get_extents</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.get_extents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.get_extents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the extents of the cropped image</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.ShutterCrop.get_visible">
+<tt class="descname">get_visible</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.get_visible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.get_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the widget is visible</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.ShutterCrop.on_changed">
+<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the ShutterCrop windows move, call <em>func</em> with the new extent.</p>
+<p>A connection id is returned which can be used to disconnect.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="yoink.widgets.ShutterCrop.set_visible">
+<tt class="descname">set_visible</tt><big>(</big><em>isvisible</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.set_visible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.set_visible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the widget (in)visible</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.widgets.if_attentive">
+<tt class="descclassname">yoink.widgets.</tt><tt class="descname">if_attentive</tt><big>(</big><em>f</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#if_attentive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.if_attentive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="yoink.widgets.make_cmap">
+<tt class="descclassname">yoink.widgets.</tt><tt class="descname">make_cmap</tt><big>(</big><em>l</em>, <em>rgb</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#make_cmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.make_cmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a colormap from the sequence of distances &amp; colors</p>
+</dd></dl>
+
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="yoink.data.html">data Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="yoink.data.html#id1"><tt class="docutils literal"><span class="pre">data</span></tt> Package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">yoink Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">yoink</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-yoink.cmap_app"><tt class="docutils literal"><span class="pre">cmap_app</span></tt> Module</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-yoink.guess"><tt class="docutils literal"><span class="pre">guess</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-yoink.interp"><tt class="docutils literal"><span class="pre">interp</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-yoink.line_app"><tt class="docutils literal"><span class="pre">line_app</span></tt> Module</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-yoink.quarantine"><tt class="docutils literal"><span class="pre">quarantine</span></tt> Module</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-yoink.skeletonize"><tt class="docutils literal"><span class="pre">skeletonize</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-yoink.textbox"><tt class="docutils literal"><span class="pre">textbox</span></tt> Module</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-yoink.trace"><tt class="docutils literal"><span class="pre">trace</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-yoink.widgets"><tt class="docutils literal"><span class="pre">widgets</span></tt> Module</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/yoink.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">yoink 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
