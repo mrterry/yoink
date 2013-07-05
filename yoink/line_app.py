@@ -173,7 +173,7 @@ class LinePicker(object):
         sizes['xhi'] = (x1-wide, gut, wide, tall)
         sizes['dump'] = (x0+wide+sepx, gut, x1-x0-2*(sepx+wide), tall)
 
-        for name, lbwh in sizes.iteritems():
+        for name, lbwh in sizes.items():
             ax = fig.add_axes(lbwh, **ax_kwargs)
             ax.yaxis.set_visible(False)
             ax.xaxis.set_visible(False)
