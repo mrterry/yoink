@@ -33,6 +33,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.autosummary',
               'numpydoc',
+              'sphinxcontrib.youtube',
               ]
 #numpydoc_show_class_members = False
 
