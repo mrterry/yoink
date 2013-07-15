@@ -51,7 +51,7 @@ clean:
 	rm -rf $(BUILDDIR)/*
 
 genapi:
-	sphinx-apidoc -f -o $(SOURCEDIR) ../yoink
+	sphinx-apidoc -f -o $(SOURCEDIR) $(SOURCEDIR)/../yoink
 
 html: genapi
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
