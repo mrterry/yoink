@@ -67,6 +67,8 @@ Yosemite valley.</p>
 <li>y-axis scale</li>
 <li>colorbar</li>
 </ul>
+<div class="section" id="preparing-you-image">
+<h2>Preparing you image<a class="headerlink" href="#preparing-you-image" title="Permalink to this headline">¶</a></h2>
 <p>If your image is rotated, (because the office printer-scanner-copier has a tilt
 to it), you will have to correct for that using something like
 <a class="reference external" href="http://scikit-image.org/docs/dev/api/skimage.transform.html#rotate">rotate in scikit-image</a>
@@ -75,6 +77,9 @@ presentation slides) you will also need to fix the perspective manually.
 Scikit-image has an nice
 <a class="reference external" href="http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html">example</a>
 of how to do these kinds of transformations.</p>
+</div>
+<div class="section" id="create-select-annotate-figures">
+<h2>Create Select &amp; Annotate Figures<a class="headerlink" href="#create-select-annotate-figures" title="Permalink to this headline">¶</a></h2>
 <p>Once your image is prepared, yoink can be used as a command line tool or
 within an interactive python session.</p>
 <ul>
@@ -86,18 +91,16 @@ within an interactive python session.</p>
 If you are using an ipython session with an interactive matplotlib event
 loop (e.g. <tt class="code docutils literal"><span class="pre">%pylab</span></tt> magic in ipython), <tt class="code docutils literal"><span class="pre">plt.show()</span></tt> will not be
 necessary.</p>
-<blockquote>
-<div><div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">yoink</span> <span class="kn">import</span> <span class="n">CmapExtractor</span>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">yoink</span> <span class="kn">import</span> <span class="n">cmapextractor</span>
 <span class="kn">from</span> <span class="nn">yoink.data</span> <span class="kn">import</span> <span class="n">yosemite</span>
 
 <span class="n">im</span> <span class="o">=</span> <span class="n">yosemite</span><span class="p">()</span>
-<span class="n">ext</span> <span class="o">=</span> <span class="n">CmapExtractor</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="s">&#39;image_data.npz&#39;</span><span class="p">)</span>
+<span class="n">ext</span> <span class="o">=</span> <span class="n">cmapextractor</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="s">&#39;image_data.npz&#39;</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div></blockquote>
 </li>
 </ul>
 <p>Two windows should be visible.  Use the selector figure to identify your data
@@ -112,6 +115,9 @@ colorbar.</p>
 <a class="reference internal image-reference" href="_images/annoate_fig.png"><img alt="_images/annoate_fig.png" src="_images/annoate_fig.png" style="height: 250px;" /></a>
 <p class="caption">Use this window to annotate the axes limits and the colorbar limits.</p>
 </div>
+</div>
+<div class="section" id="select-colorbar">
+<h2>Select Colorbar<a class="headerlink" href="#select-colorbar" title="Permalink to this headline">¶</a></h2>
 <p>First identify the colorbar.  Activate the colorbar selector widget by
 picking &#8220;Select Colorbar&#8221; radio button.  Then drag the endpoints of the newly
 visible line to the endpoints of the colorbar on the image.  Yoink shows you
@@ -119,6 +125,9 @@ the colorbar you&#8217;ve selected to the right of the image.</p>
 <div class="figure">
 <a class="reference internal image-reference" href="_images/select_cbar.png"><img alt="_images/select_cbar.png" src="_images/select_cbar.png" style="height: 250px;" /></a>
 </div>
+</div>
+<div class="section" id="crop-image">
+<h2>Crop Image<a class="headerlink" href="#crop-image" title="Permalink to this headline">¶</a></h2>
 <p>Next crop the image.  Activate the image cropper by selecting &#8220;Crop Image&#8221;.
 Drag the shutters so that only the image within the image is not obscured.
 Note that the image in annotate figure updates as you drag the shutters.</p>
@@ -134,6 +143,20 @@ there is something wrong with the colorbar selection.</p>
 <a class="reference internal image-reference" href="_images/annotate_crop.png"><img alt="_images/annotate_crop.png" src="_images/annotate_crop.png" style="height: 250px;" /></a>
 </div>
 </div>
+<div class="section" id="annoate-and-dump">
+<h2>Annoate and Dump<a class="headerlink" href="#annoate-and-dump" title="Permalink to this headline">¶</a></h2>
+<p>Now use the textboxes in the annotate figure to set the x-axis, y-axis,
+and colorbar limits.  The ticks on the figure should update automatically.</p>
+<p>Now the image in the annotate figure should look very similar to the original
+image, still shown in the select figure.  (It should, this is the data you are
+yoinking).  If you are running yoink from the command line, click the
+&#8220;Dump to file&#8221; button to text files or a single numpy npz file (depending of
+the suffix of the output file name).  If running yoink from an interactive
+Python session, <a class="reference internal" href="yoink.html#yoink.cmap_app.CmapExtractor.get_data" title="yoink.cmap_app.CmapExtractor.get_data"><tt class="xref py py-func docutils literal"><span class="pre">yoink.cmap_app.CmapExtractor.get_data()</span></tt></a> will return a
+dictionary of extracted data.  It provides the <cite>x</cite>, <cite>y</cite>, and <cite>z</cite> data as
+well as the discrete colormapping: <cite>l</cite>, and <cite>rgb</cite>.</p>
+</div>
+</div>
 
 
           </div>
@@ -141,6 +164,18 @@ there is something wrong with the colorbar selection.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Extracting colormapped data</a><ul>
+<li><a class="reference internal" href="#preparing-you-image">Preparing you image</a></li>
+<li><a class="reference internal" href="#create-select-annotate-figures">Create Select &amp; Annotate Figures</a></li>
+<li><a class="reference internal" href="#select-colorbar">Select Colorbar</a></li>
+<li><a class="reference internal" href="#crop-image">Crop Image</a></li>
+<li><a class="reference internal" href="#annoate-and-dump">Annoate and Dump</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to Yoink&#8217;s documentation!</a></p>
