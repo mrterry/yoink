@@ -170,7 +170,22 @@ class CmapExtractor(object):
         self.dump_func()
 
     def get_data(self):
-        # The rcol_image knows about x, y.  z should go from 0-1
+        """Return the data extracted from the  image.
+
+        Returns
+        -------
+        dict : Dictionary with the following keys/values
+            x : array
+                ni+1 coordinates of x grid
+            y : 1D array
+                nj+1 coordinates of x grid
+            z : 2D array
+                (ni,nj) values of centered in grid given by x and y
+            l : array
+                distance along colormap, on [0, 1] interval
+            rgb: array
+                color of each point on colormap
+        """
         data = {}
         z = np.array(self.rcol_image._A)
 
