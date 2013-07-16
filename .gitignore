@@ -1,3 +1,6 @@
 *.pyc
 docs/_build
 docs/gh-pages
+docs/modules.rst
+docs/yoink.rst
+docs/yoink.data.rst
