@@ -59,7 +59,6 @@ class TextBox(AxesWidget):
         self.text = self.ax.text(0.025, 0.2, s,
                                  transform=self.ax.transAxes, **text_kwargs)
 
-        self.enter_callback = enter_callback
         self._cid = None
         self._cursor = None
         self._cursorpos = len(self.text.get_text())
@@ -67,6 +66,9 @@ class TextBox(AxesWidget):
 
         self.cnt = 0
         self.observers = {}
+
+        self.exit_cnt = 0
+        self.exit_observers = {}
 
         self.connect_event('button_press_event', self._mouse_activate)
 
@@ -80,6 +82,23 @@ class TextBox(AxesWidget):
         self.observers[cid] = func
         self.cnt += 1
         return cid
+
+    def on_exit(self, func):
+        """
+        When exiting TextBox entry, call *func* with the new value.
+
+        A connection id is returned with can be used to disconnect.
+        """
+        cid = self.cnt
+        self.exit_observers[cid] = func
+        self.cnt += 1
+        return cid
+
+    def disconnect_exit(self, cid):
+        try:
+            del self.exit_observers[cid]
+        except KeyError:
+            pass
 
     def disconnect(self, cid):
         """remove the observer with connection id *cid*"""
@@ -127,6 +146,10 @@ class TextBox(AxesWidget):
                 keypress_cbs[k] = self.old_callbacks.pop(k)
 
         self.cursor.set_visible(False)
+
+        for func in self.exit_observers.items():
+            func(self.value)
+
         if self.drawon:
             self.canvas.draw()
 
@@ -156,8 +179,6 @@ class TextBox(AxesWidget):
             if self._cursorpos < len(t):
                 self._cursorpos += 1
         elif event.key == 'enter':
-            if self.enter_callback is not None:
-                self.enter_callback(self.value)
             self.end_text_entry()
         elif self.allowed_chars is None:
             newt = t[:self._cursorpos] + event.key + t[self._cursorpos:]
