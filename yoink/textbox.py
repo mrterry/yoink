@@ -207,7 +207,7 @@ class TextBox(AxesWidget):
         # but always change the text
         self.text.set_text(text)
         if success and self.eventson:
-            for func in self.observers.itervalues():
+            for func in self.observers.values():
                 func(self.value)
 
     def _get_cursor_endpoints(self):
