@@ -462,7 +462,7 @@ class ShutterCrop(AxesWidget):
         Initial fraction of view that is cropped on each side
 
     **rect_kw : optional
-        Keyword args to customize the shutter `Rectangle`s
+        Keyword args to customize the shutter `Rectangle`
 
     By default, shutters have:
         facecolor='gray',
