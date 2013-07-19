@@ -28,7 +28,7 @@ def arctan2pi(b, a):
     return ans
 
 
-def cie76(lab1, lab2):
+def deltaE_cie76(lab1, lab2):
     """
     "just noticible difference" ~ 2.3
     """
@@ -37,7 +37,7 @@ def cie76(lab1, lab2):
     return np.sqrt((l2-l1)**2 + (a2-a1)**2 + (b2-b1)**2)
 
 
-def ciede94(lab1, lab2, kC=1, kH=1, kL=1, k1=0.045, k2=0.015):
+def deltaE_ciede94(lab1, lab2, kC=1, kH=1, kL=1, k1=0.045, k2=0.015):
     """
     kC, kH are weighting factors, usually unity (default)
 
@@ -45,9 +45,9 @@ def ciede94(lab1, lab2, kC=1, kH=1, kL=1, k1=0.045, k2=0.015):
     kL, k1, k2 = 1, 0.045, 0.015 (graphic arts, default)
     kL, k1, k2 = 2, 0.048, 0.014 (textiles)
 
-    Note: ciede94 the defines the scales for the lightness, hue, and chroma in
-    terms of the first color.  Consequently
-    ciede94(lab1, lab2) != ciede94(lab2, lab1)
+    Note: deltaE_ciede94 the defines the scales for the lightness, hue, and
+    chroma in terms of the first color.  Consequently
+    deltaE_ciede94(lab1, lab2) != deltaE_ciede94(lab2, lab1)
     """
     l1, a1, b1 = unpack_last(lab1)
     l2, a2, b2 = unpack_last(lab2)
@@ -68,7 +68,7 @@ def ciede94(lab1, lab2, kC=1, kH=1, kL=1, k1=0.045, k2=0.015):
     return np.sqrt(ans)
 
 
-def ciede2000(lab1, lab2, kL=1, kC=1, kH=1):
+def deltaE_ciede2000(lab1, lab2, kL=1, kC=1, kH=1):
     """
     kL = 1  # graphic arts
     kL = 2  # textiles
@@ -134,13 +134,14 @@ def ciede2000(lab1, lab2, kL=1, kC=1, kH=1):
     return np.sqrt(l_term**2 + c_term**2 + h_term**2 + r_term)
 
 
-def cmc(lab1, lab2):
+def deltaE_cmc(lab1, lab2):
     """
     indistinguishable if < 1
     usual value for "different" is > 2
 
-    Note: cmc the defines the scales for the lightness, hue, and chroma in
-    terms of the first color.  Consequently cmc(lab1, lab2) != cmc(lab2, lab1)
+    Note: deltaE_cmc the defines the scales for the lightness, hue, and chroma
+    in terms of the first color.  Consequently
+    deltaE_cmc(lab1, lab2) != deltaE_cmc(lab2, lab1)
     """
     l1, c1, h1 = unpack_last(lab2lch(lab1))
     l2, c2, h2 = unpack_last(lab2lch(lab2))

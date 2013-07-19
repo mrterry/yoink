@@ -1,7 +1,7 @@
 from skimage.color import rgb2lab
 import numpy as np
 
-from yoink.color import unpack_last, cmc, cie76, ciede94, ciede2000
+from yoink.color import unpack_last, deltaE_cmc, deltaE_cie76, deltaE_ciede94, deltaE_ciede2000
 
 
 def test_unpack_list():
@@ -44,26 +44,26 @@ def get_colors():
 def test_cmc():
     lab1, lab2 = get_colors()
     oracle = np.array([[0., 1.26874821], [5.95561801, 7.05602917]])
-    ans = cmc(lab1, lab2)
+    ans = deltaE_cmc(lab1, lab2)
     assert ans == oracle
 
 
 def test_cie76():
     lab1, lab2 = get_colors()
     oracle = np.array([[0., 7.32084628], [63.0161865, 129.49648305]])
-    ans = cie76(lab1, lab2)
+    ans = deltaE_cie76(lab1, lab2)
     assert ans == oracle
 
 
 def test_ciede94():
     lab1, lab2 = get_colors()
     oracle = np.array([[0., 3.40872722], [26.01559953, 51.05794486]])
-    ans = ciede94(lab1, lab2)
+    ans = deltaE_ciede94(lab1, lab2)
     assert ans == oracle
 
 
 def test_ciede2000():
     lab1, lab2 = get_colors()
     oracle = np.array([[0., 3.00112921], [29.1280938, 48.50997063]])
-    ans = ciede2000(lab1, lab2)
+    ans = deltaE_ciede2000(lab1, lab2)
     assert ans == oracle
