@@ -1,12 +1,10 @@
 import numpy as np
 
-deg = np.pi/180.
 
-
-def unpack_last(xyz):
-    xyz = np.asarray(xyz)
-    shape = xyz.shape
-    return [xyz[..., i] for i in range(shape[-1])]
+def unpack_last(x):
+    x = np.asarray(x)
+    shape = x.shape
+    return [x[..., i] for i in range(shape[-1])]
 
 
 def lab2lch(lab):
@@ -21,7 +19,8 @@ def lab2lch(lab):
     return lch
 
 
-def atan2pi(b, a):
+def arctan2pi(b, a):
+    """np.arctan2 mapped to (0, 2*pi)"""
     ans = np.arctan2(b, a)
     ans = np.where(ans < 0, ans + 2*np.pi, ans)
     assert ans.max() <= 2*np.pi
@@ -96,8 +95,8 @@ def ciede2000(lab1, lab2, kL=1, kC=1, kH=1):
 
     # colors are in 360, but atan2 is -180, 180
     # TODO: make h?_prime on (0, 360)
-    h1_prime = atan2pi(b1, a1_prime)
-    h2_prime = atan2pi(b2, a2_prime)
+    h1_prime = arctan2pi(b1, a1_prime)
+    h2_prime = arctan2pi(b2, a2_prime)
 
     dh_prime = h2_prime - h1_prime
     mask1 = np.abs(dh_prime) <= np.pi
@@ -160,6 +159,7 @@ def cmc(lab1, lab2):
     l, c = 1, 1
     ans = ((l2 - l1)/(l * sl))**2
     ans += ((c2 - c1)/(c * sc))**2
+    deg = np.pi/180.
     ans += ((h2 - h1)*deg/sh)**2  # metric defines h in terms of degrees
 
     return np.sqrt(ans)
