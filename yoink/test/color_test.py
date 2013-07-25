@@ -1,7 +1,8 @@
 from skimage.color import rgb2lab
 import numpy as np
 
-from yoink.color import unpack_last, deltaE_cmc, deltaE_cie76, deltaE_ciede94, deltaE_ciede2000
+from yoink.color import (unpack_last, deltaE_cmc, deltaE_cie76, deltaE_ciede94,
+                         deltaE_ciede2000)
 
 
 def test_unpack_list():

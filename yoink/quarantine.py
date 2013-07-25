@@ -8,9 +8,9 @@ import numpy as np
 from scipy import ndimage
 from skimage.feature import corner_harris
 
-from yoink.guess import guess_corners, mean_rotation, clear_border
-from yoink.data import rotated_lena, rotated_parabola
-from yoink.widgets import if_attentive
+from .guess import guess_corners, mean_rotation, clear_border
+from .data import rotated_lena, rotated_parabola
+from .widgets import if_attentive
 
 
 class KeyboardCrop(Widget):

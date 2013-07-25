@@ -1,8 +1,8 @@
 from __future__ import division, print_function
 from collections import OrderedDict
 
-from yoink.widgets import (DeformableLine, ShutterCrop, NothingWidget,
-                           CroppedImage, ShadowLine)
+from .widgets import (DeformableLine, ShutterCrop, NothingWidget, CroppedImage,
+                      ShadowLine)
 
 import numpy as np
 from matplotlib.widgets import RadioButtons, Button

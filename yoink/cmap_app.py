@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import RadioButtons, Button
 import numpy as np
 
-from yoink.widgets import (ShutterCrop, DragableColorLine, NothingWidget,
-                           RecoloredWidget, ScaledColorbar)
-from yoink.textbox import TextBoxFloat
+from .widgets import (ShutterCrop, DragableColorLine, NothingWidget,
+                      RecoloredWidget, ScaledColorbar)
+from .textbox import TextBoxFloat
 
 
 class CmapExtractor(object):

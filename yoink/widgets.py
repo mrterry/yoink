@@ -9,9 +9,9 @@ from matplotlib.widgets import Widget, AxesWidget
 from matplotlib.colorbar import colorbar_factory
 from matplotlib.ticker import ScalarFormatter
 
-from yoink.textbox import TextBoxFloat
-from yoink.trace import equispaced_colormaping
-from yoink.interp import invert_cmap
+from .textbox import TextBoxFloat
+from .trace import equispaced_colormaping
+from .interp import invert_cmap
 
 
 def if_attentive(f):

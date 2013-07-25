@@ -1,8 +1,8 @@
-from yoink.trace import naive_trace
 from numpy.testing import assert_almost_equal
 from nose.tools import ok_
 import numpy as np
 
+from yoink.trace import naive_trace
 from yoink.trace import (equispaced_colormaping, naive_colormaping,
                          bresenham_colormapping)
 
