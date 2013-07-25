@@ -23,3 +23,7 @@ def square_lena():
 
 def yosemite():
     return imread(pjoin(DIR, 'yosemite.png'))
+
+
+def squiggle():
+    return imread(pjoin(DIR, 'squiggle.png'))
