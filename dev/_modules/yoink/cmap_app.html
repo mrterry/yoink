@@ -58,9 +58,9 @@
 <span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">RadioButtons</span><span class="p">,</span> <span class="n">Button</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yoink.widgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ShutterCrop</span><span class="p">,</span> <span class="n">DragableColorLine</span><span class="p">,</span> <span class="n">NothingWidget</span><span class="p">,</span>
-                           <span class="n">RecoloredWidget</span><span class="p">,</span> <span class="n">ScaledColorbar</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">yoink.textbox</span> <span class="kn">import</span> <span class="n">TextBoxFloat</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ShutterCrop</span><span class="p">,</span> <span class="n">DragableColorLine</span><span class="p">,</span> <span class="n">NothingWidget</span><span class="p">,</span>
+                      <span class="n">RecoloredWidget</span><span class="p">,</span> <span class="n">ScaledColorbar</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.textbox</span> <span class="kn">import</span> <span class="n">TextBoxFloat</span>
 
 
 <div class="viewcode-block" id="CmapExtractor"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor">[docs]</a><span class="k">class</span> <span class="nc">CmapExtractor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -223,7 +223,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dump_func</span><span class="p">()</span>
 </div>
 <div class="viewcode-block" id="CmapExtractor.get_data"><a class="viewcode-back" href="../../yoink.html#yoink.cmap_app.CmapExtractor.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># The rcol_image knows about x, y.  z should go from 0-1</span>
+        <span class="sd">&quot;&quot;&quot;Return the data extracted from the  image.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict : Dictionary with the following keys/values</span>
+<span class="sd">            x : array</span>
+<span class="sd">                ni+1 coordinates of x grid</span>
+<span class="sd">            y : 1D array</span>
+<span class="sd">                nj+1 coordinates of x grid</span>
+<span class="sd">            z : 2D array</span>
+<span class="sd">                (ni,nj) values of centered in grid given by x and y</span>
+<span class="sd">            l : array</span>
+<span class="sd">                distance along colormap, on [0, 1] interval</span>
+<span class="sd">            rgb: array</span>
+<span class="sd">                color of each point on colormap</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rcol_image</span><span class="o">.</span><span class="n">_A</span><span class="p">)</span>
 

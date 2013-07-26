@@ -62,9 +62,9 @@
 <span class="kn">from</span> <span class="nn">matplotlib.colorbar</span> <span class="kn">import</span> <span class="n">colorbar_factory</span>
 <span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">ScalarFormatter</span>
 
-<span class="kn">from</span> <span class="nn">yoink.textbox</span> <span class="kn">import</span> <span class="n">TextBoxFloat</span>
-<span class="kn">from</span> <span class="nn">yoink.trace</span> <span class="kn">import</span> <span class="n">equispaced_colormaping</span>
-<span class="kn">from</span> <span class="nn">yoink.interp</span> <span class="kn">import</span> <span class="n">invert_cmap</span>
+<span class="kn">from</span> <span class="nn">.textbox</span> <span class="kn">import</span> <span class="n">TextBoxFloat</span>
+<span class="kn">from</span> <span class="nn">.trace</span> <span class="kn">import</span> <span class="n">equispaced_colormaping</span>
+<span class="kn">from</span> <span class="nn">.interp</span> <span class="kn">import</span> <span class="n">invert_cmap</span>
 
 
 <div class="viewcode-block" id="if_attentive"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.if_attentive">[docs]</a><span class="k">def</span> <span class="nf">if_attentive</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
@@ -515,7 +515,7 @@
 <span class="sd">        Initial fraction of view that is cropped on each side</span>
 
 <span class="sd">    **rect_kw : optional</span>
-<span class="sd">        Keyword args to customize the shutter `Rectangle`s</span>
+<span class="sd">        Keyword args to customize the shutter `Rectangle`</span>
 
 <span class="sd">    By default, shutters have:</span>
 <span class="sd">        facecolor=&#39;gray&#39;,</span>

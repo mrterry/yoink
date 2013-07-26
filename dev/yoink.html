@@ -217,6 +217,276 @@ applied to it</td>
 </dd></dl>
 
 </div>
+<div class="section" id="module-yoink.delta_e">
+<span id="delta-e-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">delta_e</span></tt> Module<a class="headerlink" href="#module-yoink.delta_e" title="Permalink to this headline">¶</a></h2>
+<p>Functions for calculating the &#8220;distance&#8221; between colors.</p>
+<p>Implicit in these definitions of &#8220;distance&#8221; is the notion of &#8220;Just Noticible
+Distance&#8221; (JND).  This represents the distance between colors where a human can
+percieve different colors.  Humans are more sensitive to certain colors than
+others, which different deltaE metrics correct for this with varying degrees of
+sophistication.</p>
+<p>The literature often mentions 1 as the minimum distance for visual
+differentiation, but more recent studies (Mahy 1994) peg JND at 2.3</p>
+<p>The delta-E notation comes from the German word for &#8220;Sensation&#8221; (Empfindung).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body">Matt Terry</td>
+</tr>
+<tr class="field-even field"><th class="field-name">license:</th><td class="field-body">modified BSD</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="reference">
+<h3>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Color_difference">http://en.wikipedia.org/wiki/Color_difference</a></p>
+<dl class="function">
+<dt id="yoink.delta_e.deltaE_cie76">
+<tt class="descclassname">yoink.delta_e.</tt><tt class="descname">deltaE_cie76</tt><big>(</big><em>lab1</em>, <em>lab2</em><big>)</big><a class="reference internal" href="_modules/yoink/delta_e.html#deltaE_cie76"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.delta_e.deltaE_cie76" title="Permalink to this definition">¶</a></dt>
+<dd><p>Euclidian distance between two points in in Lab color space</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>lab1</strong> : array_like</p>
+<blockquote>
+<div><p>reference color (Lab colorspace)</p>
+</div></blockquote>
+<p><strong>lab2</strong> : array_like</p>
+<blockquote>
+<div><p>comparision color (Lab colorspace)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dE</strong> : array_like</p>
+<blockquote class="last">
+<div><p>distance between colors <cite>lab1</cite> and <cite>lab2</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[R1]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Color_difference">http://en.wikipedia.org/wiki/Color_difference</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[R2]</a></td><td>A. R. Robertson, &#8220;The CIE 1976 color-difference formulae,&#8221;
+Color Res. Appl. 2, 7-11 (1977).</td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.delta_e.deltaE_ciede2000">
+<tt class="descclassname">yoink.delta_e.</tt><tt class="descname">deltaE_ciede2000</tt><big>(</big><em>lab1</em>, <em>lab2</em>, <em>kL=1</em>, <em>kC=1</em>, <em>kH=1</em><big>)</big><a class="reference internal" href="_modules/yoink/delta_e.html#deltaE_ciede2000"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.delta_e.deltaE_ciede2000" title="Permalink to this definition">¶</a></dt>
+<dd><p>Color difference as given by the CIEDE 2000 standard.</p>
+<p>CIEDE 2000 is a major revision of CIDE94.  The perceptual calibaration is
+largely based on experience with automotive paint on smooth surfaces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>lab1</strong> : array_like</p>
+<blockquote>
+<div><p>reference color (Lab colorspace)</p>
+</div></blockquote>
+<p><strong>lab2</strong> : array_like</p>
+<blockquote>
+<div><p>comparision color (Lab colorspace)</p>
+</div></blockquote>
+<p><strong>kL</strong> : float (range), optional</p>
+<blockquote>
+<div><p>pass</p>
+</div></blockquote>
+<p><strong>kC</strong> : float (range), optional</p>
+<blockquote>
+<div><p>pass</p>
+</div></blockquote>
+<p><strong>kH</strong> : float (range), optional</p>
+<blockquote>
+<div><p>pass</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>deltaE</strong> : array_like</p>
+<blockquote class="last">
+<div><p>The distance between <cite>lab1</cite> and <cite>lab2</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>CIEDE 2000 assumes parametric weighting factors for the luminance, chroma,
+and hue (kL, kC, kH respectively).  These default to 1.</p>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[R3]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Color_difference">http://en.wikipedia.org/wiki/Color_difference</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[R4]</a></td><td><a class="reference external" href="http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf">http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf</a>
+(doi:10.1364/AO.33.008069)</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[R5]</a></td><td>M. Melgosa, J. Quesada, and E. Hita, &#8220;Uniformity of some recent
+color metrics tested with an accurate color-difference tolerance
+dataset,&#8221; Appl. Opt. 33, 8069-8077 (1994).</td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.delta_e.deltaE_ciede94">
+<tt class="descclassname">yoink.delta_e.</tt><tt class="descname">deltaE_ciede94</tt><big>(</big><em>lab1</em>, <em>lab2</em>, <em>kH=1</em>, <em>kC=1</em>, <em>kL=1</em>, <em>k1=0.045</em>, <em>k2=0.015</em><big>)</big><a class="reference internal" href="_modules/yoink/delta_e.html#deltaE_ciede94"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.delta_e.deltaE_ciede94" title="Permalink to this definition">¶</a></dt>
+<dd><p>Color difference according to CIEDE 94 standard</p>
+<p>Accomodates perceptual non-uniformites through the use of application
+specific scale factors (kH, kC, kL, k1, and k2).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>lab1</strong> : array_like</p>
+<blockquote>
+<div><p>reference color (Lab colorspace)</p>
+</div></blockquote>
+<p><strong>lab2</strong> : array_like</p>
+<blockquote>
+<div><p>comparision color (Lab colorspace)</p>
+</div></blockquote>
+<p><strong>kH</strong> : float, optional</p>
+<blockquote>
+<div><p>Hue scale</p>
+</div></blockquote>
+<p><strong>kC</strong> : float, optional</p>
+<blockquote>
+<div><p>Chroma scale</p>
+</div></blockquote>
+<p><strong>kL</strong> : float, optional</p>
+<blockquote>
+<div><p>Lightness scale</p>
+</div></blockquote>
+<p><strong>k1</strong> : float, optional</p>
+<blockquote>
+<div><p>first scale parameter</p>
+</div></blockquote>
+<p><strong>k2</strong> : float, optional</p>
+<blockquote>
+<div><p>second scale parameter</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dE</strong> : array_like</p>
+<blockquote class="last">
+<div><p>color difference between <cite>lab1</cite> and <cite>lab2</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>deltaE_ciede94 is not symmetric with respect to lab1 and lab2.  CIEDE94
+defines the scales for the lightness, hue, and chroma in terms of the first
+color.  Consequently, the first color should be regarded as the &#8220;reference&#8221;
+color.</p>
+<p>kL, k1, k2 depend on the application and default to the values suggested
+for graphic arts</p>
+<p>Parameter   Graphic Arts    Textiles
+&#8212;&#8212;&#8212;-  &#8212;&#8212;&#8212;&#8212;-   &#8212;&#8212;&#8211;
+kL          1.000           2.000
+k1          0.045           0.048
+k2          0.015           0.014</p>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[R6]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Color_difference">http://en.wikipedia.org/wiki/Color_difference</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r7" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[R7]</a></td><td><a class="reference external" href="http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE94.html">http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE94.html</a></td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.delta_e.deltaE_cmc">
+<tt class="descclassname">yoink.delta_e.</tt><tt class="descname">deltaE_cmc</tt><big>(</big><em>lab1</em>, <em>lab2</em>, <em>kL=1</em>, <em>kC=1</em><big>)</big><a class="reference internal" href="_modules/yoink/delta_e.html#deltaE_cmc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.delta_e.deltaE_cmc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Color difference from the  CMC l:c standard.</p>
+<p>This color difference developed by the Colour Measurement Committee of the
+Socieity of Dyes and Colourists of Great Britian (CMC).  It is intended for
+use in the textile industry.</p>
+<p>The scale factors kL, kC set the weight given to differences in lightness
+and chroma relative to differences in hue.  The usual values are kL=2, kC=1
+for &#8220;acceptability&#8221; and kL=1, kC=1 for &#8220;imperceptability&#8221;.  Colors with
+dE &gt; 1 are &#8220;different&#8221; for the given scale factors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>lab1</strong> : array_like</p>
+<blockquote>
+<div><p>reference color (Lab colorspace)</p>
+</div></blockquote>
+<p><strong>lab2</strong> : array_like</p>
+<blockquote>
+<div><p>comparision color (Lab colorspace)</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dE</strong> : array_like</p>
+<blockquote class="last">
+<div><p>distance between colors <cite>lab1</cite> and <cite>lab2</cite></p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>deltaE_cmc the defines the scales for the lightness, hue, and chroma
+in terms of the first color.  Consequently
+deltaE_cmc(lab1, lab2) != deltaE_cmc(lab2, lab1)</p>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[R8]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Color_difference">http://en.wikipedia.org/wiki/Color_difference</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r9" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[R9]</a></td><td><a class="reference external" href="http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE94.html">http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE94.html</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r10" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[R10]</a></td><td>F. J. J. Clarke, R. McDonald, and B. Rigg, &#8220;Modification to the
+JPC79 colour-difference formula,&#8221; J. Soc. Dyers Colour. 100, 128-132
+(1984).</td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
 <div class="section" id="module-yoink.guess">
 <span id="guess-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">guess</span></tt> Module<a class="headerlink" href="#module-yoink.guess" title="Permalink to this headline">¶</a></h2>
 <p>Functions that try to infer the placement of key things (plot border, axes
@@ -467,12 +737,120 @@ the values are dicts of keyboard-keys and how far to shift the image
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-yoink.skeletonize">
-<span id="skeletonize-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">skeletonize</span></tt> Module<a class="headerlink" href="#module-yoink.skeletonize" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-yoink.simplify">
+<span id="simplify-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">simplify</span></tt> Module<a class="headerlink" href="#module-yoink.simplify" title="Permalink to this headline">¶</a></h2>
+<p>Functions for simplifying line segments</p>
 <dl class="function">
-<dt id="yoink.skeletonize.run">
-<tt class="descclassname">yoink.skeletonize.</tt><tt class="descname">run</tt><big>(</big><em>pixels</em>, <em>path</em><big>)</big><a class="reference internal" href="_modules/yoink/skeletonize.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.skeletonize.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="yoink.simplify.img2line">
+<tt class="descclassname">yoink.simplify.</tt><tt class="descname">img2line</tt><big>(</big><em>img</em><big>)</big><a class="reference internal" href="_modules/yoink/simplify.html#img2line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.simplify.img2line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an image to a sequence of indexes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>iseq</strong> : array</p>
+<blockquote>
+<div><p>1d sequnce of i coordinates</p>
+</div></blockquote>
+<p><strong>jseq</strong> : array</p>
+<blockquote class="last">
+<div><p>1d sequnce of j coordinates</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.simplify.point_line_dist2">
+<tt class="descclassname">yoink.simplify.</tt><tt class="descname">point_line_dist2</tt><big>(</big><em>p</em>, <em>l1</em>, <em>l2</em><big>)</big><a class="reference internal" href="_modules/yoink/simplify.html#point_line_dist2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.simplify.point_line_dist2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distance**2 between sequence of N, M-dimensional points and line l1-l2</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>p</strong> : array_like</p>
+<blockquote>
+<div><p>sequence of N, M-dimensional points. shape = (N, M)</p>
+</div></blockquote>
+<p><strong>l1</strong> : array_like</p>
+<blockquote>
+<div><p>start of line segment len == M</p>
+</div></blockquote>
+<p><strong>l2</strong> : array_like</p>
+<blockquote>
+<div><p>end of line segment len == M</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>dist2</strong> : array_like</p>
+<blockquote class="last">
+<div><p>distance**2 between each point and line. shape == N</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="yoink.simplify.rdp_indexes">
+<tt class="descclassname">yoink.simplify.</tt><tt class="descname">rdp_indexes</tt><big>(</big><em>points</em>, <em>eps2</em>, <em>dist2=None</em><big>)</big><a class="reference internal" href="_modules/yoink/simplify.html#rdp_indexes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.simplify.rdp_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indexes of points kept using the Ramer-Douglas-Peucker algorithm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>points</strong> : array_like</p>
+<blockquote>
+<div><p>(n, m) n points in m dimensions</p>
+</div></blockquote>
+<p><strong>eps2</strong> : number</p>
+<blockquote>
+<div><p>(max allowable distance)**2</p>
+</div></blockquote>
+<p><strong>dist2</strong> : callable, optional</p>
+<blockquote>
+<div><p>dist to is a callable returns the square of the distance between a
+sequence of points and a line defined by its two endpoints.  defaults
+to point_line_dist2</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>indexes</strong> : list</p>
+<blockquote class="last">
+<div><p>sorted list of indexes of kept points</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r11" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id12">[R11]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm">http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r12" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id13">[R12]</a></td><td>Urs Ramer, &#8220;An iterative procedure for the polygonal approximation
+of plane curves&#8221;, Computer Graphics and Image Processing, 1(3),
+244-256 (1972) doi:10.1016/S0146-664X(72)80017-0</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r13" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id14">[R13]</a></td><td>David Douglas &amp; Thomas Peucker, &#8220;Algorithms for the reduction of the
+number of points required to represent a digitized line or its
+caricature&#8221;, The Canadian Cartographer 10(2), 112-122 (1973)
+doi:10.3138/FM57-6770-U75U-7727</td></tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-yoink.textbox">
@@ -1305,11 +1683,15 @@ picker=5</p>
 <li><a class="reference internal" href="#">yoink Package</a><ul>
 <li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">yoink</span></tt> Package</a></li>
 <li><a class="reference internal" href="#module-yoink.cmap_app"><tt class="docutils literal"><span class="pre">cmap_app</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-yoink.delta_e"><tt class="docutils literal"><span class="pre">delta_e</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#reference">Reference</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-yoink.guess"><tt class="docutils literal"><span class="pre">guess</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.interp"><tt class="docutils literal"><span class="pre">interp</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.line_app"><tt class="docutils literal"><span class="pre">line_app</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.quarantine"><tt class="docutils literal"><span class="pre">quarantine</span></tt> Module</a></li>
-<li><a class="reference internal" href="#module-yoink.skeletonize"><tt class="docutils literal"><span class="pre">skeletonize</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-yoink.simplify"><tt class="docutils literal"><span class="pre">simplify</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.textbox"><tt class="docutils literal"><span class="pre">textbox</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.trace"><tt class="docutils literal"><span class="pre">trace</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.widgets"><tt class="docutils literal"><span class="pre">widgets</span></tt> Module</a><ul>

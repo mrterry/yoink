@@ -17,6 +17,14 @@ yoink Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`delta_e` Module
+---------------------
+
+.. automodule:: yoink.delta_e
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`guess` Module
 -------------------
 
@@ -49,10 +57,10 @@ yoink Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`skeletonize` Module
--------------------------
+:mod:`simplify` Module
+----------------------
 
-.. automodule:: yoink.skeletonize
+.. automodule:: yoink.simplify
     :members:
     :undoc-members:
     :show-inheritance:

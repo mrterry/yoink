@@ -55,6 +55,14 @@
   <div class="section" id="welcome-to-yoink-s-documentation">
 <h1>Welcome to Yoink&#8217;s documentation!<a class="headerlink" href="#welcome-to-yoink-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Yoink is a tool for extracting data from rasterized images.</p>
+<p>Say you have an academic paper with an figure containing data you would like
+to use.  Unfortunalely, the raw data is not available.  All you have is the
+image on the page.  Fortunatley, the image contains all the information you
+need: clear lines, axis labels, and colorbar (if a colormapped image).  Yoink
+helps you extract (&#8220;yoink!&#8221;) the data from your picture.</p>
+<p>Yoink is pure Python and has a minimal set of dependencies (which you probably
+already have installed), to help you get your data instead of installing
+software.</p>
 <p>At SciPy 2013, Matt Terry gave a humorous <a class="reference external" href="http://www.youtube.com/watch?v=ywHqIEv3xXg&amp;t=31m42s">lighting talk</a> demonstrating
 yoink pulling data from an image despite an especially obnoxious colormap.</p>
 <iframe src="http://www.youtube.com/embed/ywHqIEv3xXg?start=1902" style="border: 0; height: 345px; width: 560px">
@@ -65,9 +73,12 @@ yoink pulling data from an image despite an especially obnoxious colormap.</p>
 <li>numpy</li>
 <li>scipy</li>
 <li>matplotlib</li>
+<li>scikit-image</li>
 </ul>
 <p>The custom widgets provided by yoink are designed to work independent of the
-backend.  Yes, even with the quirky macosx backend.</p>
+backend.  Yes, even with the quirky macosx backend.  That said, we recommend
+running with matplotlib <em>not</em> in interactive mode.  Some drawing operations are
+expensive and automatic figure updating can be slow.</p>
 </div>
 <div class="section" id="helpful-links">
 <h2>Helpful Links<a class="headerlink" href="#helpful-links" title="Permalink to this headline">¶</a></h2>
