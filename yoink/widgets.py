@@ -13,6 +13,8 @@ from .textbox import TextBoxFloat
 from .trace import equispaced_colormaping
 from .interp import invert_cmap
 
+from .has_actions import Actionable
+
 
 def if_attentive(f):
     @wraps(f)
@@ -215,7 +217,7 @@ class DragableColorLine(Widget):
             self.cbar_ax.figure.canvas.draw()
 
 
-class DeformableLine(AxesWidget):
+class DeformableLine(AxesWidget, Actionable):
     """
     Segemented line with movable vertexes
 
@@ -251,10 +253,16 @@ class DeformableLine(AxesWidget):
     circle_kw : dict
         Dictionary to customize Circles
     """
+    ACTIONS = [
+        ('on_changed', 'changed', 'disconnect'),
+        ('on_release', 'released', 'disconnect_release'),
+    ]
+
     def __init__(self, ax,
                  is_closed=False, max_points=None, grows=True, shrinks=True,
                  line_kw=None, circle_kw=None):
         AxesWidget.__init__(self, ax)
+        Actionable.__init__(self)
         self.visible = True
 
         self.observers = {}
@@ -302,52 +310,6 @@ class DeformableLine(AxesWidget):
                 self.canvas.mpl_disconnect(cid)
                 self.cids.remove(cid)
             self._rclick_cids = None
-
-    def on_changed(self, func):
-        """
-        When the DeformableLine moves, call *func* with no parameters.
-
-        A connection id is returned which can be used to disconnect.
-        """
-        cid = self.cid
-        self.observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect(self, cid):
-        """remove the observer with connection id *cid*"""
-        try:
-            del self.observers[cid]
-        except KeyError:
-            pass
-
-    def changed(self):
-        """Call the observers"""
-        for func in self.observers.values():
-            func()
-
-    def on_release(self, func):
-        """
-        When finished moving, call *func* with no parameters.
-
-        A connection id is returned which can be used to disconnect.
-        """
-        cid = self.cid
-        self.release_observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect_release(self, cid):
-        """remove the release_observer with connection id *cid*"""
-        try:
-            del self.release_observers[cid]
-        except KeyError:
-            pass
-
-    def released(self):
-        """Call the release_observers"""
-        for func in self.release_observers.values():
-            func()
 
     def add_point(self, x, y):
         """Add a new segment to the DeformableLine"""
@@ -618,7 +580,7 @@ class ShutterCrop(AxesWidget):
         self.changed()
 
 
-class RecoloredWidget(AxesWidget):
+class RecoloredWidget(AxesWidget, Actionable):
     """
     Widget that recolors a multichannel image using a given a scale sequence
     and associated colors.
@@ -638,9 +600,14 @@ class RecoloredWidget(AxesWidget):
         Source pixels to recolor
     image : matplotlib.Image
     """
+    ACTIONS = [
+        ('on_changed', 'changed', 'disconnect'),
+    ]
+
     # TODO what to do for colors "far" from scale
     def __init__(self, ax, pixels):
         AxesWidget.__init__(self, ax)
+        Actionable.__init__(self)
         self._pixels = pixels
         self.pixels = pixels[:, :, 0].copy()
         self.image = self.ax.imshow(self.pixels,
@@ -652,29 +619,6 @@ class RecoloredWidget(AxesWidget):
 
         self.observers = {}
         self.cid = 0
-
-    def on_changed(self, func):
-        """
-        When the RecoloredWidget changes, call *func* with no arguments.
-
-        A connection id is returned which can be used to disconnect.
-        """
-        cid = self.cid
-        self.observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect(self, cid):
-        """remove the observer with connection id *cid*"""
-        try:
-            del self.observers[cid]
-        except KeyError:
-            pass
-
-    def changed(self):
-        """Call the observers"""
-        for func in self.observers.values():
-            func()
 
     def make_xyextent_textboxes(self, ax_xlo, ax_xhi, ax_ylo, ax_yhi):
         """
@@ -797,7 +741,7 @@ class OffsetFormatter(ScalarFormatter):
         return ScalarFormatter.__call__(self, x, pos=pos)
 
 
-class CroppedImage(AxesWidget):
+class CroppedImage(AxesWidget, Actionable):
     """
     Widget that recolors a multichannel image using a given a scale sequence
     and associated colors.
@@ -818,9 +762,14 @@ class CroppedImage(AxesWidget):
     image : matplotlib image
         The image displayed on the axes
     """
+    ACTIONS = [
+        ('on_changed', 'changed', 'disconect'),
+    ]
+
     # TODO what to do for colors "far" from scale
     def __init__(self, ax, pixels):
         AxesWidget.__init__(self, ax)
+        Actionable.__init__(self)
         self.pixels = pixels
         self.image = self.ax.imshow(self.pixels,
                                     aspect='auto',
@@ -831,29 +780,6 @@ class CroppedImage(AxesWidget):
 
         self.observers = {}
         self.cid = 0
-
-    def on_changed(self, func):
-        """
-        When the RecoloredWidget changes, call *func* with no arguments.
-
-        A connection id is returned which can be used to disconnect.
-        """
-        cid = self.cid
-        self.observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect(self, cid):
-        """remove the observer with connection id *cid*"""
-        try:
-            del self.observers[cid]
-        except KeyError:
-            pass
-
-    def changed(self):
-        """Call the observers"""
-        for func in self.observers.values():
-            func()
 
     def make_xyextent_textboxes(self, ax_xlo, ax_xhi, ax_ylo, ax_yhi):
         """
