@@ -37,6 +37,26 @@ extensions = ['sphinx.ext.autodoc',
               ]
 numpydoc_show_class_members = False
 
+import glob
+from os.path import join as pjoin, basename, abspath
+from subprocess import call
+from os import mkdir
+nbs = glob.glob('../examples/*.ipynb')
+d = pjoin('_build', 'html', 'examples')
+try:
+    mkdir(d)
+except OSError:
+    pass
+command = ['ipython', 'nbconvert', 'html', '--stdout']
+for nb_path in nbs:
+    nb_path = abspath(nb_path)
+    name = basename(nb_path)
+    name = name.split('.')
+    name = '.'.join(name[:-1])
+    html_path = pjoin(d, name+'.html')
+    with open(html_path, 'w') as f:
+        call(command + [nb_path], stdout=f)
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
