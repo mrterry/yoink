@@ -32,6 +32,12 @@ disf_docstring = """\
 
 
 class ActionableMeta(type):
+    """Metaclass for populating boilerplate callback methods
+
+    Consumes the class attribute ACTIONS, where ACTIONS is a list of
+    3-element tuples.  The elements are the names of the on_ACTION, ACTIONED,
+    and disconnect_ACTION methods.
+    """
     def __new__(meta, name, bases, dct):
         actions = dct.pop('ACTIONS', [])
         for on_action, actioned, disconnect in actions:
@@ -64,11 +70,18 @@ class ActionableMeta(type):
 
         return super(ActionableMeta, meta).__new__(meta, name, bases, dct)
 
-    def __init__(cls, name, bases, dct):
-        super(ActionableMeta, cls).__init__(name, bases, dct)
-
 
 class Actionable(object):
+    """Class for managing callbacks functions.
+
+    Populates the class with functions for registering callbacks (on_ACTION),
+    un-registering callbacks (disconnect_ACTION), and calling the registered
+    callback function (ACTIONED).
+
+    Subclasses must define a class attribute ACTIONS that contains a list of
+    tuples.  Each tuple should be three elements long and contain the names of
+    the on_ACTION, ACTIONED, and disconnect_ACTION functions.
+    """
     __metaclass__ = ActionableMeta
 
     def __init__(self):
