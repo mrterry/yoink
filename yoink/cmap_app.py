@@ -99,7 +99,10 @@ class CmapExtractor(object):
                                                  ann_axes['yhi'])
 
         # Crop the re-colored image when the cropping shutters move
-        self.crop_widget.on_changed(self.rcol_widget.crop)
+        self.crop_widget.on_changed(
+            lambda has_extent: self.rcol_widget.crop(has_extent.get_extents()),
+            args=(self.crop_widget,),
+        )
 
         # Draw a colorbar for the re-colored image, and set the initial cmap
         self.cbar_widget = ScaledColorbar(ann_axes['cbar'],

@@ -414,7 +414,7 @@ class DeformableLine(AxesWidget, Actionable):
         return self.line.get_xydata()
 
 
-class ShutterCrop(AxesWidget):
+class ShutterCrop(AxesWidget, Actionable):
     """
     Crop an image by dragging transparent panes over excluded region.
 
@@ -439,9 +439,14 @@ class ShutterCrop(AxesWidget):
     rects : dict
         Dictionary of Rectangles
     """
+    ACTIONS = [
+        ('on_changed', 'changed', 'disconnect'),
+    ]
+
     def __init__(self, ax, dx_frac=0.05, **rect_kw):
         self.rects = {}  # AxesWidget sets active=True, so rects needs to exist
         AxesWidget.__init__(self, ax)
+        Actionable.__init__(self)
         self.visible = True
 
         self.observers = {}
@@ -461,30 +466,6 @@ class ShutterCrop(AxesWidget):
         self.connect_event('pick_event', self._pick),
         self.connect_event('button_release_event', self._release),
         self.connect_event('motion_notify_event', self._motion),
-
-    def on_changed(self, func):
-        """
-        When the ShutterCrop windows move, call *func* with the new extent.
-
-        A connection id is returned which can be used to disconnect.
-        """
-        cid = self.cid
-        self.observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect(self, cid):
-        """remove the observer with connection id *cid*"""
-        try:
-            del self.observers[cid]
-        except KeyError:
-            pass
-
-    def changed(self):
-        """Call the observers"""
-        extent = self.get_extents()  # data (pixel) coordinates
-        for func in self.observers.values():
-            func(extent)
 
     def _make_rects(self, dx_frac, kw):
         """Create the rectangles for each shutter"""
