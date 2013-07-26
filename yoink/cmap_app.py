@@ -111,7 +111,10 @@ class CmapExtractor(object):
 
         # Re-draw the colormap when the colorbar-selector moves
         # re-digitizing is expensive, so only do it when you release the mouse
-        self.cbar_select.on_release(self.rcol_widget.digitize)
+        self.cbar_select.on_release(
+            lambda has_cb: self.rcol_widget.digitize(has_cb.l, has_cb.rgb),
+            args=(self.cbar_select,),
+        )
 
         # colorbar text boxes
         self.create_cbar_textboxes(ann_axes['cbar_lo'], ann_axes['cbar_hi'])

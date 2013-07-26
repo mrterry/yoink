@@ -54,7 +54,7 @@ class ShadowLine(AxesWidget):
             self.canvas.draw()
 
 
-class DragableColorLine(Widget):
+class DragableColorLine(Widget, Actionable):
     """
     Fake colormap-like image taken from the end points of a DeformableLine
 
@@ -84,9 +84,15 @@ class DragableColorLine(Widget):
     pixels :  ndarray
         pixels pull colors from
     """
+    ACTIONS = [
+        ('on_release', 'released', 'disconnect_release'),
+        ('on_changed', 'changed', 'disconnect'),
+    ]
+
     def __init__(self, select_ax, cbar_ax, pixels,
                  line_kw=None, circle_kw=None):
         Widget.__init__(self)
+        Actionable.__init__(self)
         self.select_ax = select_ax
         self.cbar_ax = cbar_ax
         self._active = True
@@ -118,54 +124,6 @@ class DragableColorLine(Widget):
         self._fill_cbar_ax()
         self.line.on_changed(self.update)
         self.line.on_release(self.released)
-
-    def on_release(self, func):
-        """
-        When the DragableColorLine finishes moving, call *func* with the new
-        path and colors.
-
-        A connection id is returned which can be used to disconnect.
-        """
-        cid = self.cid
-        self.release_observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect_release(self, cid):
-        """remove the release_observer with connection id *cid*"""
-        try:
-            del self.release_observers[cid]
-        except KeyError:
-            pass
-
-    def released(self):
-        """call the release_observers"""
-        for func in self.release_observers.values():
-            func(self.l, self.rgb)
-
-    def on_changed(self, func):
-        """
-        When the DragableColorLine moves, call *func* with the new path and
-        colors.
-
-        A connection id is returned which can be used to disconnect.
-        """
-        cid = self.cid
-        self.observers[cid] = func
-        self.cid += 1
-        return cid
-
-    def disconnect(self, cid):
-        """remove the observer with connection id *cid*"""
-        try:
-            del self.observers[cid]
-        except KeyError:
-            pass
-
-    def changed(self):
-        """Call the observers"""
-        for func in self.observers.values():
-            func(self.l, self.rgb)
 
     def _fill_cbar_ax(self):
         """Put a colorbar-like image in the axes"""
