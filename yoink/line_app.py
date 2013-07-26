@@ -50,7 +50,10 @@ class LinePicker(object):
                                                  self.ann_axes['xhi'],
                                                  self.ann_axes['ylo'],
                                                  self.ann_axes['yhi'])
-        self.cropper.on_changed(self.cropped_img.crop)
+        self.cropper.on_changed(
+            lambda has_extent: self.cropped_img.crop(has_extent.get_extents()),
+            args=[self.cropper]
+        )
 
         line_kw = dict(linewidth=0.5, color='k', alpha=0.5)
         circle_kw = dict(radius=15, alpha=0.5)
