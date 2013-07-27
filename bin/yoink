@@ -3,7 +3,7 @@
 import argparse
 import matplotlib.pyplot as plt
 from yoink.cmap_app import CmapExtractor
-from yoink.line_app import LinePicker
+from yoink.line_app import LineExtrator
 
 parser = argparse.ArgumentParser(
     description='Yoink colored data from an image')
@@ -46,7 +46,7 @@ if 'log' in (args.xscale, args.yscale):
 pixels = plt.imread(args.image)
 
 if args.plottype in line_choices:
-    extractor = LinePicker(pixels, args.output)
+    extractor = LineExtrator(pixels, args.output)
 elif args.plottype in image_choices:
     extractor = CmapExtractor(pixels, args.output)
 

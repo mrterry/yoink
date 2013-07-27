@@ -9,7 +9,7 @@ from matplotlib.widgets import RadioButtons, Button
 import matplotlib.pyplot as plt
 
 
-class LinePicker(object):
+class LineExtrator(object):
     """
     Parameters
     ----------
