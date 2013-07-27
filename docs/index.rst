@@ -37,12 +37,25 @@ expensive and automatic figure updating can be slow.
 
 Helpful Links
 -------------
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 
 .. toctree::
    :maxdepth: 2
 
    walkthrough
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
+
+Thanks
+------
+
+The image of the beautiful, yet deadly mantis 
+`shrimp <http://www.flickr.com/photos/jayvee/8766788164/>`_
+courtesy
+`Jayvee Fernandez <http://abuggedlife.com>`_,
+licensed under a Creative Commons CC-By-2.0 license.
+
+
