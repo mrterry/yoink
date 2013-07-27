@@ -29,10 +29,6 @@ Yoink currently depends on:
 *  matplotlib
 *  scikit-image
    
-The custom widgets provided by yoink are designed to work independent of the
-backend.  Yes, even with the quirky macosx backend.  That said, we recommend
-running with matplotlib *not* in interactive mode.  Some drawing operations are
-expensive and automatic figure updating can be slow.
 
 
 Helpful Links
@@ -44,6 +40,16 @@ Helpful Links
    walkthrough
 
 
+Known Issues
+------------
+The custom widgets provided by yoink are designed to work independent of the
+backend.  Yes, even with the quirky macosx backend.  That said, we recommend
+running the integrated extractors (
+:class:`yoink.cmap_app.CmapExtractor`, and 
+:class:`yoink.line_app.LineExtractor`)
+with matplotlib *not* in interactive mode.  Some drawing operations and
+reasonable performance requires programatic control over redraws.  There no
+known performance issues with using the widgets individually.
 
 
 Thanks
@@ -54,5 +60,3 @@ The image of the beautiful, yet deadly mantis
 courtesy
 `Jayvee Fernandez <http://abuggedlife.com>`_,
 licensed under a Creative Commons CC-By-2.0 license.
-
-
