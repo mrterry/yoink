@@ -37,15 +37,12 @@ expensive and automatic figure updating can be slow.
 
 Helpful Links
 -------------
-
 .. toctree::
    :maxdepth: 2
 
+   notebooks
    walkthrough
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 
 
