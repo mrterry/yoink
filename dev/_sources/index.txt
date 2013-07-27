@@ -3,8 +3,8 @@ Welcome to Yoink's documentation!
 Yoink is a tool for extracting data from rasterized images.
 
 Say you have an academic paper with an figure containing data you would like
-to use.  Unfortunalely, the raw data is not available.  All you have is the
-image on the page.  Fortunatley, the image contains all the information you
+to use.  Unfortunately, the raw data is not available.  All you have is the
+image on the page.  Fortunately, the image contains all the information you
 need: clear lines, axis labels, and colorbar (if a colormapped image).  Yoink
 helps you extract ("yoink!") the data from your picture.
 
@@ -37,12 +37,25 @@ expensive and automatic figure updating can be slow.
 
 Helpful Links
 -------------
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 
 .. toctree::
    :maxdepth: 2
 
    walkthrough
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
+
+Thanks
+------
+
+The image of the beautiful, yet deadly mantis 
+`shrimp <http://www.flickr.com/photos/jayvee/8766788164/>`_
+courtesy
+`Jayvee Fernandez <http://abuggedlife.com>`_,
+licensed under a Creative Commons CC-By-2.0 license.
+
+

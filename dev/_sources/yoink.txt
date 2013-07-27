@@ -33,6 +33,14 @@ yoink Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`has_actions` Module
+-------------------------
+
+.. automodule:: yoink.has_actions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`interp` Module
 --------------------
 

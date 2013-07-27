@@ -524,6 +524,32 @@ rectangle and the x axis.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-yoink.has_actions">
+<span id="has-actions-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">has_actions</span></tt> Module<a class="headerlink" href="#module-yoink.has_actions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="yoink.has_actions.Actionable">
+<em class="property">class </em><tt class="descclassname">yoink.has_actions.</tt><tt class="descname">Actionable</tt><a class="reference internal" href="_modules/yoink/has_actions.html#Actionable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.has_actions.Actionable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Class for managing callbacks functions.</p>
+<p>Populates the class with functions for registering callbacks (on_ACTION),
+un-registering callbacks (disconnect_ACTION), and calling the registered
+callback function (ACTIONED).</p>
+<p>Subclasses must define a class attribute ACTIONS that contains a list of
+tuples.  Each tuple should be three elements long and contain the names of
+the on_ACTION, ACTIONED, and disconnect_ACTION functions.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="yoink.has_actions.ActionableMeta">
+<em class="property">class </em><tt class="descclassname">yoink.has_actions.</tt><tt class="descname">ActionableMeta</tt><a class="reference internal" href="_modules/yoink/has_actions.html#ActionableMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.has_actions.ActionableMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">type</span></tt></p>
+<p>Metaclass for populating boilerplate callback methods</p>
+<p>Consumes the class attribute ACTIONS, where ACTIONS is a list of
+3-element tuples.  The elements are the names of the on_ACTION, ACTIONED,
+and disconnect_ACTION methods.</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-yoink.interp">
 <span id="interp-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">interp</span></tt> Module<a class="headerlink" href="#module-yoink.interp" title="Permalink to this headline">¶</a></h2>
 <p>Functions for interpreting data in different contexts.  So, inverting a
@@ -1095,7 +1121,7 @@ reliable, or good.</p>
 <dl class="class">
 <dt id="yoink.widgets.CroppedImage">
 <em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">CroppedImage</tt><big>(</big><em>ax</em>, <em>pixels</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt>, <a class="reference internal" href="#yoink.has_actions.Actionable" title="yoink.has_actions.Actionable"><tt class="xref py py-class docutils literal"><span class="pre">yoink.has_actions.Actionable</span></tt></a></p>
 <p>Widget that recolors a multichannel image using a given a scale sequence
 and associated colors.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1139,7 +1165,7 @@ and associated colors.</p>
 <dl class="method">
 <dt id="yoink.widgets.CroppedImage.changed">
 <tt class="descname">changed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.changed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the observers</p>
+<dd><p>Call on_changed observers with appropriate arguments</p>
 </dd></dl>
 
 <dl class="method">
@@ -1149,9 +1175,21 @@ and associated colors.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="yoink.widgets.CroppedImage.disconnect">
-<tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove the observer with connection id <em>cid</em></p>
+<dt id="yoink.widgets.CroppedImage.disconect">
+<tt class="descname">disconect</tt><big>(</big><em>cid</em><big>)</big><a class="headerlink" href="#yoink.widgets.CroppedImage.disconect" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove on_changed observers with connection id <em>cid</em></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>remove observer with given connection id</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1163,9 +1201,34 @@ connect them to the right image so that it extents auto-update</p>
 
 <dl class="method">
 <dt id="yoink.widgets.CroppedImage.on_changed">
-<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.on_changed" title="Permalink to this definition">¶</a></dt>
-<dd><p>When the RecoloredWidget changes, call <em>func</em> with no arguments.</p>
-<p>A connection id is returned which can be used to disconnect.</p>
+<tt class="descname">on_changed</tt><big>(</big><em>f</em>, <em>args=None</em>, <em>kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#CroppedImage.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.CroppedImage.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When changed call <cite>f</cite> with positional and keyword args and kw</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>f</strong> : callable</p>
+<blockquote>
+<div><p>Function to call when object changes</p>
+</div></blockquote>
+<p><strong>args</strong> : tuple</p>
+<blockquote>
+<div><p>sequence of positional args to f</p>
+</div></blockquote>
+<p><strong>kw</strong> : dict</p>
+<blockquote>
+<div><p>dict of keyword args to f</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>connection id which can be used to disconnect.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1179,7 +1242,7 @@ connect them to the right image so that it extents auto-update</p>
 <dl class="class">
 <dt id="yoink.widgets.DeformableLine">
 <em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">DeformableLine</tt><big>(</big><em>ax</em>, <em>is_closed=False</em>, <em>max_points=None</em>, <em>grows=True</em>, <em>shrinks=True</em>, <em>line_kw=None</em>, <em>circle_kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DeformableLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DeformableLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt>, <a class="reference internal" href="#yoink.has_actions.Actionable" title="yoink.has_actions.Actionable"><tt class="xref py py-class docutils literal"><span class="pre">yoink.has_actions.Actionable</span></tt></a></p>
 <p>Segemented line with movable vertexes</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1231,7 +1294,7 @@ connect them to the right image so that it extents auto-update</p>
 <dl class="class">
 <dt id="yoink.widgets.DragableColorLine">
 <em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">DragableColorLine</tt><big>(</big><em>select_ax</em>, <em>cbar_ax</em>, <em>pixels</em>, <em>line_kw=None</em>, <em>circle_kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.Widget</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.Widget</span></tt>, <a class="reference internal" href="#yoink.has_actions.Actionable" title="yoink.has_actions.Actionable"><tt class="xref py py-class docutils literal"><span class="pre">yoink.has_actions.Actionable</span></tt></a></p>
 <p>Fake colormap-like image taken from the end points of a DeformableLine</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1300,41 +1363,113 @@ connect them to the right image so that it extents auto-update</p>
 <dl class="method">
 <dt id="yoink.widgets.DragableColorLine.changed">
 <tt class="descname">changed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.changed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the observers</p>
+<dd><p>Call on_changed observers with appropriate arguments</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="yoink.widgets.DragableColorLine.disconnect">
 <tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove the observer with connection id <em>cid</em></p>
+<dd><p>remove on_changed observers with connection id <em>cid</em></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>remove observer with given connection id</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="yoink.widgets.DragableColorLine.disconnect_release">
 <tt class="descname">disconnect_release</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.disconnect_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.disconnect_release" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove the release_observer with connection id <em>cid</em></p>
+<dd><p>remove on_release observers with connection id <em>cid</em></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>remove observer with given connection id</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="yoink.widgets.DragableColorLine.on_changed">
-<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.on_changed" title="Permalink to this definition">¶</a></dt>
-<dd><p>When the DragableColorLine moves, call <em>func</em> with the new path and
-colors.</p>
-<p>A connection id is returned which can be used to disconnect.</p>
+<tt class="descname">on_changed</tt><big>(</big><em>f</em>, <em>args=None</em>, <em>kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When changed call <cite>f</cite> with positional and keyword args and kw</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>f</strong> : callable</p>
+<blockquote>
+<div><p>Function to call when object changes</p>
+</div></blockquote>
+<p><strong>args</strong> : tuple</p>
+<blockquote>
+<div><p>sequence of positional args to f</p>
+</div></blockquote>
+<p><strong>kw</strong> : dict</p>
+<blockquote>
+<div><p>dict of keyword args to f</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>connection id which can be used to disconnect.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="yoink.widgets.DragableColorLine.on_release">
-<tt class="descname">on_release</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.on_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.on_release" title="Permalink to this definition">¶</a></dt>
-<dd><p>When the DragableColorLine finishes moving, call <em>func</em> with the new
-path and colors.</p>
-<p>A connection id is returned which can be used to disconnect.</p>
+<tt class="descname">on_release</tt><big>(</big><em>f</em>, <em>args=None</em>, <em>kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.on_release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.on_release" title="Permalink to this definition">¶</a></dt>
+<dd><p>When released call <cite>f</cite> with positional and keyword args and kw</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>f</strong> : callable</p>
+<blockquote>
+<div><p>Function to call when object changes</p>
+</div></blockquote>
+<p><strong>args</strong> : tuple</p>
+<blockquote>
+<div><p>sequence of positional args to f</p>
+</div></blockquote>
+<p><strong>kw</strong> : dict</p>
+<blockquote>
+<div><p>dict of keyword args to f</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>connection id which can be used to disconnect.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="yoink.widgets.DragableColorLine.released">
 <tt class="descname">released</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#DragableColorLine.released"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.DragableColorLine.released" title="Permalink to this definition">¶</a></dt>
-<dd><p>call the release_observers</p>
+<dd><p>Call on_release observers with appropriate arguments</p>
 </dd></dl>
 
 <dl class="method">
@@ -1412,7 +1547,7 @@ limits of the colorbar</p>
 <dl class="class">
 <dt id="yoink.widgets.RecoloredWidget">
 <em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">RecoloredWidget</tt><big>(</big><em>ax</em>, <em>pixels</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt>, <a class="reference internal" href="#yoink.has_actions.Actionable" title="yoink.has_actions.Actionable"><tt class="xref py py-class docutils literal"><span class="pre">yoink.has_actions.Actionable</span></tt></a></p>
 <p>Widget that recolors a multichannel image using a given a scale sequence
 and associated colors.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1456,7 +1591,7 @@ and associated colors.</p>
 <dl class="method">
 <dt id="yoink.widgets.RecoloredWidget.changed">
 <tt class="descname">changed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.changed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the observers</p>
+<dd><p>Call on_changed observers with appropriate arguments</p>
 </dd></dl>
 
 <dl class="method">
@@ -1475,7 +1610,19 @@ to the new scale, create a cbar with l &amp; rgb, and redraw the image.</p>
 <dl class="method">
 <dt id="yoink.widgets.RecoloredWidget.disconnect">
 <tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove the observer with connection id <em>cid</em></p>
+<dd><p>remove on_changed observers with connection id <em>cid</em></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>remove observer with given connection id</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1487,9 +1634,34 @@ connect them to the right image so that it extents auto-update</p>
 
 <dl class="method">
 <dt id="yoink.widgets.RecoloredWidget.on_changed">
-<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.on_changed" title="Permalink to this definition">¶</a></dt>
-<dd><p>When the RecoloredWidget changes, call <em>func</em> with no arguments.</p>
-<p>A connection id is returned which can be used to disconnect.</p>
+<tt class="descname">on_changed</tt><big>(</big><em>f</em>, <em>args=None</em>, <em>kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#RecoloredWidget.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.RecoloredWidget.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When changed call <cite>f</cite> with positional and keyword args and kw</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>f</strong> : callable</p>
+<blockquote>
+<div><p>Function to call when object changes</p>
+</div></blockquote>
+<p><strong>args</strong> : tuple</p>
+<blockquote>
+<div><p>sequence of positional args to f</p>
+</div></blockquote>
+<p><strong>kw</strong> : dict</p>
+<blockquote>
+<div><p>dict of keyword args to f</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>connection id which can be used to disconnect.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1565,7 +1737,7 @@ connect them to the right image so that it extents auto-update</p>
 <dl class="class">
 <dt id="yoink.widgets.ShutterCrop">
 <em class="property">class </em><tt class="descclassname">yoink.widgets.</tt><tt class="descname">ShutterCrop</tt><big>(</big><em>ax</em>, <em>dx_frac=0.05</em>, <em>**rect_kw</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">matplotlib.widgets.AxesWidget</span></tt>, <a class="reference internal" href="#yoink.has_actions.Actionable" title="yoink.has_actions.Actionable"><tt class="xref py py-class docutils literal"><span class="pre">yoink.has_actions.Actionable</span></tt></a></p>
 <p>Crop an image by dragging transparent panes over excluded region.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1611,13 +1783,25 @@ picker=5</p>
 <dl class="method">
 <dt id="yoink.widgets.ShutterCrop.changed">
 <tt class="descname">changed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.changed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call the observers</p>
+<dd><p>Call on_changed observers with appropriate arguments</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="yoink.widgets.ShutterCrop.disconnect">
 <tt class="descname">disconnect</tt><big>(</big><em>cid</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove the observer with connection id <em>cid</em></p>
+<dd><p>remove on_changed observers with connection id <em>cid</em></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>remove observer with given connection id</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1634,9 +1818,34 @@ picker=5</p>
 
 <dl class="method">
 <dt id="yoink.widgets.ShutterCrop.on_changed">
-<tt class="descname">on_changed</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.on_changed" title="Permalink to this definition">¶</a></dt>
-<dd><p>When the ShutterCrop windows move, call <em>func</em> with the new extent.</p>
-<p>A connection id is returned which can be used to disconnect.</p>
+<tt class="descname">on_changed</tt><big>(</big><em>f</em>, <em>args=None</em>, <em>kw=None</em><big>)</big><a class="reference internal" href="_modules/yoink/widgets.html#ShutterCrop.on_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.widgets.ShutterCrop.on_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>When changed call <cite>f</cite> with positional and keyword args and kw</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>f</strong> : callable</p>
+<blockquote>
+<div><p>Function to call when object changes</p>
+</div></blockquote>
+<p><strong>args</strong> : tuple</p>
+<blockquote>
+<div><p>sequence of positional args to f</p>
+</div></blockquote>
+<p><strong>kw</strong> : dict</p>
+<blockquote>
+<div><p>dict of keyword args to f</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>cid</strong> : int</p>
+<blockquote class="last">
+<div><p>connection id which can be used to disconnect.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1678,6 +1887,9 @@ picker=5</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/shrimp_b.png" alt="Logo"/>
+            </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">yoink Package</a><ul>
@@ -1688,6 +1900,7 @@ picker=5</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-yoink.guess"><tt class="docutils literal"><span class="pre">guess</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-yoink.has_actions"><tt class="docutils literal"><span class="pre">has_actions</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.interp"><tt class="docutils literal"><span class="pre">interp</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.line_app"><tt class="docutils literal"><span class="pre">line_app</span></tt> Module</a></li>
 <li><a class="reference internal" href="#module-yoink.quarantine"><tt class="docutils literal"><span class="pre">quarantine</span></tt> Module</a></li>
