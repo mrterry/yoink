@@ -21,7 +21,7 @@ description = dedent("""\
 from setuptools import setup
 
 setup(
-    name='yoink',
+    name='yoinkery',
     version=VERSION,
     author='Matt Terry',
     author_email='matt.terry@gmail.com',
