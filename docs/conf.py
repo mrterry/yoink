@@ -41,20 +41,21 @@ import glob
 from os.path import join as pjoin, basename, abspath
 from subprocess import call
 from os import mkdir
-nbs = glob.glob('../examples/*.ipynb')
-d = pjoin('_build', 'html', 'examples')
+
+d = pjoin('_build', 'html', 'notebooks')
 try:
     mkdir(d)
 except OSError:
     pass
+
 command = ['ipython', 'nbconvert', 'html', '--stdout']
-for nb_path in nbs:
+for nb_path in glob.glob('../notebooks/*.ipynb'):
     nb_path = abspath(nb_path)
     name = basename(nb_path)
     name = name.split('.')
     name = '.'.join(name[:-1])
-    html_path = pjoin(d, name+'.html')
-    with open(html_path, 'w') as f:
+
+    with open(pjoin(d, name+'.html'), 'w') as f:
         call(command + [nb_path], stdout=f)
 
 # Add any paths that contain templates here, relative to this directory.
