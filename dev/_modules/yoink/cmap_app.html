@@ -37,9 +37,6 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="../../np-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
         <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -152,7 +149,10 @@
                                                  <span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;yhi&#39;</span><span class="p">])</span>
 
         <span class="c"># Crop the re-colored image when the cropping shutters move</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">crop_widget</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">crop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop_widget</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">has_extent</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">has_extent</span><span class="o">.</span><span class="n">get_extents</span><span class="p">()),</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crop_widget</span><span class="p">,),</span>
+        <span class="p">)</span>
 
         <span class="c"># Draw a colorbar for the re-colored image, and set the initial cmap</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cbar_widget</span> <span class="o">=</span> <span class="n">ScaledColorbar</span><span class="p">(</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;cbar&#39;</span><span class="p">],</span>
@@ -161,7 +161,10 @@
 
         <span class="c"># Re-draw the colormap when the colorbar-selector moves</span>
         <span class="c"># re-digitizing is expensive, so only do it when you release the mouse</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">on_release</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">digitize</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">on_release</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">has_cb</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rcol_widget</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">has_cb</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">has_cb</span><span class="o">.</span><span class="n">rgb</span><span class="p">),</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cbar_select</span><span class="p">,),</span>
+        <span class="p">)</span>
 
         <span class="c"># colorbar text boxes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_cbar_textboxes</span><span class="p">(</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;cbar_lo&#39;</span><span class="p">],</span> <span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;cbar_hi&#39;</span><span class="p">])</span>
@@ -365,9 +368,6 @@
              >index</a></li>
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 

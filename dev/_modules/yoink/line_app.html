@@ -37,9 +37,6 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="../../np-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
         <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -62,7 +59,7 @@
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 
 
-<div class="viewcode-block" id="LinePicker"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker">[docs]</a><span class="k">class</span> <span class="nc">LinePicker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="LineExtrator"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator">[docs]</a><span class="k">class</span> <span class="nc">LineExtrator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -103,7 +100,10 @@
                                                  <span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;xhi&#39;</span><span class="p">],</span>
                                                  <span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;ylo&#39;</span><span class="p">],</span>
                                                  <span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;yhi&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cropped_img</span><span class="o">.</span><span class="n">crop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">has_extent</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropped_img</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">has_extent</span><span class="o">.</span><span class="n">get_extents</span><span class="p">()),</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="p">]</span>
+        <span class="p">)</span>
 
         <span class="n">line_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
         <span class="n">circle_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
@@ -153,7 +153,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
 
-<div class="viewcode-block" id="LinePicker.create_selector_toggle"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker.create_selector_toggle">[docs]</a>    <span class="k">def</span> <span class="nf">create_selector_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LineExtrator.create_selector_toggle"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator.create_selector_toggle">[docs]</a>    <span class="k">def</span> <span class="nf">create_selector_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Do nothing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">NothingWidget</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Crop&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span>
@@ -167,7 +167,7 @@
                                          <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">select_radio</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_state</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="LinePicker.toggle_state"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker.toggle_state">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">):</span>
+<div class="viewcode-block" id="LineExtrator.toggle_state"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator.toggle_state">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Change the active selector widget&quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">new_state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">:</span>
@@ -176,7 +176,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="n">new_state</span><span class="p">]</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
 </div>
-<div class="viewcode-block" id="LinePicker.create_selector_figure"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker.create_selector_figure">[docs]</a>    <span class="k">def</span> <span class="nf">create_selector_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gut</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">sepx</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">wide</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">tall</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+<div class="viewcode-block" id="LineExtrator.create_selector_figure"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator.create_selector_figure">[docs]</a>    <span class="k">def</span> <span class="nf">create_selector_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gut</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">sepx</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">wide</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">tall</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
                                <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">):</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
         <span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span>
@@ -203,7 +203,7 @@
 
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span>
 </div>
-<div class="viewcode-block" id="LinePicker.create_annotate_figure"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker.create_annotate_figure">[docs]</a>    <span class="k">def</span> <span class="nf">create_annotate_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gut</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">sepx</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">sepy</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span>
+<div class="viewcode-block" id="LineExtrator.create_annotate_figure"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator.create_annotate_figure">[docs]</a>    <span class="k">def</span> <span class="nf">create_annotate_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gut</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">sepx</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">sepy</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span>
                                <span class="n">wide</span><span class="o">=</span><span class="mf">0.09</span><span class="p">,</span> <span class="n">tall</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span>
                                <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">):</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
@@ -234,27 +234,27 @@
 
         <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span>
 </div>
-<div class="viewcode-block" id="LinePicker.get_data"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LineExtrator.get_data"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">data</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">data</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">raise</span> <span class="bp">NotImplemented</span>
         <span class="k">return</span> <span class="n">data</span>
 </div>
-<div class="viewcode-block" id="LinePicker.dump_npz"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker.dump_npz">[docs]</a>    <span class="k">def</span> <span class="nf">dump_npz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LineExtrator.dump_npz"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator.dump_npz">[docs]</a>    <span class="k">def</span> <span class="nf">dump_npz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumping to&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumped&#39;</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="LinePicker.dump_txt"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker.dump_txt">[docs]</a>    <span class="k">def</span> <span class="nf">dump_txt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LineExtrator.dump_txt"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator.dump_txt">[docs]</a>    <span class="k">def</span> <span class="nf">dump_txt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumping to </span><span class="si">%s</span><span class="s">.*.txt&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.txt&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">key</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumped&#39;</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="LinePicker.dump"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LinePicker.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="LineExtrator.dump"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtrator.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dump_func</span><span class="p">()</span></div></div>
 </pre></div>
 
@@ -291,9 +291,6 @@
              >index</a></li>
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 

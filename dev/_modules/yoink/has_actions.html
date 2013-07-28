@@ -37,9 +37,6 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="../../np-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
         <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
@@ -54,7 +51,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 
-<span class="n">on_ACTION_docstring</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="n">on_f_docstring</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s">    When {actioned} call `f` with positional and keyword args and kw</span>
 
 <span class="s">    Parameters</span>
@@ -72,10 +69,10 @@
 <span class="s">        connection id which can be used to disconnect.</span>
 <span class="s">    &quot;&quot;&quot;</span>
 
-<span class="n">ACTIONED_docstring</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;Call {key} observers with appropriate arguments&quot;&quot;&quot;</span>
+<span class="n">fed_docstring</span> <span class="o">=</span> <span class="s">&quot;Call {on_action} observers with appropriate arguments&quot;</span>
 
-<span class="n">disconnect_ACTION_docstring</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s">    remove {key} observers with connection id *cid*</span>
+<span class="n">disf_docstring</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">    remove {on_action} observers with connection id *cid*</span>
 
 <span class="s">    Parameters</span>
 <span class="s">    ----------</span>
@@ -85,45 +82,61 @@
 
 
 <div class="viewcode-block" id="ActionableMeta"><a class="viewcode-back" href="../../yoink.html#yoink.has_actions.ActionableMeta">[docs]</a><span class="k">class</span> <span class="nc">ActionableMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">&#39;calling ActionableMeta new&#39;</span><span class="p">)</span>
-        <span class="n">unique</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,)</span>
-        <span class="n">on_action</span> <span class="o">=</span> <span class="n">dct</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;MEGA&#39;</span><span class="p">,</span> <span class="n">unique</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">on_action</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">unique</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actioned</span><span class="p">(</span><span class="n">on_action</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">=</span> <span class="n">on_ACTION_docstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">actioned</span><span class="o">=</span><span class="n">on_action</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="n">on_action</span>
-            <span class="n">dct</span><span class="p">[</span><span class="n">on_action</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ActionableMeta</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Metaclass for populating boilerplate callback methods</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ActionableMeta</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">)</span>
+<span class="sd">    Consumes the class attribute ACTIONS, where ACTIONS is a list of</span>
+<span class="sd">    3-element tuples.  The elements are the names of the on_ACTION, ACTIONED,</span>
+<span class="sd">    and disconnect_ACTION methods.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="n">dct</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&#39;ACTIONS&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">on_action</span><span class="p">,</span> <span class="n">actioned</span><span class="p">,</span> <span class="n">disconnect</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+            <span class="k">def</span> <span class="nf">on_f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kw</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">()</span>
+                <span class="n">kw</span> <span class="o">=</span> <span class="n">kw</span> <span class="k">if</span> <span class="n">kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">[</span><span class="n">on_action</span><span class="p">][</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kw</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="n">cid</span>
+            <span class="n">on_f</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">=</span> <span class="n">on_f_docstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">actioned</span><span class="o">=</span><span class="n">actioned</span><span class="p">)</span>
+            <span class="n">on_f</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="n">on_action</span>
+            <span class="n">dct</span><span class="p">[</span><span class="n">on_action</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_f</span>
+
+            <span class="k">def</span> <span class="nf">fed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kw</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">[</span><span class="n">on_action</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+            <span class="n">fed</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">=</span> <span class="n">fed_docstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_action</span><span class="o">=</span><span class="n">on_action</span><span class="p">)</span>
+            <span class="n">fed</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="n">actioned</span>
+            <span class="n">dct</span><span class="p">[</span><span class="n">actioned</span><span class="p">]</span> <span class="o">=</span> <span class="n">fed</span>
+
+            <span class="k">def</span> <span class="nf">disf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">[</span><span class="n">on_action</span><span class="p">][</span><span class="n">cid</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="n">disf</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">=</span> <span class="n">disf_docstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_action</span><span class="o">=</span><span class="n">on_action</span><span class="p">)</span>
+            <span class="n">disf</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="n">disconnect</span>
+            <span class="n">dct</span><span class="p">[</span><span class="n">disconnect</span><span class="p">]</span> <span class="o">=</span> <span class="n">disf</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ActionableMeta</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="Actionable"><a class="viewcode-back" href="../../yoink.html#yoink.has_actions.Actionable">[docs]</a><span class="k">class</span> <span class="nc">Actionable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for managing callbacks functions.</span>
+
+<span class="sd">    Populates the class with functions for registering callbacks (on_ACTION),</span>
+<span class="sd">    un-registering callbacks (disconnect_ACTION), and calling the registered</span>
+<span class="sd">    callback function (ACTIONED).</span>
+
+<span class="sd">    Subclasses must define a class attribute ACTIONS that contains a list of</span>
+<span class="sd">    tuples.  Each tuple should be three elements long and contain the names of</span>
+<span class="sd">    the on_ACTION, ACTIONED, and disconnect_ACTION functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ActionableMeta</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">def</span> <span class="nf">_actioned</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kw</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_on_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">kw</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">()</span>
-        <span class="n">kw</span> <span class="o">=</span> <span class="n">kw</span> <span class="k">if</span> <span class="n">kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kw</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">cid</span>
-
-    <span class="k">def</span> <span class="nf">_disconnect_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">cid</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">pass</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">0</span></div>
 </pre></div>
 
           </div>
@@ -159,9 +172,6 @@
              >index</a></li>
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="../../np-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
