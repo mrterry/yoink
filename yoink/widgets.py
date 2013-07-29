@@ -10,7 +10,7 @@ from matplotlib.colorbar import colorbar_factory
 from matplotlib.ticker import ScalarFormatter
 
 from .textbox import TextBoxFloat
-from .trace import equispaced_colormaping
+from .trace import equispaced_colormapping
 from .interp import invert_cmap
 
 from .has_actions import Actionable
@@ -148,7 +148,7 @@ class DragableColorLine(Widget, Actionable):
             return
         x0, y0 = self.line.circles[0].center
         x1, y1 = self.line.circles[1].center
-        self.l, self.rgb = equispaced_colormaping(x0, y0, x1, y1, self.pixels)
+        self.l, self.rgb = equispaced_colormapping(x0, y0, x1, y1, self.pixels)
         cmap = make_cmap(self.l, self.rgb)
         self._im.set_cmap(cmap)
         if self.drawon:
