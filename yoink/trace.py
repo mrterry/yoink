@@ -145,7 +145,7 @@ def equispaced_colormaping(x0, y0, x1, y1, im, N=256, order=1):
     y2 = np.linspace(y0, y1, N)
     x2 = np.linspace(x0, x1, N)
     l = np.linspace(0, 1, N)
-    return l, get_rgb(im, y2, x2, order=1)
+    return l, get_rgb(im, y2, x2, order=order)
 
 
 def bresenham_colormapping(x0, y0, x1, y1, im):
