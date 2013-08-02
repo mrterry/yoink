@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 descr = """Data Extraction Tools
 
@@ -43,7 +43,7 @@ setup(
     hidden=True,
     classifiers=CLASSIFIERS,
     url=URL,
-    packages=['yoink'],
+    packages=find_packages(),
     package_data={'yoink': ['data/*.png']},
     scripts=['bin/yoink'],
     install_requires=['numpy', 'scipy', 'matplotlib >= 1.2'],
