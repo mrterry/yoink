@@ -14,8 +14,8 @@ to fix this, but it is not in a matplotlib release.
 
 MacOSX Backend
 --------------
-Event handling on MacOSX is a little finicky, particularly handling `key_press_events`.
-This mainly affects text entry in TextBox widgets.  To receive events from the
-OS, you must use a framework python build that also links to the Mac OS stuff
-that fires event.  tldr; you must use `pythonw` if you want `key_press_events`
-to work.
+With the MacOSX backend, you must use `pythonw` if you want `key_press_events`
+to work.  Event handling on MacOSX is a little finicky, particularly handling
+`key_press_events`.  This mainly affects text entry in TextBox widgets.  To
+receive events from the OS, you must use a framework python build that also
+links to the Mac OS stuff that fires event.
