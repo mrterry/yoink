@@ -38,18 +38,7 @@ Helpful Links
 
    notebooks
    walkthrough
-
-
-Known Issues
-------------
-The custom widgets provided by yoink are designed to work independent of the
-backend.  Yes, even with the quirky macosx backend.  That said, we recommend
-running the integrated extractors (
-:class:`yoink.cmap_app.CmapExtractor`, and 
-:class:`yoink.line_app.LineExtractor`)
-with matplotlib *not* in interactive mode.  Some drawing operations and
-reasonable performance requires programatic control over redraws.  There no
-known performance issues with using the widgets individually.
+   known_issues
 
 
 Thanks

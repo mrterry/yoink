@@ -115,5 +115,5 @@ yoinking).  If you are running yoink from the command line, click the
 "Dump to file" button to text files or a single numpy npz file (depending of
 the suffix of the output file name).  If running yoink from an interactive
 Python session, :func:`yoink.cmap_app.CmapExtractor.get_data` will return a
-dictionary of extracted data.  It provides the `x`, `y`, and `z` data as
-well as the discrete colormapping: `l`, and `rgb`.
+dictionary of extracted data.  It provides the ``x``, ``y``, and ``z`` data as
+well as the discrete colormapping: ``l``, and ``rgb``.
