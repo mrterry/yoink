@@ -19,6 +19,8 @@ __ http://www.youtube.com/watch?v=ywHqIEv3xXg&t=31m42s
 
 .. youtube:: ywHqIEv3xXg?start=1902
 
+Follow the development on GitHub: `https://github.com/mrterry/yoink`.  Feedback
+and pull requests are welcome.
 
 Dependencies
 ------------

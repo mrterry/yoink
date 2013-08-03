@@ -8,6 +8,8 @@ extracting the scalar field from a colormapped image.  Yoink builds on top
 matplotlib and is platform and rendering backend independent.
 
 Please refer to the online documentation at http://yoinkery.com/
+
+Follow development at https://github.com/mrterry/yoink
 """
 
 DISTNAME = 'yoinkery'
