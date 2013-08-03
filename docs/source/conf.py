@@ -37,27 +37,6 @@ extensions = ['sphinx.ext.autodoc',
               ]
 numpydoc_show_class_members = False
 
-import glob
-from os.path import join as pjoin, basename, abspath
-from subprocess import call
-from os import mkdir
-
-d = pjoin('..', 'build', 'html', 'notebooks')
-try:
-    mkdir(d)
-except OSError:
-    pass
-
-command = ['ipython', 'nbconvert', 'html', '--stdout']
-for nb_path in glob.glob('../../notebooks/*.ipynb'):
-    nb_path = abspath(nb_path)
-    name = basename(nb_path)
-    name = name.split('.')
-    name = '.'.join(name[:-1])
-
-    with open(pjoin(d, name+'.html'), 'w') as f:
-        call(command + [nb_path], stdout=f)
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -145,7 +124,7 @@ html_theme = 'nature'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '_images/shrimp_b.png'
+html_logo = '../_images/shrimp_b.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -155,7 +134,7 @@ html_logo = '_images/shrimp_b.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['../_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -280,7 +259,7 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 
-# -- Options for Epub output ---------------------------------------------------
+# -- Options for Epub output --------------------------------------------------
 
 # Bibliographic Dublin Core info.
 epub_title = u'yoink'

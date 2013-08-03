@@ -36,9 +36,10 @@ Helpful Links
 .. toctree::
    :maxdepth: 2
 
-   notebooks
+   notebooks/notebooks
    walkthrough
    known_issues
+   modules
 
 
 Thanks

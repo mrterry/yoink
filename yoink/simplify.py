@@ -91,8 +91,8 @@ def point_line_dist2(p, l1, l2):
 def img2line(img):
     """Convert an image to a sequence of indexes
 
-    Paramters
-    ---------
+    Parameters
+    ----------
     img : 2d array_like
         image to extract line from
 
