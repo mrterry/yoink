@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from distutils.core import setup
 
 descr = """Data Extraction Tools
 
@@ -23,6 +23,7 @@ VERSION = '0.2dev'
 
 CLASSIFIERS = [
     'Development Status :: 3 - Alpha',
+    'Intended Audience :: Developers',
     'Intended Audience :: Science/Research',
     'License :: OSI Approved :: BSD License',
     'Programming Language :: Python :: 2.7',
@@ -37,7 +38,6 @@ setup(
     version=VERSION,
     author='Matt Terry',
     author_email='matt.terry@gmail.com',
-    home_page=None,
     license=LICENSE,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
@@ -45,7 +45,7 @@ setup(
     hidden=True,
     classifiers=CLASSIFIERS,
     url=URL,
-    packages=find_packages(),
+    packages=['yoink', 'yoink.data'],
     package_data={'yoink': ['data/*.png']},
     scripts=['bin/yoink'],
     install_requires=['numpy', 'scipy', 'matplotlib >= 1.2'],
