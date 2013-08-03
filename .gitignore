@@ -1,4 +1,10 @@
 *.pyc
 docs/build
 docs/gh-pages
+
+# ignore generated content
 docs/source/notebooks/html
+docs/source/notebooks/nb
+docs/source/modules.rst
+docs/source/yoink.data.rst
+docs/source/yoink.rst
