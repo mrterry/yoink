@@ -30,8 +30,8 @@ from subprocess import Popen, PIPE, CalledProcessError, check_call
 #-----------------------------------------------------------------------------
 
 pages_dir = 'gh-pages'
-html_dir = '_build/html'
-#pdf_dir = '_build/latex'
+html_dir = 'build/html'
+#pdf_dir = 'build/latex'
 pages_repo = 'git@github.com:mrterry/yoink.git'
 
 #-----------------------------------------------------------------------------

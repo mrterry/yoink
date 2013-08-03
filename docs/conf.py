@@ -42,7 +42,7 @@ from os.path import join as pjoin, basename, abspath
 from subprocess import call
 from os import mkdir
 
-d = pjoin('_build', 'html', 'notebooks')
+d = pjoin('build', 'html', 'notebooks')
 try:
     mkdir(d)
 except OSError:

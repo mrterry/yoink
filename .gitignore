@@ -1,5 +1,5 @@
 *.pyc
-docs/_build
+docs/build
 docs/gh-pages
 docs/modules.rst
 docs/yoink.rst
