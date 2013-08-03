@@ -103,3 +103,38 @@ doctest: genapi
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+    
+push-latest:
+	cd $(BUILDDIR) && \
+	test -d $(DOCREPONAME) || git clone $(REPOURL) -b gh-pages $(DOCREPONAME) && \
+	cd $(DOCREPONAME) && \
+	git pull origin gh-pages && \
+	test -d latest || mkdir latest && touch latest/_ && \
+	rm -r latest/* && \
+	cp -r ../html/* latest/ && \
+	git add latest/ && \
+	git commit -am "Pushed latest docs at $(date)" && \
+	git push
+
+push-release:
+	cd $(BUILDDIR) && \
+	test -d $(DOCREPONAME) || git clone $(REPOURL) -b gh-pages $(DOCREPONAME) && \
+	cd $(REPONAME) && \
+	git pull origin gh-pages && \
+	test -d $(RELEASE) || mkdir $(RELEASE) && touch $(RELEASE)/_ && \
+	rm -r $(RELEASE)/* && \
+	cp -r ../html/* $(RELEASE)/ && \
+	git add $(RELEASE)/ && \
+	git commit -am "Pushed $(RELEASE) docs at $(date)" && \
+	git push
+
+push-root:
+	cd $(BUILDDIR) && \
+	test -d $(DOCREPONAME) || git clone $(REPOURL) -b gh-pages $(DOCREPONAME) && \
+	cd $(REPONAME) && \
+	git pull origin gh-pages && \
+	rm -rf libref previous _sources _static *.html *.js *.inv && \
+	cp -r ../html/* . && \
+	git add . && \
+	git commit -am "Pushed root-level docs at $(date)" && \
+	git push
