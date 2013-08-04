@@ -19,7 +19,7 @@ MAINTAINER = 'Matt Terry'
 MAINTAINER_EMAIL = 'matt.terry@gmail.com'
 URL = 'http://yoinkery.com'
 LICENSE = 'Modified BSD'
-VERSION = '0.2dev'
+VERSION = '0.3'
 
 CLASSIFIERS = [
     'Development Status :: 3 - Alpha',
