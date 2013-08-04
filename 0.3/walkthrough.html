@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Extracting colormapped data &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="index.html" />
+    <link rel="next" title="Known Issues" href="known_issues.html" />
+    <link rel="prev" title="Example Notebooks" href="notebooks/notebooks.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="known_issues.html" title="Known Issues"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="notebooks/notebooks.html" title="Example Notebooks"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">yoink 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="extracting-colormapped-data">
+<h1>Extracting colormapped data<a class="headerlink" href="#extracting-colormapped-data" title="Permalink to this headline">¶</a></h1>
+<p>Say you have a color-mapped image that contains data that you want.  For
+illustration purposes, we&#8217;ll use this strangely colored elevation map of the
+Yosemite valley.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/yosemite.png"><img alt="_images/yosemite.png" src="_images/yosemite.png" style="height: 250px;" /></a>
+</div>
+<p>Content-wise, the image provides all the information you need:</p>
+<ul class="simple">
+<li>unrotated, rectangular frame</li>
+<li>x-axis scale</li>
+<li>y-axis scale</li>
+<li>colorbar</li>
+</ul>
+<div class="section" id="preparing-you-image">
+<h2>Preparing you image<a class="headerlink" href="#preparing-you-image" title="Permalink to this headline">¶</a></h2>
+<p>If your image is rotated, (because the office printer-scanner-copier has a tilt
+to it), you will have to correct for that using something like
+<a class="reference external" href="http://scikit-image.org/docs/dev/api/skimage.transform.html#rotate">rotate in scikit-image</a>
+Also, if your image is distorted, (because it is a picture of someones
+presentation slides) you will also need to fix the perspective manually.
+Scikit-image has an nice
+<a class="reference external" href="http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html">example</a>
+of how to do these kinds of transformations.</p>
+</div>
+<div class="section" id="create-select-annotate-figures">
+<h2>Create Select &amp; Annotate Figures<a class="headerlink" href="#create-select-annotate-figures" title="Permalink to this headline">¶</a></h2>
+<p>Once your image is prepared, yoink can be used as a command line tool or
+within an interactive python session.</p>
+<ul>
+<li><p class="first">For command line use, yoink provides the executable <tt class="code docutils literal"><span class="pre">yoink</span></tt>.</p>
+<div class="code highlight-python"><pre>$ yoink image -o image_data.npz path/to/image/file</pre>
+</div>
+</li>
+<li><p class="first">For interactive Python usage, use the <a class="reference internal" href="yoink.html#yoink.cmap_app.CmapExtractor" title="yoink.cmap_app.CmapExtractor"><tt class="xref py py-class docutils literal"><span class="pre">yoink.cmap_app.CmapExtractor</span></tt></a> class.
+If you are using an ipython session with an interactive matplotlib event
+loop (e.g. <tt class="code docutils literal"><span class="pre">%pylab</span></tt> magic in ipython), <tt class="code docutils literal"><span class="pre">plt.show()</span></tt> will not be
+necessary.</p>
+<div class="code python highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">yoink</span> <span class="kn">import</span> <span class="n">cmapextractor</span>
+<span class="kn">from</span> <span class="nn">yoink.data</span> <span class="kn">import</span> <span class="n">yosemite</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">yosemite</span><span class="p">()</span>
+<span class="n">ext</span> <span class="o">=</span> <span class="n">cmapextractor</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="s">&#39;image_data.npz&#39;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Two windows should be visible.  Use the selector figure to identify your data
+within the image and the annotate figure to set the limits of the x-axis,
+y-axis, and colorbar.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/select_fig.png"><img alt="_images/select_fig.png" src="_images/select_fig.png" style="height: 250px;" /></a>
+<p class="caption">Use this figure to select the frame of your data and to select the
+colorbar.</p>
+</div>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/annoate_fig.png"><img alt="_images/annoate_fig.png" src="_images/annoate_fig.png" style="height: 250px;" /></a>
+<p class="caption">Use this window to annotate the axes limits and the colorbar limits.</p>
+</div>
+</div>
+<div class="section" id="select-colorbar">
+<h2>Select Colorbar<a class="headerlink" href="#select-colorbar" title="Permalink to this headline">¶</a></h2>
+<p>First identify the colorbar.  Activate the colorbar selector widget by
+picking &#8220;Select Colorbar&#8221; radio button.  Then drag the endpoints of the newly
+visible line to the endpoints of the colorbar on the image.  Yoink shows you
+the colorbar you&#8217;ve selected to the right of the image.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/select_cbar.png"><img alt="_images/select_cbar.png" src="_images/select_cbar.png" style="height: 250px;" /></a>
+</div>
+</div>
+<div class="section" id="crop-image">
+<h2>Crop Image<a class="headerlink" href="#crop-image" title="Permalink to this headline">¶</a></h2>
+<p>Next crop the image.  Activate the image cropper by selecting &#8220;Crop Image&#8221;.
+Drag the shutters so that only the image within the image is not obscured.
+Note that the image in annotate figure updates as you drag the shutters.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/select_crop.png"><img alt="_images/select_crop.png" src="_images/select_crop.png" style="height: 250px;" /></a>
+<p class="caption">This figure has correctly select the top of the colorbar</p>
+</div>
+<p>During the data selection exercises, the annotate window will update to show
+you how yoink is interpreting your selected data.  The picture in the annotate
+figure should look like the figure you are selecting.  If the colors are off,
+there is something wrong with the colorbar selection.</p>
+<div class="figure">
+<a class="reference internal image-reference" href="_images/annotate_crop.png"><img alt="_images/annotate_crop.png" src="_images/annotate_crop.png" style="height: 250px;" /></a>
+</div>
+</div>
+<div class="section" id="annoate-and-dump">
+<h2>Annoate and Dump<a class="headerlink" href="#annoate-and-dump" title="Permalink to this headline">¶</a></h2>
+<p>Now use the textboxes in the annotate figure to set the x-axis, y-axis,
+and colorbar limits.  The ticks on the figure should update automatically.</p>
+<p>Now the image in the annotate figure should look very similar to the original
+image, still shown in the select figure.  (It should, this is the data you are
+yoinking).  If you are running yoink from the command line, click the
+&#8220;Dump to file&#8221; button to text files or a single numpy npz file (depending of
+the suffix of the output file name).  If running yoink from an interactive
+Python session, <a class="reference internal" href="yoink.html#yoink.cmap_app.CmapExtractor.get_data" title="yoink.cmap_app.CmapExtractor.get_data"><tt class="xref py py-func docutils literal"><span class="pre">yoink.cmap_app.CmapExtractor.get_data()</span></tt></a> will return a
+dictionary of extracted data.  It provides the <tt class="docutils literal"><span class="pre">x</span></tt>, <tt class="docutils literal"><span class="pre">y</span></tt>, and <tt class="docutils literal"><span class="pre">z</span></tt> data as
+well as the discrete colormapping: <tt class="docutils literal"><span class="pre">l</span></tt>, and <tt class="docutils literal"><span class="pre">rgb</span></tt>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/shrimp_b.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Extracting colormapped data</a><ul>
+<li><a class="reference internal" href="#preparing-you-image">Preparing you image</a></li>
+<li><a class="reference internal" href="#create-select-annotate-figures">Create Select &amp; Annotate Figures</a></li>
+<li><a class="reference internal" href="#select-colorbar">Select Colorbar</a></li>
+<li><a class="reference internal" href="#crop-image">Crop Image</a></li>
+<li><a class="reference internal" href="#annoate-and-dump">Annoate and Dump</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="notebooks/notebooks.html"
+                        title="previous chapter">Example Notebooks</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="known_issues.html"
+                        title="next chapter">Known Issues</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/walkthrough.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="known_issues.html" title="Known Issues"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="notebooks/notebooks.html" title="Example Notebooks"
+             >previous</a> |</li>
+        <li><a href="index.html">yoink 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yoink.delta_e &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yoink.delta_e</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for calculating the &quot;distance&quot; between colors.</span>
+
+<span class="sd">Implicit in these definitions of &quot;distance&quot; is the notion of &quot;Just Noticible</span>
+<span class="sd">Distance&quot; (JND).  This represents the distance between colors where a human can</span>
+<span class="sd">percieve different colors.  Humans are more sensitive to certain colors than</span>
+<span class="sd">others, which different deltaE metrics correct for this with varying degrees of</span>
+<span class="sd">sophistication.</span>
+
+<span class="sd">The literature often mentions 1 as the minimum distance for visual</span>
+<span class="sd">differentiation, but more recent studies (Mahy 1994) peg JND at 2.3</span>
+
+<span class="sd">The delta-E notation comes from the German word for &quot;Sensation&quot; (Empfindung).</span>
+
+<span class="sd">:author: Matt Terry</span>
+
+<span class="sd">:license: modified BSD</span>
+
+<span class="sd">Reference</span>
+<span class="sd">---------</span>
+<span class="sd">http://en.wikipedia.org/wiki/Color_difference</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="n">DEG</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span>
+
+
+<span class="k">def</span> <span class="nf">_arctan2pi</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;np.arctan2 mapped to (0, 2 * pi)&quot;&quot;&quot;</span>
+    <span class="n">ans</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">ans</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ans</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ans</span>
+
+
+<div class="viewcode-block" id="deltaE_cie76"><a class="viewcode-back" href="../../yoink.html#yoink.delta_e.deltaE_cie76">[docs]</a><span class="k">def</span> <span class="nf">deltaE_cie76</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="n">lab2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Euclidian distance between two points in in Lab color space</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lab1 : array_like</span>
+<span class="sd">        reference color (Lab colorspace)</span>
+<span class="sd">    lab2 : array_like</span>
+<span class="sd">        comparision color (Lab colorspace)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dE : array_like</span>
+<span class="sd">        distance between colors `lab1` and `lab2`</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://en.wikipedia.org/wiki/Color_difference</span>
+<span class="sd">    .. [2] A. R. Robertson, &quot;The CIE 1976 color-difference formulae,&quot;</span>
+<span class="sd">           Color Res. Appl. 2, 7-11 (1977).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">l1</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">l2</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">lab2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">l2</span> <span class="o">-</span> <span class="n">l1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">a2</span> <span class="o">-</span> <span class="n">a1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">b2</span> <span class="o">-</span> <span class="n">b1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="deltaE_ciede94"><a class="viewcode-back" href="../../yoink.html#yoink.delta_e.deltaE_ciede94">[docs]</a><span class="k">def</span> <span class="nf">deltaE_ciede94</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="n">lab2</span><span class="p">,</span> <span class="n">kH</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">kC</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">kL</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">k1</span><span class="o">=</span><span class="mf">0.045</span><span class="p">,</span> <span class="n">k2</span><span class="o">=</span><span class="mf">0.015</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Color difference according to CIEDE 94 standard</span>
+
+<span class="sd">    Accomodates perceptual non-uniformites through the use of application</span>
+<span class="sd">    specific scale factors (kH, kC, kL, k1, and k2).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lab1 : array_like</span>
+<span class="sd">        reference color (Lab colorspace)</span>
+<span class="sd">    lab2 : array_like</span>
+<span class="sd">        comparision color (Lab colorspace)</span>
+<span class="sd">    kH : float, optional</span>
+<span class="sd">        Hue scale</span>
+<span class="sd">    kC : float, optional</span>
+<span class="sd">        Chroma scale</span>
+<span class="sd">    kL : float, optional</span>
+<span class="sd">        Lightness scale</span>
+<span class="sd">    k1 : float, optional</span>
+<span class="sd">        first scale parameter</span>
+<span class="sd">    k2 : float, optional</span>
+<span class="sd">        second scale parameter</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dE : array_like</span>
+<span class="sd">        color difference between `lab1` and `lab2`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    deltaE_ciede94 is not symmetric with respect to lab1 and lab2.  CIEDE94</span>
+<span class="sd">    defines the scales for the lightness, hue, and chroma in terms of the first</span>
+<span class="sd">    color.  Consequently, the first color should be regarded as the &quot;reference&quot;</span>
+<span class="sd">    color.</span>
+
+<span class="sd">    kL, k1, k2 depend on the application and default to the values suggested</span>
+<span class="sd">    for graphic arts</span>
+
+<span class="sd">    Parameter   Graphic Arts    Textiles</span>
+<span class="sd">    ----------  -------------   --------</span>
+<span class="sd">    kL          1.000           2.000</span>
+<span class="sd">    k1          0.045           0.048</span>
+<span class="sd">    k2          0.015           0.014</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://en.wikipedia.org/wiki/Color_difference</span>
+<span class="sd">    .. [2] http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE94.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">l1</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">l2</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">lab2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">dl</span> <span class="o">=</span> <span class="n">l1</span> <span class="o">-</span> <span class="n">l2</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b2</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">dc</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">-</span> <span class="n">c2</span>
+    <span class="n">dh_ab</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">deltaE_cie76</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="n">lab2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">dl</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">dc</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">SL</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">SC</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">k1</span> <span class="o">*</span> <span class="n">c1</span>
+    <span class="n">SH</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">k2</span> <span class="o">*</span> <span class="n">c1</span>
+
+    <span class="n">ans</span> <span class="o">=</span> <span class="p">((</span><span class="n">dl</span> <span class="o">/</span> <span class="p">(</span><span class="n">kL</span> <span class="o">*</span> <span class="n">SL</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+           <span class="p">(</span><span class="n">dc</span> <span class="o">/</span> <span class="p">(</span><span class="n">kC</span> <span class="o">*</span> <span class="n">SC</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+           <span class="p">(</span><span class="n">dh_ab</span> <span class="o">/</span> <span class="p">(</span><span class="n">kH</span> <span class="o">*</span> <span class="n">SH</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+           <span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ans</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="deltaE_ciede2000"><a class="viewcode-back" href="../../yoink.html#yoink.delta_e.deltaE_ciede2000">[docs]</a><span class="k">def</span> <span class="nf">deltaE_ciede2000</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="n">lab2</span><span class="p">,</span> <span class="n">kL</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">kC</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">kH</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Color difference as given by the CIEDE 2000 standard.</span>
+
+<span class="sd">    CIEDE 2000 is a major revision of CIDE94.  The perceptual calibaration is</span>
+<span class="sd">    largely based on experience with automotive paint on smooth surfaces.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lab1 : array_like</span>
+<span class="sd">        reference color (Lab colorspace)</span>
+<span class="sd">    lab2 : array_like</span>
+<span class="sd">        comparision color (Lab colorspace)</span>
+<span class="sd">    kL : float (range), optional</span>
+<span class="sd">        pass</span>
+<span class="sd">    kC : float (range), optional</span>
+<span class="sd">        pass</span>
+<span class="sd">    kH : float (range), optional</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    deltaE : array_like</span>
+<span class="sd">        The distance between `lab1` and `lab2`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    CIEDE 2000 assumes parametric weighting factors for the luminance, chroma,</span>
+<span class="sd">    and hue (kL, kC, kH respectively).  These default to 1.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://en.wikipedia.org/wiki/Color_difference</span>
+<span class="sd">    .. [2] http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf</span>
+<span class="sd">           (doi:10.1364/AO.33.008069)</span>
+<span class="sd">    .. [3] M. Melgosa, J. Quesada, and E. Hita, &quot;Uniformity of some recent</span>
+<span class="sd">           color metrics tested with an accurate color-difference tolerance</span>
+<span class="sd">           dataset,&quot; Appl. Opt. 33, 8069-8077 (1994).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">L1</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">L2</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">lab2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b2</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">cbar</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c1</span> <span class="o">+</span> <span class="n">c2</span><span class="p">)</span>
+    <span class="n">c7</span> <span class="o">=</span> <span class="n">cbar</span> <span class="o">**</span> <span class="mi">7</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">c7</span> <span class="o">/</span> <span class="p">(</span><span class="n">c7</span> <span class="o">+</span> <span class="mi">25</span> <span class="o">**</span> <span class="mi">7</span><span class="p">)))</span>
+
+    <span class="n">dL_prime</span> <span class="o">=</span> <span class="n">L2</span> <span class="o">-</span> <span class="n">L1</span>
+    <span class="n">Lbar</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">L1</span> <span class="o">+</span> <span class="n">L2</span><span class="p">)</span>
+
+    <span class="n">a1_prime</span> <span class="o">=</span> <span class="n">a1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">G</span><span class="p">)</span>
+    <span class="n">a2_prime</span> <span class="o">=</span> <span class="n">a2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">G</span><span class="p">)</span>
+
+    <span class="n">c1_prime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a1_prime</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">c2_prime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a2_prime</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b2</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">cbar_prime</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">c1_prime</span> <span class="o">+</span> <span class="n">c2_prime</span><span class="p">)</span>
+    <span class="n">dC_prime</span> <span class="o">=</span> <span class="n">c2_prime</span> <span class="o">-</span> <span class="n">c1_prime</span>
+
+    <span class="n">h1_prime</span> <span class="o">=</span> <span class="n">_arctan2pi</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">a1_prime</span><span class="p">)</span>
+    <span class="n">h2_prime</span> <span class="o">=</span> <span class="n">_arctan2pi</span><span class="p">(</span><span class="n">b2</span><span class="p">,</span> <span class="n">a2_prime</span><span class="p">)</span>
+
+    <span class="n">dh_prime</span> <span class="o">=</span> <span class="n">h2_prime</span> <span class="o">-</span> <span class="n">h1_prime</span>
+
+    <span class="n">cc</span> <span class="o">=</span> <span class="n">c1_prime</span> <span class="o">*</span> <span class="n">c2_prime</span>
+    <span class="n">mask1</span> <span class="o">=</span> <span class="n">cc</span> <span class="o">==</span> <span class="mf">0.</span>
+    <span class="n">mask2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="o">-</span><span class="n">mask1</span><span class="p">,</span> <span class="n">dh_prime</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">mask3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="o">-</span><span class="n">mask1</span><span class="p">,</span> <span class="n">dh_prime</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">dh_prime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask1</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">dh_prime</span><span class="p">)</span>
+    <span class="n">dh_prime</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">dh_prime</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask3</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">dH_prime</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dh_prime</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">Hbar_prime</span> <span class="o">=</span> <span class="n">h1_prime</span> <span class="o">+</span> <span class="n">h2_prime</span>
+    <span class="n">mask0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">h1_prime</span> <span class="o">-</span> <span class="n">h2_prime</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">cc</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">)</span>
+    <span class="n">mask1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">mask0</span><span class="p">,</span> <span class="n">Hbar_prime</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">mask2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">mask0</span><span class="p">,</span> <span class="n">Hbar_prime</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+    <span class="n">Hbar_prime</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">Hbar_prime</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">Hbar_prime</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cc</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Hbar_prime</span> <span class="o">*=</span> <span class="mf">0.5</span>
+
+    <span class="n">T</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span>
+         <span class="mf">0.17</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">Hbar_prime</span> <span class="o">-</span> <span class="mi">30</span> <span class="o">*</span> <span class="n">DEG</span><span class="p">)</span> <span class="o">+</span>
+         <span class="mf">0.24</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">Hbar_prime</span><span class="p">)</span> <span class="o">+</span>
+         <span class="mf">0.32</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">Hbar_prime</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">*</span> <span class="n">DEG</span><span class="p">)</span> <span class="o">-</span>
+         <span class="mf">0.20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">Hbar_prime</span> <span class="o">-</span> <span class="mi">63</span> <span class="o">*</span> <span class="n">DEG</span><span class="p">)</span>
+         <span class="p">)</span>
+    <span class="n">dTheta</span> <span class="o">=</span> <span class="mi">30</span> <span class="o">*</span> <span class="n">DEG</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">Hbar_prime</span> <span class="o">/</span> <span class="n">DEG</span> <span class="o">-</span> <span class="mi">275</span><span class="p">)</span> <span class="o">/</span> <span class="mi">25</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">c7</span> <span class="o">=</span> <span class="n">cbar_prime</span> <span class="o">**</span> <span class="mi">7</span>
+    <span class="n">Rc</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">c7</span> <span class="o">/</span> <span class="p">(</span><span class="n">c7</span> <span class="o">+</span> <span class="mi">25</span> <span class="o">**</span> <span class="mi">7</span><span class="p">))</span>
+
+    <span class="n">term</span> <span class="o">=</span> <span class="p">(</span><span class="n">Lbar</span> <span class="o">-</span> <span class="mi">50</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">SL</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">0.015</span> <span class="o">*</span> <span class="n">term</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">20</span> <span class="o">+</span> <span class="n">term</span><span class="p">)</span>
+    <span class="n">SC</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">0.045</span> <span class="o">*</span> <span class="n">cbar_prime</span>
+    <span class="n">SH</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">0.015</span> <span class="o">*</span> <span class="n">cbar_prime</span> <span class="o">*</span> <span class="n">T</span>
+
+    <span class="n">RT</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dTheta</span><span class="p">)</span> <span class="o">*</span> <span class="n">Rc</span>
+
+    <span class="n">l_term</span> <span class="o">=</span> <span class="n">dL_prime</span> <span class="o">/</span> <span class="p">(</span><span class="n">kL</span> <span class="o">*</span> <span class="n">SL</span><span class="p">)</span>
+    <span class="n">c_term</span> <span class="o">=</span> <span class="n">dC_prime</span> <span class="o">/</span> <span class="p">(</span><span class="n">kC</span> <span class="o">*</span> <span class="n">SC</span><span class="p">)</span>
+    <span class="n">h_term</span> <span class="o">=</span> <span class="n">dH_prime</span> <span class="o">/</span> <span class="p">(</span><span class="n">kH</span> <span class="o">*</span> <span class="n">SH</span><span class="p">)</span>
+    <span class="n">r_term</span> <span class="o">=</span> <span class="n">RT</span> <span class="o">*</span> <span class="n">c_term</span> <span class="o">*</span> <span class="n">h_term</span>
+
+    <span class="n">dE2</span> <span class="o">=</span> <span class="n">l_term</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">dE2</span> <span class="o">+=</span> <span class="n">c_term</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">dE2</span> <span class="o">+=</span> <span class="n">h_term</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">dE2</span> <span class="o">+=</span> <span class="n">r_term</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dE2</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="deltaE_cmc"><a class="viewcode-back" href="../../yoink.html#yoink.delta_e.deltaE_cmc">[docs]</a><span class="k">def</span> <span class="nf">deltaE_cmc</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="n">lab2</span><span class="p">,</span> <span class="n">kL</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">kC</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Color difference from the  CMC l:c standard.</span>
+
+<span class="sd">    This color difference developed by the Colour Measurement Committee of the</span>
+<span class="sd">    Socieity of Dyes and Colourists of Great Britian (CMC).  It is intended for</span>
+<span class="sd">    use in the textile industry.</span>
+
+<span class="sd">    The scale factors kL, kC set the weight given to differences in lightness</span>
+<span class="sd">    and chroma relative to differences in hue.  The usual values are kL=2, kC=1</span>
+<span class="sd">    for &quot;acceptability&quot; and kL=1, kC=1 for &quot;imperceptability&quot;.  Colors with</span>
+<span class="sd">    dE &gt; 1 are &quot;different&quot; for the given scale factors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lab1 : array_like</span>
+<span class="sd">        reference color (Lab colorspace)</span>
+<span class="sd">    lab2 : array_like</span>
+<span class="sd">        comparision color (Lab colorspace)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dE : array_like</span>
+<span class="sd">        distance between colors `lab1` and `lab2`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    deltaE_cmc the defines the scales for the lightness, hue, and chroma</span>
+<span class="sd">    in terms of the first color.  Consequently</span>
+<span class="sd">    deltaE_cmc(lab1, lab2) != deltaE_cmc(lab2, lab1)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://en.wikipedia.org/wiki/Color_difference</span>
+<span class="sd">    .. [2] http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE94.html</span>
+<span class="sd">    .. [3] F. J. J. Clarke, R. McDonald, and B. Rigg, &quot;Modification to the</span>
+<span class="sd">           JPC79 colour-difference formula,&quot; J. Soc. Dyers Colour. 100, 128-132</span>
+<span class="sd">           (1984).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">l1</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">l2</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">(</span><span class="n">lab2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b2</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">dC</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">-</span> <span class="n">c2</span>
+    <span class="n">dl</span> <span class="o">=</span> <span class="n">l1</span> <span class="o">-</span> <span class="n">l2</span>
+    <span class="n">dH</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">deltaE_cie76</span><span class="p">(</span><span class="n">lab1</span><span class="p">,</span> <span class="n">lab2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">dl</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">dC</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">dL</span> <span class="o">=</span> <span class="n">l1</span> <span class="o">-</span> <span class="n">l2</span>
+
+    <span class="n">h1</span> <span class="o">=</span> <span class="n">_arctan2pi</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">a1</span><span class="p">)</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">h1</span> <span class="o">&gt;=</span> <span class="mi">164</span> <span class="o">*</span> <span class="n">DEG</span><span class="p">,</span> <span class="n">h1</span> <span class="o">&lt;=</span> <span class="mi">345</span> <span class="o">*</span> <span class="n">DEG</span><span class="p">),</span>
+                 <span class="mf">0.56</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">h1</span> <span class="o">+</span> <span class="mi">168</span> <span class="o">*</span> <span class="n">DEG</span><span class="p">)),</span>
+                 <span class="mf">0.36</span> <span class="o">+</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">h1</span> <span class="o">+</span> <span class="mi">35</span> <span class="o">*</span> <span class="n">DEG</span><span class="p">))</span>
+                 <span class="p">)</span>
+    <span class="n">c1_4</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">**</span> <span class="mi">4</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">c1_4</span> <span class="o">/</span> <span class="p">(</span><span class="n">c1_4</span> <span class="o">+</span> <span class="mi">1900</span><span class="p">))</span>
+
+    <span class="n">SL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">l1</span> <span class="o">&lt;</span> <span class="mi">16</span><span class="p">,</span> <span class="mf">0.511</span><span class="p">,</span> <span class="mf">0.040975</span> <span class="o">*</span> <span class="n">l1</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">0.01765</span> <span class="o">*</span> <span class="n">l1</span><span class="p">))</span>
+    <span class="n">SC</span> <span class="o">=</span> <span class="mf">0.638</span> <span class="o">+</span> <span class="mf">0.0638</span> <span class="o">*</span> <span class="n">c1</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="mf">0.0131</span> <span class="o">*</span> <span class="n">c1</span><span class="p">)</span>
+    <span class="n">SH</span> <span class="o">=</span> <span class="n">SC</span> <span class="o">*</span> <span class="p">(</span><span class="n">F</span> <span class="o">*</span> <span class="n">T</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">F</span><span class="p">)</span>
+
+    <span class="n">dE2</span> <span class="o">=</span> <span class="p">(</span><span class="n">dL</span> <span class="o">/</span> <span class="p">(</span><span class="n">kL</span> <span class="o">*</span> <span class="n">SL</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">dE2</span> <span class="o">+=</span> <span class="p">(</span><span class="n">dC</span> <span class="o">/</span> <span class="p">(</span><span class="n">kC</span> <span class="o">*</span> <span class="n">SC</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">dE2</span> <span class="o">+=</span> <span class="p">(</span><span class="n">dH</span> <span class="o">/</span> <span class="n">SH</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dE2</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/shrimp_b.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

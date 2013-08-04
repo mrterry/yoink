@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yoink.simplify &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yoink.simplify</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Functions for simplifying line segments&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">img_as_bool</span>
+<span class="c">#from skimage.morphology import skeletonize</span>
+
+
+<div class="viewcode-block" id="rdp_indexes"><a class="viewcode-back" href="../../yoink.html#yoink.simplify.rdp_indexes">[docs]</a><span class="k">def</span> <span class="nf">rdp_indexes</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">eps2</span><span class="p">,</span> <span class="n">dist2</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Indexes of points kept using the Ramer-Douglas-Peucker algorithm.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : array_like</span>
+<span class="sd">        (n, m) n points in m dimensions</span>
+<span class="sd">    eps2 : number</span>
+<span class="sd">        (max allowable distance)**2</span>
+<span class="sd">    dist2 : callable, optional</span>
+<span class="sd">        dist to is a callable returns the square of the distance between a</span>
+<span class="sd">        sequence of points and a line defined by its two endpoints.  defaults</span>
+<span class="sd">        to point_line_dist2</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    indexes : list</span>
+<span class="sd">        sorted list of indexes of kept points</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm</span>
+<span class="sd">    .. [2] Urs Ramer, &quot;An iterative procedure for the polygonal approximation</span>
+<span class="sd">           of plane curves&quot;, Computer Graphics and Image Processing, 1(3),</span>
+<span class="sd">           244-256 (1972) doi:10.1016/S0146-664X(72)80017-0</span>
+<span class="sd">    .. [3] David Douglas &amp; Thomas Peucker, &quot;Algorithms for the reduction of the</span>
+<span class="sd">           number of points required to represent a digitized line or its</span>
+<span class="sd">           caricature&quot;, The Canadian Cartographer 10(2), 112-122 (1973)</span>
+<span class="sd">           doi:10.3138/FM57-6770-U75U-7727</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dist2</span> <span class="o">=</span> <span class="n">point_line_dist2</span> <span class="k">if</span> <span class="n">dist2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">point_line_dist2</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">stack</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">keep</span><span class="p">)</span>
+
+        <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">i1</span> <span class="o">&lt;=</span> <span class="n">i0</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">dist2</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">i0</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span><span class="n">i1</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="n">i0</span><span class="p">],</span> <span class="n">points</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">dmax</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">dmax</span> <span class="o">&gt;</span> <span class="n">eps2</span><span class="p">:</span>
+            <span class="n">keep</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">stack</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">i0</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i1</span><span class="p">)]</span>
+
+    <span class="k">assert</span> <span class="bp">False</span>
+
+</div>
+<div class="viewcode-block" id="point_line_dist2"><a class="viewcode-back" href="../../yoink.html#yoink.simplify.point_line_dist2">[docs]</a><span class="k">def</span> <span class="nf">point_line_dist2</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Distance**2 between sequence of N, M-dimensional points and line l1-l2</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p : array_like</span>
+<span class="sd">        sequence of N, M-dimensional points. shape = (N, M)</span>
+<span class="sd">    l1 : array_like</span>
+<span class="sd">        start of line segment len == M</span>
+<span class="sd">    l2 : array_like</span>
+<span class="sd">        end of line segment len == M</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dist2 : array_like</span>
+<span class="sd">        distance**2 between each point and line. shape == N</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">l2</span><span class="p">)</span>
+    <span class="n">ap</span> <span class="o">=</span> <span class="n">l1</span> <span class="o">-</span> <span class="n">p</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">l2</span> <span class="o">-</span> <span class="n">l1</span>
+    <span class="n">n</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">ap</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ap</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dist</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="img2line"><a class="viewcode-back" href="../../yoink.html#yoink.simplify.img2line">[docs]</a><span class="k">def</span> <span class="nf">img2line</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert an image to a sequence of indexes</span>
+
+<span class="sd">    Paramters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    img : 2d array_like</span>
+<span class="sd">        image to extract line from</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    iseq : array</span>
+<span class="sd">        1d sequnce of i coordinates</span>
+<span class="sd">    jseq : array</span>
+<span class="sd">        1d sequnce of j coordinates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">img_as_bool</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">Ns</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">Ns</span><span class="p">)</span>
+
+    <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">jrange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nj</span><span class="p">)</span>
+
+    <span class="n">iseq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">jseq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">ii</span> <span class="o">=</span> <span class="n">iseq</span>
+    <span class="n">jj</span> <span class="o">=</span> <span class="n">jseq</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Ns</span><span class="p">):</span>
+        <span class="n">ii</span><span class="p">,</span> <span class="n">ii</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">ii</span><span class="p">[:</span><span class="n">n</span><span class="p">],</span> <span class="n">i</span>
+        <span class="n">jj</span><span class="p">,</span> <span class="n">jj</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">jj</span><span class="p">[:</span><span class="n">n</span><span class="p">],</span> <span class="n">jrange</span><span class="p">[</span><span class="n">img</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">ii</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">jj</span>
+
+    <span class="k">return</span> <span class="n">iseq</span><span class="p">,</span> <span class="n">jseq</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/shrimp_b.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

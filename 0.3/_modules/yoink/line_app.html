@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yoink.line_app &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yoink.line_app</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DeformableLine</span><span class="p">,</span> <span class="n">ShutterCrop</span><span class="p">,</span> <span class="n">NothingWidget</span><span class="p">,</span> <span class="n">CroppedImage</span><span class="p">,</span>
+                      <span class="n">ShadowLine</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">RadioButtons</span><span class="p">,</span> <span class="n">Button</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+
+<div class="viewcode-block" id="LineExtractor"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor">[docs]</a><span class="k">class</span> <span class="nc">LineExtractor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pixels</span>
+<span class="sd">    path</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sel_fig</span>
+<span class="sd">    sel_axes</span>
+<span class="sd">    ann_fig</span>
+<span class="sd">    ann_axes</span>
+<span class="sd">    select_image</span>
+<span class="sd">    cropper</span>
+<span class="sd">    cropped_img</span>
+<span class="sd">    line_manual</span>
+<span class="sd">    line_shadow</span>
+<span class="sd">    points_manual</span>
+<span class="sd">    points_shadow</span>
+<span class="sd">    select_iamge</span>
+<span class="sd">    dump_button</span>
+<span class="sd">    dump_func</span>
+<span class="sd">    path</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sel_fig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_selector_figure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ann_fig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_annotate_figure</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pixels</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span> <span class="o">=</span> <span class="n">ShutterCrop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropped_img</span> <span class="o">=</span> <span class="n">CroppedImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">],</span> <span class="n">pixels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropped_img</span><span class="o">.</span><span class="n">make_xyextent_textboxes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;xlo&#39;</span><span class="p">],</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;xhi&#39;</span><span class="p">],</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;ylo&#39;</span><span class="p">],</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;yhi&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">has_extent</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropped_img</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">has_extent</span><span class="o">.</span><span class="n">get_extents</span><span class="p">()),</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">line_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">circle_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_manual</span> <span class="o">=</span> <span class="n">DeformableLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">],</span>
+                                          <span class="n">grows</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">shrinks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                          <span class="n">line_kw</span><span class="o">=</span><span class="n">line_kw</span><span class="p">,</span> <span class="n">circle_kw</span><span class="o">=</span><span class="n">circle_kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_manual</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_manual</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_shadow</span> <span class="o">=</span> <span class="n">ShadowLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">],</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">line_manual</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="p">,</span>
+                                      <span class="n">marker</span><span class="o">=</span><span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line_shadow</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+
+        <span class="n">line_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">circle_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;k&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_manual</span> <span class="o">=</span> <span class="n">DeformableLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">],</span>
+                                            <span class="n">grows</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">shrinks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                            <span class="n">line_kw</span><span class="o">=</span><span class="n">line_kw</span><span class="p">,</span>
+                                            <span class="n">circle_kw</span><span class="o">=</span><span class="n">circle_kw</span><span class="p">,</span>
+                                            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_manual</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_manual</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="c"># shadow data plotted in axes coordiates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_shadow</span> <span class="o">=</span> <span class="n">ShadowLine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">],</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">points_manual</span><span class="p">,</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="p">,</span>
+                                        <span class="n">marker</span><span class="o">=</span><span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="o">**</span><span class="n">line_kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points_shadow</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+
+        <span class="c"># the xlim/ylim may have changed due to adding the lines</span>
+        <span class="c"># set xlim/ylim to the pre-lines-added state</span>
+        <span class="n">extent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_image</span><span class="o">.</span><span class="n">get_extent</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_image</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">extent</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_image</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+
+        <span class="n">extent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropped_img</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">get_extent</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropped_img</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">extent</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropped_img</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_selector_toggle</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ann_axes</span><span class="p">[</span><span class="s">&#39;dump&#39;</span><span class="p">],</span> <span class="s">&#39;Dump to file&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dump_npz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dump</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+
+<div class="viewcode-block" id="LineExtractor.create_selector_toggle"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor.create_selector_toggle">[docs]</a>    <span class="k">def</span> <span class="nf">create_selector_toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Do nothing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">NothingWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Crop&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Segmented Line&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_manual</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="s">&#39;Manual Points&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_manual</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_state</span><span class="p">(</span><span class="s">&#39;Do nothing&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_radio</span> <span class="o">=</span> <span class="n">RadioButtons</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sel_axes</span><span class="p">[</span><span class="s">&#39;select&#39;</span><span class="p">],</span>
+                                         <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                                         <span class="n">active</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_radio</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_state</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LineExtractor.toggle_state"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor.toggle_state">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change the active selector widget&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">new_state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">new_state</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector_widgets</span><span class="p">[</span><span class="n">new_state</span><span class="p">]</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="LineExtractor.create_selector_figure"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor.create_selector_figure">[docs]</a>    <span class="k">def</span> <span class="nf">create_selector_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gut</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">sepx</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">wide</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">tall</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                               <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">):</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">gut</span> <span class="o">+</span> <span class="n">wide</span> <span class="o">+</span> <span class="n">sepx</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">gut</span> <span class="o">+</span> <span class="n">sepx</span><span class="p">)</span>
+
+        <span class="n">y0</span> <span class="o">=</span> <span class="n">gut</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">gut</span>
+
+        <span class="n">l</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">l</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">],</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span>
+
+        <span class="n">l</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gut</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">y0</span> <span class="o">+</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span>
+        <span class="n">select</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">l</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">],</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+        <span class="n">select</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">select</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="s">&#39;select&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">select</span>
+
+        <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span>
+</div>
+<div class="viewcode-block" id="LineExtractor.create_annotate_figure"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor.create_annotate_figure">[docs]</a>    <span class="k">def</span> <span class="nf">create_annotate_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gut</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">sepx</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">sepy</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span>
+                               <span class="n">wide</span><span class="o">=</span><span class="mf">0.09</span><span class="p">,</span> <span class="n">tall</span><span class="o">=</span><span class="mf">0.06</span><span class="p">,</span>
+                               <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">):</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">gut</span> <span class="o">+</span> <span class="n">wide</span> <span class="o">+</span> <span class="n">sepx</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">gut</span> <span class="o">+</span> <span class="n">sepx</span><span class="p">)</span>
+
+        <span class="n">y0</span> <span class="o">=</span> <span class="n">gut</span> <span class="o">+</span> <span class="n">tall</span> <span class="o">+</span> <span class="n">sepy</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">gut</span>
+
+        <span class="n">l</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span>
+        <span class="n">axes</span><span class="p">[</span><span class="s">&#39;img&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="n">l</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">],</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+
+        <span class="n">sizes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;yhi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gut</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">gut</span><span class="o">-</span><span class="n">tall</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;ylo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gut</span><span class="p">,</span> <span class="n">gut</span><span class="o">+</span><span class="n">tall</span><span class="o">+</span><span class="n">sepy</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;xlo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">gut</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;xhi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">wide</span><span class="p">,</span> <span class="n">gut</span><span class="p">,</span> <span class="n">wide</span><span class="p">,</span> <span class="n">tall</span><span class="p">)</span>
+        <span class="n">sizes</span><span class="p">[</span><span class="s">&#39;dump&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="o">+</span><span class="n">wide</span><span class="o">+</span><span class="n">sepx</span><span class="p">,</span> <span class="n">gut</span><span class="p">,</span> <span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">sepx</span><span class="o">+</span><span class="n">wide</span><span class="p">),</span> <span class="n">tall</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">lbwh</span> <span class="ow">in</span> <span class="n">sizes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">(</span><span class="n">lbwh</span><span class="p">,</span> <span class="o">**</span><span class="n">ax_kwargs</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax</span>
+
+        <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span>
+</div>
+<div class="viewcode-block" id="LineExtractor.get_data"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">data</span>
+</div>
+<div class="viewcode-block" id="LineExtractor.dump_npz"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor.dump_npz">[docs]</a>    <span class="k">def</span> <span class="nf">dump_npz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumping to&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumped&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LineExtractor.dump_txt"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor.dump_txt">[docs]</a>    <span class="k">def</span> <span class="nf">dump_txt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumping to </span><span class="si">%s</span><span class="s">.*.txt&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">.txt&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">key</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;dumped&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LineExtractor.dump"><a class="viewcode-back" href="../../yoink.html#yoink.line_app.LineExtractor.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_func</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/shrimp_b.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
