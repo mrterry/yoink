@@ -7,8 +7,8 @@ SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
 SOURCEDIR     = source
-REPONAME      = yoink
 REPOURL       = git@github.com:mrterry/yoink.git
+DOCREPONAME   = yoink_doc
 RELEASE       = 0.3
 
 # User-friendly check for sphinx-build
@@ -107,22 +107,22 @@ doctest: genapi
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
     
-push-latest:
+push-dev:
 	cd $(BUILDDIR) && \
 	test -d $(DOCREPONAME) || git clone $(REPOURL) -b gh-pages $(DOCREPONAME) && \
 	cd $(DOCREPONAME) && \
 	git pull origin gh-pages && \
-	test -d latest || mkdir latest && touch latest/_ && \
-	rm -r latest/* && \
-	cp -r ../html/* latest/ && \
-	git add latest/ && \
-	git commit -am "Pushed latest docs at $(date)" && \
+	test -d dev || mkdir dev && touch dev/_ && \
+	rm -r dev/* && \
+	cp -r ../html/* dev/ && \
+	git add dev/ && \
+	git commit -am "Pushed dev docs at $(date)" && \
 	git push
 
 push-release:
 	cd $(BUILDDIR) && \
 	test -d $(DOCREPONAME) || git clone $(REPOURL) -b gh-pages $(DOCREPONAME) && \
-	cd $(REPONAME) && \
+	cd $(DOCREPONAME) && \
 	git pull origin gh-pages && \
 	test -d $(RELEASE) || mkdir $(RELEASE) && touch $(RELEASE)/_ && \
 	rm -r $(RELEASE)/* && \
@@ -134,7 +134,7 @@ push-release:
 push-root:
 	cd $(BUILDDIR) && \
 	test -d $(DOCREPONAME) || git clone $(REPOURL) -b gh-pages $(DOCREPONAME) && \
-	cd $(REPONAME) && \
+	cd $(DOCREPONAME) && \
 	git pull origin gh-pages && \
 	rm -rf libref previous _sources _static *.html *.js *.inv && \
 	cp -r ../html/* . && \
