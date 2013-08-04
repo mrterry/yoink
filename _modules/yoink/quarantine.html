@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yoink.quarantine &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yoink.quarantine</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Things I&#39;m not ready to remove, but should be prevented from infecting</span>
+<span class="sd">things that actually work.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">Widget</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
+<span class="kn">from</span> <span class="nn">skimage.feature</span> <span class="kn">import</span> <span class="n">corner_harris</span>
+
+<span class="kn">from</span> <span class="nn">.guess</span> <span class="kn">import</span> <span class="n">guess_corners</span><span class="p">,</span> <span class="n">mean_rotation</span><span class="p">,</span> <span class="n">clear_border</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">if_attentive</span>
+<span class="kn">from</span> <span class="nn">yoink.data</span> <span class="kn">import</span> <span class="n">rotated_lena</span><span class="p">,</span> <span class="n">rotated_parabola</span>
+
+
+<div class="viewcode-block" id="KeyboardCrop"><a class="viewcode-back" href="../../yoink.html#yoink.quarantine.KeyboardCrop">[docs]</a><span class="k">class</span> <span class="nc">KeyboardCrop</span><span class="p">(</span><span class="n">Widget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Keyboard driven interface to set crop an image</span>
+
+<span class="sd">    KeyboardCrop.edge_effects is a dict that controls the keyboard interface.</span>
+<span class="sd">    the keys are the edges effected (north/south/east/west)</span>
+<span class="sd">    the values are dicts of keyboard-keys and how far to shift the image</span>
+<span class="sd">    (nominally in pixels).</span>
+
+<span class="sd">    Example usage given in keyboard_crop()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">limits</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crop</span> <span class="o">=</span> <span class="n">limits</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="s">&#39;col&#39;</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="s">&#39;row&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax2</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax4</span><span class="p">)</span> <span class="o">=</span> <span class="n">axes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_effects</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax3</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax4</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cids</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s">&#39;key_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_press</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_limits</span><span class="p">()</span>
+
+<div class="viewcode-block" id="KeyboardCrop.update_limits"><a class="viewcode-back" href="../../yoink.html#yoink.quarantine.KeyboardCrop.update_limits">[docs]</a>    <span class="k">def</span> <span class="nf">update_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="s">&#39;west&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="s">&#39;west&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="s">&#39;east&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="s">&#39;east&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="s">&#39;north&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="s">&#39;north&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax3</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="s">&#39;south&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="s">&#39;south&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</div>
+    <span class="nd">@if_attentive</span>
+    <span class="k">def</span> <span class="nf">_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="s">&#39;enter&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">effects</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_effects</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">effects</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="n">edge</span><span class="p">]</span> <span class="o">+=</span> <span class="n">effects</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_limits</span><span class="p">()</span>
+
+<div class="viewcode-block" id="KeyboardCrop.get_edges"><a class="viewcode-back" href="../../yoink.html#yoink.quarantine.KeyboardCrop.get_edges">[docs]</a>    <span class="k">def</span> <span class="nf">get_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">crop</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;south&#39;</span><span class="p">,</span> <span class="s">&#39;east&#39;</span><span class="p">,</span> <span class="s">&#39;north&#39;</span><span class="p">,</span> <span class="s">&#39;west&#39;</span><span class="p">)]</span>
+
+</div></div>
+<div class="viewcode-block" id="keyboard_crop"><a class="viewcode-back" href="../../yoink.html#yoink.quarantine.keyboard_crop">[docs]</a><span class="k">def</span> <span class="nf">keyboard_crop</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+    <span class="n">corners</span> <span class="o">=</span> <span class="n">corner_harris</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">lim</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;west&#39;</span><span class="p">:</span> <span class="n">corners</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span>
+        <span class="s">&#39;east&#39;</span><span class="p">:</span> <span class="n">corners</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span>
+        <span class="s">&#39;north&#39;</span><span class="p">:</span> <span class="n">corners</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span>
+        <span class="s">&#39;south&#39;</span><span class="p">:</span> <span class="n">corners</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">limiter</span> <span class="o">=</span> <span class="n">KeyboardCrop</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">lim</span><span class="p">)</span>
+
+    <span class="n">limiter</span><span class="o">.</span><span class="n">edge_effects</span><span class="p">[</span><span class="s">&#39;west&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;left&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;right&#39;</span><span class="p">:</span> <span class="o">+</span><span class="mi">1</span><span class="p">}</span>
+    <span class="n">limiter</span><span class="o">.</span><span class="n">edge_effects</span><span class="p">[</span><span class="s">&#39;north&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;up&#39;</span><span class="p">:</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+    <span class="n">limiter</span><span class="o">.</span><span class="n">edge_effects</span><span class="p">[</span><span class="s">&#39;east&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;left&#39;</span><span class="p">:</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;right&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+    <span class="n">limiter</span><span class="o">.</span><span class="n">edge_effects</span><span class="p">[</span><span class="s">&#39;south&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;up&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">:</span> <span class="o">+</span><span class="mi">1</span><span class="p">}</span>
+
+    <span class="n">ylo</span><span class="p">,</span> <span class="n">xhi</span><span class="p">,</span> <span class="n">yhi</span><span class="p">,</span> <span class="n">xlo</span> <span class="o">=</span> <span class="n">limiter</span><span class="o">.</span><span class="n">get_edges</span><span class="p">()</span>
+    <span class="n">cropped</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">ylo</span><span class="p">:</span><span class="n">yhi</span><span class="p">,</span> <span class="n">xlo</span><span class="p">:</span><span class="n">xhi</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">cropped</span>
+
+</div>
+<div class="viewcode-block" id="lena_example"><a class="viewcode-back" href="../../yoink.html#yoink.quarantine.lena_example">[docs]</a><span class="k">def</span> <span class="nf">lena_example</span><span class="p">():</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">rotated_lena</span><span class="p">()</span>
+
+    <span class="c"># find corners on grayscale image</span>
+    <span class="c"># use negative so that boundary is 0</span>
+    <span class="n">bw</span> <span class="o">=</span> <span class="n">im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">bw</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">bw</span>
+
+    <span class="n">corners</span><span class="p">,</span> <span class="n">outline</span> <span class="o">=</span> <span class="n">guess_corners</span><span class="p">(</span><span class="n">bw</span><span class="p">)</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">mean_rotation</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span> <span class="o">*</span> <span class="mf">180.</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="n">im2</span> <span class="o">=</span> <span class="n">clear_border</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">outline</span><span class="p">)</span>
+    <span class="n">im2</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">)</span>
+    <span class="n">cropped</span> <span class="o">=</span> <span class="n">keyboard_crop</span><span class="p">(</span><span class="n">im2</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">ax3</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">corners</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">corners</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s">&#39;o&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span><span class="p">)</span>
+    <span class="n">ax3</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="p">((</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">),</span> <span class="p">(</span><span class="n">ax3</span><span class="p">,</span> <span class="n">ax4</span><span class="p">))</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">[:</span><span class="mi">20</span><span class="p">,</span> <span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">[:</span><span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">:])</span>
+    <span class="n">ax3</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">:,</span> <span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+    <span class="n">ax4</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">:,</span> <span class="o">-</span><span class="mi">20</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="n">cropped</span>
+
+</div>
+<div class="viewcode-block" id="parabola_example"><a class="viewcode-back" href="../../yoink.html#yoink.quarantine.parabola_example">[docs]</a><span class="k">def</span> <span class="nf">parabola_example</span><span class="p">():</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">rotated_parabola</span><span class="p">()</span>
+
+    <span class="c"># find corners on grayscale image</span>
+    <span class="c"># use negative so that boundary is 0</span>
+    <span class="n">bw</span> <span class="o">=</span> <span class="n">im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">bw</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">bw</span>
+
+    <span class="n">corners</span><span class="p">,</span> <span class="n">outline</span> <span class="o">=</span> <span class="n">guess_corners</span><span class="p">(</span><span class="n">bw</span><span class="p">)</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">mean_rotation</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>
+    <span class="n">im2</span> <span class="o">=</span> <span class="n">clear_border</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">outline</span><span class="p">)</span>
+    <span class="n">im2</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">reshape</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;nearest&#39;</span><span class="p">)</span>
+    <span class="n">cropped</span> <span class="o">=</span> <span class="n">keyboard_crop</span><span class="p">(</span><span class="n">im2</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">ax3</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">corners</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">corners</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s">&#39;o&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span><span class="p">)</span>
+    <span class="n">ax3</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="p">((</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">),</span> <span class="p">(</span><span class="n">ax3</span><span class="p">,</span> <span class="n">ax4</span><span class="p">))</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">[:</span><span class="mi">20</span><span class="p">,</span> <span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">[:</span><span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">:])</span>
+    <span class="n">ax3</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">:,</span> <span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+    <span class="n">ax4</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cropped</span><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">:,</span> <span class="o">-</span><span class="mi">20</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="n">cropped</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/shrimp_b.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

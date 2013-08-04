@@ -1,0 +1,11 @@
+data Package
+============
+
+:mod:`data` Package
+-------------------
+
+.. automodule:: yoink.data
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

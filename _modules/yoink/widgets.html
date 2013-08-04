@@ -1,0 +1,852 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>yoink.widgets &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for yoink.widgets</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Backend independent widgets.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">print_function</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span><span class="p">,</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Circle</span><span class="p">,</span> <span class="n">Rectangle</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">LinearSegmentedColormap</span>
+<span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">Widget</span><span class="p">,</span> <span class="n">AxesWidget</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colorbar</span> <span class="kn">import</span> <span class="n">colorbar_factory</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">ScalarFormatter</span>
+
+<span class="kn">from</span> <span class="nn">.textbox</span> <span class="kn">import</span> <span class="n">TextBoxFloat</span>
+<span class="kn">from</span> <span class="nn">.trace</span> <span class="kn">import</span> <span class="n">equispaced_colormapping</span>
+<span class="kn">from</span> <span class="nn">.interp</span> <span class="kn">import</span> <span class="n">invert_cmap</span>
+
+<span class="kn">from</span> <span class="nn">.has_actions</span> <span class="kn">import</span> <span class="n">Actionable</span>
+
+
+<div class="viewcode-block" id="if_attentive"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.if_attentive">[docs]</a><span class="k">def</span> <span class="nf">if_attentive</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span>
+
+</div>
+<div class="viewcode-block" id="NothingWidget"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.NothingWidget">[docs]</a><span class="k">class</span> <span class="nc">NothingWidget</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="NothingWidget.set_visible"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.NothingWidget.set_visible">[docs]</a>    <span class="k">def</span> <span class="nf">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vis</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+</div></div>
+<div class="viewcode-block" id="ShadowLine"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ShadowLine">[docs]</a><span class="k">class</span> <span class="nc">ShadowLine</span><span class="p">(</span><span class="n">AxesWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">orig_line</span><span class="p">,</span> <span class="n">cropper</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
+        <span class="n">AxesWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_line</span> <span class="o">=</span> <span class="n">orig_line</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span> <span class="o">=</span> <span class="n">cropper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_line</span><span class="o">.</span><span class="n">on_release</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ShadowLine.update"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ShadowLine.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crop</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_line</span><span class="o">.</span><span class="n">vertexes</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">crop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="o">.</span><span class="n">get_extents</span><span class="p">()</span>
+
+        <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">crop</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="DragableColorLine"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DragableColorLine">[docs]</a><span class="k">class</span> <span class="nc">DragableColorLine</span><span class="p">(</span><span class="n">Widget</span><span class="p">,</span> <span class="n">Actionable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fake colormap-like image taken from the end points of a DeformableLine</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    select_ax : axes</span>
+<span class="sd">        Axes to draw the selector line on</span>
+<span class="sd">    cbar_ax : axes</span>
+<span class="sd">        Axes to draw the colorbar into</span>
+<span class="sd">    pixels : array-like (3d)</span>
+<span class="sd">        ndarray to pick colors from</span>
+<span class="sd">    line_kw : dict, optional</span>
+<span class="sd">        keyword args to pass to Line2D</span>
+<span class="sd">    circle_kw : dict, optional</span>
+<span class="sd">        keyword args to pass to Circle</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    select_ax : axes</span>
+<span class="sd">        Axes to draw the selector line on</span>
+<span class="sd">    cbar_ax : axes</span>
+<span class="sd">        Axes to draw the colorbar into</span>
+<span class="sd">    pixels : array-like (3d)</span>
+<span class="sd">        Pixels values</span>
+<span class="sd">    line : DeformableLine</span>
+<span class="sd">        Segmented line</span>
+<span class="sd">    pixels :  ndarray</span>
+<span class="sd">        pixels pull colors from</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ACTIONS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;on_release&#39;</span><span class="p">,</span> <span class="s">&#39;released&#39;</span><span class="p">,</span> <span class="s">&#39;disconnect_release&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;on_changed&#39;</span><span class="p">,</span> <span class="s">&#39;changed&#39;</span><span class="p">,</span> <span class="s">&#39;disconnect&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">select_ax</span><span class="p">,</span> <span class="n">cbar_ax</span><span class="p">,</span> <span class="n">pixels</span><span class="p">,</span>
+                 <span class="n">line_kw</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">circle_kw</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">Widget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">Actionable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_ax</span> <span class="o">=</span> <span class="n">select_ax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">cbar_ax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release_observers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">lkw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">line_kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">lkw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">line_kw</span><span class="p">)</span>
+        <span class="n">ckw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">circle_kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ckw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">circle_kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">DeformableLine</span><span class="p">(</span><span class="n">select_ax</span><span class="p">,</span>
+                                   <span class="n">grows</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">shrinks</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                   <span class="n">line_kw</span><span class="o">=</span><span class="n">lkw</span><span class="p">,</span>
+                                   <span class="n">circle_kw</span><span class="o">=</span><span class="n">ckw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">xl</span><span class="p">,</span> <span class="n">xr</span> <span class="o">=</span> <span class="n">select_ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">xr</span> <span class="o">-</span> <span class="n">xl</span>
+        <span class="n">yb</span><span class="p">,</span> <span class="n">yt</span> <span class="o">=</span> <span class="n">select_ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">yt</span> <span class="o">-</span> <span class="n">yb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span><span class="n">xl</span> <span class="o">+</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span> <span class="n">yb</span> <span class="o">+</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="n">dy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span><span class="n">xl</span> <span class="o">+</span> <span class="mf">0.75</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span> <span class="n">yb</span> <span class="o">+</span> <span class="mf">0.75</span> <span class="o">*</span> <span class="n">dy</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fill_cbar_ax</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">on_release</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">released</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fill_cbar_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Put a colorbar-like image in the axes&quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cbar_ax</span>
+
+        <span class="c"># Dummy image to get the colorbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
+                             <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                             <span class="n">visible</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                             <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_im</span><span class="o">.</span><span class="n">drawon</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar</span> <span class="o">=</span> <span class="n">colorbar_factory</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_im</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DragableColorLine.update"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DragableColorLine.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;update the properties of the line, redraw, and trigger observers&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">circles</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">circles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">center</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">circles</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">center</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb</span> <span class="o">=</span> <span class="n">equispaced_colormapping</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">make_cmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_im</span><span class="o">.</span><span class="n">set_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cbar_ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return whether the widget is active&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span>
+
+    <span class="nd">@active.setter</span>
+<div class="viewcode-block" id="DragableColorLine.active"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DragableColorLine.active">[docs]</a>    <span class="k">def</span> <span class="nf">active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">active</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set whether the widget is active&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="n">active</span>
+</div>
+<div class="viewcode-block" id="DragableColorLine.set_visible"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DragableColorLine.set_visible">[docs]</a>    <span class="k">def</span> <span class="nf">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isvisible</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set whether the widget is visible&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="n">isvisible</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="n">isvisible</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cbar_ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="DeformableLine"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DeformableLine">[docs]</a><span class="k">class</span> <span class="nc">DeformableLine</span><span class="p">(</span><span class="n">AxesWidget</span><span class="p">,</span> <span class="n">Actionable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Segemented line with movable vertexes</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">        Axes to draw the line on</span>
+<span class="sd">    is_closed : bool, optional default=False</span>
+<span class="sd">        Do the line endpoints connect?</span>
+<span class="sd">    max_points : int, optional default=None</span>
+<span class="sd">        Maximum number of points allowed in line</span>
+<span class="sd">    grows : bool, optional</span>
+<span class="sd">        May the line add segments</span>
+<span class="sd">    shrinks : bool, optional</span>
+<span class="sd">        May the line shed segments</span>
+<span class="sd">    line_kw : dict, optional</span>
+<span class="sd">        Dictionary to customize Line2D</span>
+<span class="sd">    circle_kw : dict, optional</span>
+<span class="sd">        Dictionary to customize Circles</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">        Axes to draw the line on</span>
+<span class="sd">    is_closed : bool, optional default=False</span>
+<span class="sd">        Do the line endpoints connect?</span>
+<span class="sd">    max_points : int | None</span>
+<span class="sd">        Maximum number of points allowed in line</span>
+<span class="sd">    grows : bool</span>
+<span class="sd">        May the line add segments</span>
+<span class="sd">    shrinks : bool</span>
+<span class="sd">        May the line shed segments</span>
+<span class="sd">    circle_kw : dict</span>
+<span class="sd">        Dictionary to customize Circles</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ACTIONS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;on_changed&#39;</span><span class="p">,</span> <span class="s">&#39;changed&#39;</span><span class="p">,</span> <span class="s">&#39;disconnect&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;on_release&#39;</span><span class="p">,</span> <span class="s">&#39;released&#39;</span><span class="p">,</span> <span class="s">&#39;disconnect_release&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
+                 <span class="n">is_closed</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">max_points</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">grows</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">shrinks</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">line_kw</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">circle_kw</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">AxesWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+        <span class="n">Actionable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release_observers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">kw</span> <span class="o">=</span> <span class="n">line_kw</span> <span class="k">if</span> <span class="n">line_kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">circle_kw</span> <span class="o">=</span> <span class="n">circle_kw</span> <span class="k">if</span> <span class="n">circle_kw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">circles</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving_ci</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="o">=</span> <span class="n">is_closed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_points</span> <span class="o">=</span> <span class="n">max_points</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lclick_cids</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grows</span> <span class="o">=</span> <span class="n">grows</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rclick_cids</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_can_shrink</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shrinks</span> <span class="o">=</span> <span class="n">shrinks</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_event</span><span class="p">(</span><span class="s">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_left_press</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_event</span><span class="p">(</span><span class="s">&#39;button_release_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_release</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_event</span><span class="p">(</span><span class="s">&#39;motion_notify_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_motion</span><span class="p">),</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shrinks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_can_shrink</span>
+
+    <span class="nd">@shrinks.setter</span>
+<div class="viewcode-block" id="DeformableLine.shrinks"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DeformableLine.shrinks">[docs]</a>    <span class="k">def</span> <span class="nf">shrinks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shrinks</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_can_shrink</span> <span class="o">=</span> <span class="n">shrinks</span>
+
+        <span class="k">if</span> <span class="n">shrinks</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rclick_cids</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rclick_cids</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">connect_event</span><span class="p">(</span><span class="s">&#39;button_press_event&#39;</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">_right_press</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">shrinks</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rclick_cids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">cid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rclick_cids</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rclick_cids</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="DeformableLine.add_point"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DeformableLine.add_point">[docs]</a>    <span class="k">def</span> <span class="nf">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a new segment to the DeformableLine&quot;&quot;&quot;</span>
+        <span class="c"># new circle</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span>
+        <span class="n">circle</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">circle_kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="c"># finish square if adding last corner</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_points</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">i</span>
+</div>
+<div class="viewcode-block" id="DeformableLine.remove_point"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DeformableLine.remove_point">[docs]</a>    <span class="k">def</span> <span class="nf">remove_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">artists</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="DeformableLine.set_visible"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DeformableLine.set_visible">[docs]</a>    <span class="k">def</span> <span class="nf">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isvisible</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="n">isvisible</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="n">isvisible</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="n">isvisible</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="DeformableLine.get_visible"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DeformableLine.get_visible">[docs]</a>    <span class="k">def</span> <span class="nf">get_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span>
+</div>
+    <span class="nd">@if_attentive</span>
+    <span class="k">def</span> <span class="nf">_left_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c"># Get the circle index</span>
+        <span class="k">for</span> <span class="n">ci</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">event</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">grows</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_points</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">max_points</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="p">)):</span>
+                <span class="n">ci</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_point</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+
+        <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">[</span><span class="n">ci</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving_ci</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span><span class="p">,</span> <span class="n">ci</span>
+
+    <span class="nd">@if_attentive</span>
+    <span class="k">def</span> <span class="nf">_right_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">ci</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">event</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_point</span><span class="p">(</span><span class="n">ci</span><span class="p">)</span>
+
+    <span class="nd">@if_attentive</span>
+    <span class="k">def</span> <span class="nf">_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">moving_ci</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moving_ci</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">released</span><span class="p">()</span>
+
+    <span class="nd">@if_attentive</span>
+    <span class="k">def</span> <span class="nf">_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">moving_ci</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">xc</span><span class="p">,</span> <span class="n">yc</span><span class="p">,</span> <span class="n">xclick</span><span class="p">,</span> <span class="n">yclick</span><span class="p">,</span> <span class="n">ci</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">moving_ci</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">xc</span> <span class="o">+</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">xdata</span> <span class="o">-</span> <span class="n">xclick</span><span class="p">),</span> <span class="n">yc</span> <span class="o">+</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">ydata</span> <span class="o">-</span> <span class="n">yclick</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_vertex</span><span class="p">(</span><span class="n">ci</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeformableLine.set_vertex"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DeformableLine.set_vertex">[docs]</a>    <span class="k">def</span> <span class="nf">set_vertex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ci</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">[</span><span class="n">ci</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_points</span> <span class="ow">and</span> <span class="n">ci</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ys</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="DeformableLine.vertexes"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.DeformableLine.vertexes">[docs]</a>    <span class="k">def</span> <span class="nf">vertexes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">get_xydata</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="ShutterCrop"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ShutterCrop">[docs]</a><span class="k">class</span> <span class="nc">ShutterCrop</span><span class="p">(</span><span class="n">AxesWidget</span><span class="p">,</span> <span class="n">Actionable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crop an image by dragging transparent panes over excluded region.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dx_frac : float, optional, default=0.05</span>
+<span class="sd">        Initial fraction of view that is cropped on each side</span>
+
+<span class="sd">    **rect_kw : optional</span>
+<span class="sd">        Keyword args to customize the shutter `Rectangle`</span>
+
+<span class="sd">    By default, shutters have:</span>
+<span class="sd">        facecolor=&#39;gray&#39;,</span>
+<span class="sd">        edgecolor=&#39;none&#39;,</span>
+<span class="sd">        alpha=0.5,</span>
+<span class="sd">        picker=5</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">        Axes to draw the shutters on</span>
+<span class="sd">    rects : dict</span>
+<span class="sd">        Dictionary of Rectangles</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ACTIONS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;on_changed&#39;</span><span class="p">,</span> <span class="s">&#39;changed&#39;</span><span class="p">,</span> <span class="s">&#39;disconnect&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">dx_frac</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">**</span><span class="n">rect_kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rects</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># AxesWidget sets active=True, so rects needs to exist</span>
+        <span class="n">AxesWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+        <span class="n">Actionable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_pick</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s">&#39;gray&#39;</span><span class="p">,</span>
+            <span class="n">edgecolor</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">picker</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rect_kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_make_rects</span><span class="p">(</span><span class="n">dx_frac</span><span class="p">,</span> <span class="n">kw</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_event</span><span class="p">(</span><span class="s">&#39;pick_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pick</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_event</span><span class="p">(</span><span class="s">&#39;button_release_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_release</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_event</span><span class="p">(</span><span class="s">&#39;motion_notify_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_motion</span><span class="p">),</span>
+
+    <span class="k">def</span> <span class="nf">_make_rects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dx_frac</span><span class="p">,</span> <span class="n">kw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the rectangles for each shutter&quot;&quot;&quot;</span>
+        <span class="n">xlo</span><span class="p">,</span> <span class="n">xhi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">xhi</span> <span class="o">-</span> <span class="n">xlo</span>
+        <span class="n">ylo</span><span class="p">,</span> <span class="n">yhi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">yhi</span> <span class="o">-</span> <span class="n">ylo</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">dx_frac</span> <span class="o">*</span> <span class="n">dx</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">dx_frac</span> <span class="o">*</span> <span class="n">dy</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;north&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">((</span><span class="n">xlo</span><span class="p">,</span> <span class="n">yhi</span> <span class="o">-</span> <span class="n">height</span><span class="p">),</span> <span class="n">dx</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;south&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">((</span><span class="n">xlo</span><span class="p">,</span> <span class="n">ylo</span><span class="p">),</span> <span class="n">dx</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;east&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">((</span><span class="n">xhi</span> <span class="o">-</span> <span class="n">width</span><span class="p">,</span> <span class="n">ylo</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;west&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">((</span><span class="n">xlo</span><span class="p">,</span> <span class="n">ylo</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ShutterCrop.set_visible"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ShutterCrop.set_visible">[docs]</a>    <span class="k">def</span> <span class="nf">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">isvisible</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make the widget (in)visible&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visible</span> <span class="o">=</span> <span class="n">isvisible</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="n">isvisible</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ShutterCrop.get_visible"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ShutterCrop.get_visible">[docs]</a>    <span class="k">def</span> <span class="nf">get_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return whether the widget is visible&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible</span>
+</div>
+<div class="viewcode-block" id="ShutterCrop.get_extents"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ShutterCrop.get_extents">[docs]</a>    <span class="k">def</span> <span class="nf">get_extents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the extents of the cropped image&quot;&quot;&quot;</span>
+        <span class="n">west</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;west&#39;</span><span class="p">]</span>
+        <span class="n">xlo</span> <span class="o">=</span> <span class="n">west</span><span class="o">.</span><span class="n">get_x</span><span class="p">()</span> <span class="o">+</span> <span class="n">west</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span>
+        <span class="n">xhi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;east&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_x</span><span class="p">()</span>
+
+        <span class="n">south</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;south&#39;</span><span class="p">]</span>
+        <span class="n">ylo</span> <span class="o">=</span> <span class="n">south</span><span class="o">.</span><span class="n">get_y</span><span class="p">()</span> <span class="o">+</span> <span class="n">south</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span>
+        <span class="n">yhi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;north&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_y</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">xlo</span><span class="p">,</span> <span class="n">xhi</span><span class="p">,</span> <span class="n">ylo</span><span class="p">,</span> <span class="n">yhi</span>
+</div>
+    <span class="nd">@if_attentive</span>
+    <span class="k">def</span> <span class="nf">_pick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">artist</span> <span class="ow">is</span> <span class="n">r</span><span class="p">:</span>
+                <span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">get_x</span><span class="p">(),</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">get_y</span><span class="p">(),</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">get_width</span><span class="p">(),</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">get_height</span><span class="p">(),</span>
+                <span class="p">)</span>
+                <span class="n">click</span> <span class="o">=</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">mouseevent</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">mouseevent</span><span class="o">.</span><span class="n">ydata</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">active_pick</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">click</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+                <span class="k">return</span>
+
+    <span class="nd">@if_attentive</span>
+    <span class="k">def</span> <span class="nf">_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Callback for to stop monitoring a picked artist&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_pick</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="nd">@if_attentive</span>
+    <span class="k">def</span> <span class="nf">_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Callback to move a picked artist&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_pick</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">bar</span><span class="p">,</span> <span class="p">(</span><span class="n">xclick</span><span class="p">,</span> <span class="n">yclick</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_pick</span>
+
+        <span class="k">if</span> <span class="n">bar</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;south&#39;</span><span class="p">]:</span>
+            <span class="n">new_height</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">ydata</span> <span class="o">-</span> <span class="n">yclick</span><span class="p">)</span>
+            <span class="n">bar</span><span class="o">.</span><span class="n">set_height</span><span class="p">(</span><span class="n">new_height</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bar</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;west&#39;</span><span class="p">]:</span>
+            <span class="n">new_w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">xdata</span> <span class="o">-</span> <span class="n">xclick</span><span class="p">)</span>
+            <span class="n">bar</span><span class="o">.</span><span class="n">set_width</span><span class="p">(</span><span class="n">new_w</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bar</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;north&#39;</span><span class="p">]:</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span> <span class="o">-</span> <span class="n">yclick</span>
+            <span class="n">new_h</span> <span class="o">=</span> <span class="n">h</span> <span class="o">-</span> <span class="n">dy</span>
+            <span class="n">new_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">dy</span>
+            <span class="n">bar</span><span class="o">.</span><span class="n">set_height</span><span class="p">(</span><span class="n">new_h</span><span class="p">)</span>
+            <span class="n">bar</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="n">new_y</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bar</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">rects</span><span class="p">[</span><span class="s">&#39;east&#39;</span><span class="p">]:</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span> <span class="o">-</span> <span class="n">xclick</span>
+            <span class="n">new_w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">dx</span>
+            <span class="n">new_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">dx</span>
+            <span class="n">bar</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="n">new_x</span><span class="p">)</span>
+            <span class="n">bar</span><span class="o">.</span><span class="n">set_width</span><span class="p">(</span><span class="n">new_w</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="RecoloredWidget"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.RecoloredWidget">[docs]</a><span class="k">class</span> <span class="nc">RecoloredWidget</span><span class="p">(</span><span class="n">AxesWidget</span><span class="p">,</span> <span class="n">Actionable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Widget that recolors a multichannel image using a given a scale sequence</span>
+<span class="sd">    and associated colors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">        Axes to draw the widget</span>
+<span class="sd">    pixels : 3d array</span>
+<span class="sd">        Source pixels to recolor</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">        Axes to draw the widget</span>
+<span class="sd">    pixels : 3d array</span>
+<span class="sd">        Source pixels to recolor</span>
+<span class="sd">    image : matplotlib.Image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ACTIONS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;on_changed&#39;</span><span class="p">,</span> <span class="s">&#39;changed&#39;</span><span class="p">,</span> <span class="s">&#39;disconnect&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="c"># TODO what to do for colors &quot;far&quot; from scale</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">pixels</span><span class="p">):</span>
+        <span class="n">AxesWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+        <span class="n">Actionable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pixels</span> <span class="o">=</span> <span class="n">pixels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span>
+                                    <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span>
+                                    <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span>
+                                    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="RecoloredWidget.make_xyextent_textboxes"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.RecoloredWidget.make_xyextent_textboxes">[docs]</a>    <span class="k">def</span> <span class="nf">make_xyextent_textboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax_xlo</span><span class="p">,</span> <span class="n">ax_xhi</span><span class="p">,</span> <span class="n">ax_ylo</span><span class="p">,</span> <span class="n">ax_yhi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create text boxes for x-axis &amp; y-axis limits</span>
+<span class="sd">        connect them to the right image so that it extents auto-update</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">get_extent</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_extent</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textboxes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">ax_xlo</span><span class="p">,</span> <span class="n">ax_xhi</span><span class="p">,</span> <span class="n">ax_ylo</span><span class="p">,</span> <span class="n">ax_yhi</span><span class="p">]):</span>
+            <span class="n">tb</span> <span class="o">=</span> <span class="n">TextBoxFloat</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ext</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">tb</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_side_extent</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">textboxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="RecoloredWidget.set_side_extent"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.RecoloredWidget.set_side_extent">[docs]</a>    <span class="k">def</span> <span class="nf">set_side_extent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the cropping extent for a single side `side` to value `val`&quot;&quot;&quot;</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">get_extent</span><span class="p">())</span>
+        <span class="n">ext</span><span class="p">[</span><span class="n">side</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_extent</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="RecoloredWidget.crop"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.RecoloredWidget.crop">[docs]</a>    <span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Crop self.image to the given extent&quot;&quot;&quot;</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">:</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x0</span>
+        <span class="k">if</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="n">y0</span><span class="p">:</span>
+            <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y0</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="n">y0</span><span class="p">:</span><span class="n">y1</span><span class="p">,</span> <span class="n">x0</span><span class="p">:</span><span class="n">x1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">pix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="RecoloredWidget.digitize"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.RecoloredWidget.digitize">[docs]</a>    <span class="k">def</span> <span class="nf">digitize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">rgb</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Using the new scale &quot;l&quot; and colorsequence &quot;rgb&quot; translate all pixels</span>
+<span class="sd">        to the new scale, create a cbar with l &amp; rgb, and redraw the image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">=</span> <span class="n">l</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rgb</span> <span class="o">=</span> <span class="n">rgb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">invert_cmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pixels</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">rgb</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">make_cmap</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">rgb</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_cmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="make_cmap"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.make_cmap">[docs]</a><span class="k">def</span> <span class="nf">make_cmap</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">rgb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make a colormap from the sequence of distances &amp; colors&quot;&quot;&quot;</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">rgb</span><span class="p">)]</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">seq</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmap</span>
+
+</div>
+<div class="viewcode-block" id="ScaledColorbar"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ScaledColorbar">[docs]</a><span class="k">class</span> <span class="nc">ScaledColorbar</span><span class="p">(</span><span class="n">AxesWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Colorbar with manually specified extrema</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">        parent axes</span>
+<span class="sd">    im : ScalarMappable</span>
+<span class="sd">        ScalarMappable to draw a colorbar for</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cbar : matplotlib Colorbar</span>
+<span class="sd">        colorbar</span>
+<span class="sd">    fmt : matplotlib formatter</span>
+<span class="sd">        colorbar text formatter</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+        <span class="n">AxesWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar</span> <span class="o">=</span> <span class="n">colorbar_factory</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">im</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cbar</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">OffsetFormatter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ScaledColorbar.set_min"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ScaledColorbar.set_min">[docs]</a>    <span class="k">def</span> <span class="nf">set_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">mn</span> <span class="o">=</span> <span class="n">mn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar</span><span class="o">.</span><span class="n">update_ticks</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ScaledColorbar.set_max"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.ScaledColorbar.set_max">[docs]</a>    <span class="k">def</span> <span class="nf">set_max</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mx</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="o">.</span><span class="n">mx</span> <span class="o">=</span> <span class="n">mx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cbar</span><span class="o">.</span><span class="n">update_ticks</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="OffsetFormatter"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.OffsetFormatter">[docs]</a><span class="k">class</span> <span class="nc">OffsetFormatter</span><span class="p">(</span><span class="n">ScalarFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    child of matplotlib.ScalarFormatter to make it easy to set the numerical</span>
+<span class="sd">    limits of the colorbar</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    *args : optional</span>
+<span class="sd">        positional arguments to forward to ScalarFormatter</span>
+<span class="sd">    *kwargs : optional</span>
+<span class="sd">        keyword arguments to forward to ScalarFormatter</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mn : number</span>
+<span class="sd">        scale minimum</span>
+<span class="sd">    mx : number</span>
+<span class="sd">        scale maximum</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">ScalarFormatter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mn</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mx</span> <span class="o">=</span> <span class="mf">1.</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">dc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mx</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mn</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="n">dc</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mn</span>
+        <span class="k">return</span> <span class="n">ScalarFormatter</span><span class="o">.</span><span class="n">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="CroppedImage"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.CroppedImage">[docs]</a><span class="k">class</span> <span class="nc">CroppedImage</span><span class="p">(</span><span class="n">AxesWidget</span><span class="p">,</span> <span class="n">Actionable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Widget that recolors a multichannel image using a given a scale sequence</span>
+<span class="sd">    and associated colors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">        Axes to draw the widget</span>
+<span class="sd">    pixels : 3d array</span>
+<span class="sd">        Source pixels to recolor</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : axes</span>
+<span class="sd">        Axes to draw the widget</span>
+<span class="sd">    pixels : 3d array</span>
+<span class="sd">        Source pixels to recolor</span>
+<span class="sd">    image : matplotlib image</span>
+<span class="sd">        The image displayed on the axes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ACTIONS</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;on_changed&#39;</span><span class="p">,</span> <span class="s">&#39;changed&#39;</span><span class="p">,</span> <span class="s">&#39;disconect&#39;</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="c"># TODO what to do for colors &quot;far&quot; from scale</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">pixels</span><span class="p">):</span>
+        <span class="n">AxesWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+        <span class="n">Actionable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span>
+                                    <span class="n">aspect</span><span class="o">=</span><span class="s">&#39;auto&#39;</span><span class="p">,</span>
+                                    <span class="n">interpolation</span><span class="o">=</span><span class="s">&#39;none&#39;</span><span class="p">,</span>
+                                    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="CroppedImage.make_xyextent_textboxes"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.CroppedImage.make_xyextent_textboxes">[docs]</a>    <span class="k">def</span> <span class="nf">make_xyextent_textboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax_xlo</span><span class="p">,</span> <span class="n">ax_xhi</span><span class="p">,</span> <span class="n">ax_ylo</span><span class="p">,</span> <span class="n">ax_yhi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create text boxes for x-axis &amp; y-axis limits</span>
+<span class="sd">        connect them to the right image so that it extents auto-update</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">get_extent</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_extent</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textboxes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">ax_xlo</span><span class="p">,</span> <span class="n">ax_xhi</span><span class="p">,</span> <span class="n">ax_ylo</span><span class="p">,</span> <span class="n">ax_yhi</span><span class="p">]):</span>
+            <span class="n">tb</span> <span class="o">=</span> <span class="n">TextBoxFloat</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ext</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="n">tb</span><span class="o">.</span><span class="n">on_changed</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_side_extent</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">textboxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CroppedImage.set_side_extent"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.CroppedImage.set_side_extent">[docs]</a>    <span class="k">def</span> <span class="nf">set_side_extent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the cropping extent for a single side `side` to value `val`&quot;&quot;&quot;</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">get_extent</span><span class="p">())</span>
+        <span class="n">ext</span><span class="p">[</span><span class="n">side</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_extent</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ext</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ext</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+</div>
+<div class="viewcode-block" id="CroppedImage.crop"><a class="viewcode-back" href="../../yoink.html#yoink.widgets.CroppedImage.crop">[docs]</a>    <span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Crop self.image to the given extent&quot;&quot;&quot;</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x1</span> <span class="o">&lt;</span> <span class="n">x0</span><span class="p">:</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x0</span>
+        <span class="k">if</span> <span class="n">y1</span> <span class="o">&lt;</span> <span class="n">y0</span><span class="p">:</span>
+            <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y0</span>
+        <span class="n">pix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">[</span><span class="n">y0</span><span class="p">:</span><span class="n">y1</span><span class="p">,</span> <span class="n">x0</span><span class="p">:</span><span class="n">x1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">pix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/shrimp_b.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

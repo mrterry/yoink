@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to Yoink’s documentation! &mdash; yoink 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="yoink 0.2 documentation" href="#" />
+    <link rel="next" title="Example Notebooks" href="notebooks/notebooks.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="notebooks/notebooks.html" title="Example Notebooks"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">yoink 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-yoink-s-documentation">
+<h1>Welcome to Yoink&#8217;s documentation!<a class="headerlink" href="#welcome-to-yoink-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Yoink is a tool for extracting data from rasterized images.</p>
+<p>Say you have an academic paper with an figure containing data you would like
+to use.  Unfortunately, the raw data is not available.  All you have is the
+image on the page.  Fortunately, the image contains all the information you
+need: clear lines, axis labels, and colorbar (if a colormapped image).  Yoink
+helps you extract (&#8220;yoink!&#8221;) the data from your picture.</p>
+<p>Yoink is pure Python and has a minimal set of dependencies (which you probably
+already have installed), to help you get your data instead of installing
+software.</p>
+<p>At SciPy 2013, Matt Terry gave a humorous <a class="reference external" href="http://www.youtube.com/watch?v=ywHqIEv3xXg&amp;t=31m42s">lighting talk</a> demonstrating
+yoink pulling data from an image despite an especially obnoxious colormap.</p>
+<iframe src="http://www.youtube.com/embed/ywHqIEv3xXg?start=1902" style="border: 0; height: 345px; width: 560px">
+</iframe><p>Follow the development on GitHub: <cite>https://github.com/mrterry/yoink</cite>.  Feedback
+and pull requests are welcome.</p>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Yoink currently depends on:</p>
+<ul class="simple">
+<li>numpy</li>
+<li>scipy</li>
+<li>matplotlib</li>
+<li>scikit-image</li>
+</ul>
+</div>
+<div class="section" id="helpful-links">
+<h2>Helpful Links<a class="headerlink" href="#helpful-links" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/notebooks.html">Example Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/notebooks.html#cmapextractor-demo">CmapExtractor Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/notebooks.html#manual-colormap-extraction">Manual Colormap Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/notebooks.html#manual-line-extraction">Manual Line Extraction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="walkthrough.html">Extracting colormapped data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#preparing-you-image">Preparing you image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#create-select-annotate-figures">Create Select &amp; Annotate Figures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#select-colorbar">Select Colorbar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#crop-image">Crop Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#annoate-and-dump">Annoate and Dump</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#performance">Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#key-press-events">Key Press Events</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">yoink</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="yoink.html">yoink Package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="thanks">
+<h2>Thanks<a class="headerlink" href="#thanks" title="Permalink to this headline">¶</a></h2>
+<p>The image of the beautiful, yet deadly mantis
+<a class="reference external" href="http://www.flickr.com/photos/jayvee/8766788164/">shrimp</a>
+courtesy
+<a class="reference external" href="http://abuggedlife.com">Jayvee Fernandez</a>,
+licensed under a Creative Commons CC-By-2.0 license.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/shrimp_b.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to Yoink&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#helpful-links">Helpful Links</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#thanks">Thanks</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="notebooks/notebooks.html"
+                        title="next chapter">Example Notebooks</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="notebooks/notebooks.html" title="Example Notebooks"
+             >next</a> |</li>
+        <li><a href="#">yoink 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, matt terry.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
