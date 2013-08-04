@@ -60,7 +60,7 @@
 <span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">ScalarFormatter</span>
 
 <span class="kn">from</span> <span class="nn">.textbox</span> <span class="kn">import</span> <span class="n">TextBoxFloat</span>
-<span class="kn">from</span> <span class="nn">.trace</span> <span class="kn">import</span> <span class="n">equispaced_colormaping</span>
+<span class="kn">from</span> <span class="nn">.trace</span> <span class="kn">import</span> <span class="n">equispaced_colormapping</span>
 <span class="kn">from</span> <span class="nn">.interp</span> <span class="kn">import</span> <span class="n">invert_cmap</span>
 
 <span class="kn">from</span> <span class="nn">.has_actions</span> <span class="kn">import</span> <span class="n">Actionable</span>
@@ -198,7 +198,7 @@
             <span class="k">return</span>
         <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">circles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">center</span>
         <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">circles</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">center</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb</span> <span class="o">=</span> <span class="n">equispaced_colormaping</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb</span> <span class="o">=</span> <span class="n">equispaced_colormapping</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">)</span>
         <span class="n">cmap</span> <span class="o">=</span> <span class="n">make_cmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_im</span><span class="o">.</span><span class="n">set_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drawon</span><span class="p">:</span>

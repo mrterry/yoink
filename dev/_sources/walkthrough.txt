@@ -4,7 +4,7 @@ Say you have a color-mapped image that contains data that you want.  For
 illustration purposes, we'll use this strangely colored elevation map of the
 Yosemite valley.
 
-.. figure:: _images/yosemite.png
+.. figure:: ../_images/yosemite.png
     :height: 250px
 
 Content-wise, the image provides all the information you need:
@@ -59,14 +59,14 @@ within the image and the annotate figure to set the limits of the x-axis,
 y-axis, and colorbar.
 
 
-.. figure:: _images/select_fig.png
+.. figure:: ../_images/select_fig.png
     :height: 250px
 
     Use this figure to select the frame of your data and to select the
     colorbar.
 
 
-.. figure:: _images/annoate_fig.png
+.. figure:: ../_images/annoate_fig.png
     :height: 250px
 
     Use this window to annotate the axes limits and the colorbar limits.
@@ -79,7 +79,7 @@ picking "Select Colorbar" radio button.  Then drag the endpoints of the newly
 visible line to the endpoints of the colorbar on the image.  Yoink shows you
 the colorbar you've selected to the right of the image.
 
-.. figure:: _images/select_cbar.png
+.. figure:: ../_images/select_cbar.png
     :height: 250px
 
 
@@ -89,7 +89,7 @@ Next crop the image.  Activate the image cropper by selecting "Crop Image".
 Drag the shutters so that only the image within the image is not obscured.
 Note that the image in annotate figure updates as you drag the shutters.
 
-.. figure:: _images/select_crop.png
+.. figure:: ../_images/select_crop.png
     :height: 250px
 
     This figure has correctly select the top of the colorbar
@@ -100,7 +100,7 @@ you how yoink is interpreting your selected data.  The picture in the annotate
 figure should look like the figure you are selecting.  If the colors are off,
 there is something wrong with the colorbar selection.
 
-.. figure:: _images/annotate_crop.png
+.. figure:: ../_images/annotate_crop.png
     :height: 250px
 
 
@@ -115,5 +115,5 @@ yoinking).  If you are running yoink from the command line, click the
 "Dump to file" button to text files or a single numpy npz file (depending of
 the suffix of the output file name).  If running yoink from an interactive
 Python session, :func:`yoink.cmap_app.CmapExtractor.get_data` will return a
-dictionary of extracted data.  It provides the `x`, `y`, and `z` data as
-well as the discrete colormapping: `l`, and `rgb`.
+dictionary of extracted data.  It provides the ``x``, ``y``, and ``z`` data as
+well as the discrete colormapping: ``l``, and ``rgb``.

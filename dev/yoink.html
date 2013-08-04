@@ -24,7 +24,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="yoink 0.2 documentation" href="index.html" /> 
+    <link rel="top" title="yoink 0.2 documentation" href="index.html" />
+    <link rel="up" title="yoink" href="modules.html" />
+    <link rel="next" title="data Package" href="yoink.data.html" />
+    <link rel="prev" title="yoink" href="modules.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,7 +39,14 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">yoink 0.2 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="yoink.data.html" title="data Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="yoink"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" accesskey="U">yoink</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -593,8 +603,8 @@ min(x**2+y**2), argmin(y), argmax(x), left</p>
 <div class="section" id="module-yoink.line_app">
 <span id="line-app-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">line_app</span></tt> Module<a class="headerlink" href="#module-yoink.line_app" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="yoink.line_app.LineExtrator">
-<em class="property">class </em><tt class="descclassname">yoink.line_app.</tt><tt class="descname">LineExtrator</tt><big>(</big><em>pixels</em>, <em>path</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor">
+<em class="property">class </em><tt class="descclassname">yoink.line_app.</tt><tt class="descname">LineExtractor</tt><big>(</big><em>pixels</em>, <em>path</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -661,43 +671,43 @@ min(x**2+y**2), argmin(y), argmax(x), left</p>
 </tbody>
 </table>
 <dl class="method">
-<dt id="yoink.line_app.LineExtrator.create_annotate_figure">
-<tt class="descname">create_annotate_figure</tt><big>(</big><em>gut=0.04</em>, <em>sepx=0.05</em>, <em>sepy=0.04</em>, <em>wide=0.09</em>, <em>tall=0.06</em>, <em>**ax_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator.create_annotate_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator.create_annotate_figure" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor.create_annotate_figure">
+<tt class="descname">create_annotate_figure</tt><big>(</big><em>gut=0.04</em>, <em>sepx=0.05</em>, <em>sepy=0.04</em>, <em>wide=0.09</em>, <em>tall=0.06</em>, <em>**ax_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor.create_annotate_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor.create_annotate_figure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="yoink.line_app.LineExtrator.create_selector_figure">
-<tt class="descname">create_selector_figure</tt><big>(</big><em>gut=0.04</em>, <em>sepx=0.01</em>, <em>wide=0.2</em>, <em>tall=0.3</em>, <em>**ax_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator.create_selector_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator.create_selector_figure" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor.create_selector_figure">
+<tt class="descname">create_selector_figure</tt><big>(</big><em>gut=0.04</em>, <em>sepx=0.01</em>, <em>wide=0.2</em>, <em>tall=0.3</em>, <em>**ax_kwargs</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor.create_selector_figure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor.create_selector_figure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="yoink.line_app.LineExtrator.create_selector_toggle">
-<tt class="descname">create_selector_toggle</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator.create_selector_toggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator.create_selector_toggle" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor.create_selector_toggle">
+<tt class="descname">create_selector_toggle</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor.create_selector_toggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor.create_selector_toggle" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="yoink.line_app.LineExtrator.dump">
-<tt class="descname">dump</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator.dump" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor.dump">
+<tt class="descname">dump</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor.dump" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="yoink.line_app.LineExtrator.dump_npz">
-<tt class="descname">dump_npz</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator.dump_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator.dump_npz" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor.dump_npz">
+<tt class="descname">dump_npz</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor.dump_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor.dump_npz" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="yoink.line_app.LineExtrator.dump_txt">
-<tt class="descname">dump_txt</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator.dump_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator.dump_txt" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor.dump_txt">
+<tt class="descname">dump_txt</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor.dump_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor.dump_txt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="yoink.line_app.LineExtrator.get_data">
-<tt class="descname">get_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator.get_data" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor.get_data">
+<tt class="descname">get_data</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor.get_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="yoink.line_app.LineExtrator.toggle_state">
-<tt class="descname">toggle_state</tt><big>(</big><em>new_state</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtrator.toggle_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtrator.toggle_state" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.line_app.LineExtractor.toggle_state">
+<tt class="descname">toggle_state</tt><big>(</big><em>new_state</em><big>)</big><a class="reference internal" href="_modules/yoink/line_app.html#LineExtractor.toggle_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.line_app.LineExtractor.toggle_state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the active selector widget</p>
 </dd></dl>
 
@@ -757,7 +767,13 @@ the values are dicts of keyboard-keys and how far to shift the image
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>iseq</strong> : array</p>
+<tr class="field-odd field"><th class="field-name">Parameters :</th><td class="field-body"><p class="first"><strong>img</strong> : 2d array_like</p>
+<blockquote>
+<div><p>image to extract line from</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns :</th><td class="field-body"><p class="first"><strong>iseq</strong> : array</p>
 <blockquote>
 <div><p>1d sequnce of i coordinates</p>
 </div></blockquote>
@@ -1034,8 +1050,8 @@ digital plotter&#8221;. IBM Systems Journal 4 (1): 25-30.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="yoink.trace.equispaced_colormaping">
-<tt class="descclassname">yoink.trace.</tt><tt class="descname">equispaced_colormaping</tt><big>(</big><em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em>, <em>im</em>, <em>N=256</em>, <em>order=1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#equispaced_colormaping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.equispaced_colormaping" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.trace.equispaced_colormapping">
+<tt class="descclassname">yoink.trace.</tt><tt class="descname">equispaced_colormapping</tt><big>(</big><em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em>, <em>im</em>, <em>N=256</em>, <em>order=1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#equispaced_colormapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.equispaced_colormapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get lineout from x0/y0 to x1/y1 with equally spaced points.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1061,8 +1077,8 @@ digital plotter&#8221;. IBM Systems Journal 4 (1): 25-30.</p>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="yoink.trace.naive_colormaping">
-<tt class="descclassname">yoink.trace.</tt><tt class="descname">naive_colormaping</tt><big>(</big><em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em>, <em>im</em>, <em>order=1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#naive_colormaping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.naive_colormaping" title="Permalink to this definition">¶</a></dt>
+<dt id="yoink.trace.naive_colormapping">
+<tt class="descclassname">yoink.trace.</tt><tt class="descname">naive_colormapping</tt><big>(</big><em>x0</em>, <em>y0</em>, <em>x1</em>, <em>y1</em>, <em>im</em>, <em>order=1</em><big>)</big><a class="reference internal" href="_modules/yoink/trace.html#naive_colormapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yoink.trace.naive_colormapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get lineout from x0/y0 to x1/y1 with points takein from naive_trace ray
 tracing algorithm.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -2034,6 +2050,12 @@ picker=5</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">yoink</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="yoink.data.html"
+                        title="next chapter">data Package</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/yoink.txt"
@@ -2065,7 +2087,14 @@ picker=5</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="index.html">yoink 0.2 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="yoink.data.html" title="data Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="yoink"
+             >previous</a> |</li>
+        <li><a href="index.html">yoink 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >yoink</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

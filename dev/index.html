@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="yoink 0.2 documentation" href="#" />
-    <link rel="next" title="Example Notebooks" href="notebooks.html" /> 
+    <link rel="next" title="Example Notebooks" href="notebooks/notebooks.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="notebooks.html" title="Example Notebooks"
+          <a href="notebooks/notebooks.html" title="Example Notebooks"
              accesskey="N">next</a> |</li>
         <li><a href="#">yoink 0.2 documentation</a> &raquo;</li> 
       </ul>
@@ -63,7 +63,9 @@ software.</p>
 <p>At SciPy 2013, Matt Terry gave a humorous <a class="reference external" href="http://www.youtube.com/watch?v=ywHqIEv3xXg&amp;t=31m42s">lighting talk</a> demonstrating
 yoink pulling data from an image despite an especially obnoxious colormap.</p>
 <iframe src="http://www.youtube.com/embed/ywHqIEv3xXg?start=1902" style="border: 0; height: 345px; width: 560px">
-</iframe><div class="section" id="dependencies">
+</iframe><p>Follow the development on GitHub: <cite>https://github.com/mrterry/yoink</cite>.  Feedback
+and pull requests are welcome.</p>
+<div class="section" id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <p>Yoink currently depends on:</p>
 <ul class="simple">
@@ -77,10 +79,10 @@ yoink pulling data from an image despite an especially obnoxious colormap.</p>
 <h2>Helpful Links<a class="headerlink" href="#helpful-links" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="notebooks.html">Example Notebooks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks.html#cmapextractor-demo">CmapExtractor Demo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks.html#manual-colormap-extraction">Manual Colormap Extraction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks.html#manual-line-extraction">Manual Line Extraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/notebooks.html">Example Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/notebooks.html#cmapextractor-demo">CmapExtractor Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/notebooks.html#manual-colormap-extraction">Manual Colormap Extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/notebooks.html#manual-line-extraction">Manual Line Extraction</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="walkthrough.html">Extracting colormapped data</a><ul>
@@ -91,19 +93,17 @@ yoink pulling data from an image despite an especially obnoxious colormap.</p>
 <li class="toctree-l2"><a class="reference internal" href="walkthrough.html#annoate-and-dump">Annoate and Dump</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="known_issues.html">Known Issues</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#performance">Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="known_issues.html#key-press-events">Key Press Events</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">yoink</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="yoink.html">yoink Package</a></li>
+</ul>
+</li>
 </ul>
 </div>
-</div>
-<div class="section" id="known-issues">
-<h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">¶</a></h2>
-<p>The custom widgets provided by yoink are designed to work independent of the
-backend.  Yes, even with the quirky macosx backend.  That said, we recommend
-running the integrated extractors (
-<a class="reference internal" href="yoink.html#yoink.cmap_app.CmapExtractor" title="yoink.cmap_app.CmapExtractor"><tt class="xref py py-class docutils literal"><span class="pre">yoink.cmap_app.CmapExtractor</span></tt></a>, and
-<tt class="xref py py-class docutils literal"><span class="pre">yoink.line_app.LineExtractor</span></tt>)
-with matplotlib <em>not</em> in interactive mode.  Some drawing operations and
-reasonable performance requires programatic control over redraws.  There no
-known performance issues with using the widgets individually.</p>
 </div>
 <div class="section" id="thanks">
 <h2>Thanks<a class="headerlink" href="#thanks" title="Permalink to this headline">¶</a></h2>
@@ -131,14 +131,13 @@ licensed under a Creative Commons CC-By-2.0 license.</p>
 <li><a class="reference internal" href="#helpful-links">Helpful Links</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#known-issues">Known Issues</a></li>
 <li><a class="reference internal" href="#thanks">Thanks</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="notebooks.html"
+  <p class="topless"><a href="notebooks/notebooks.html"
                         title="next chapter">Example Notebooks</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
@@ -172,7 +171,7 @@ licensed under a Creative Commons CC-By-2.0 license.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="notebooks.html" title="Example Notebooks"
+          <a href="notebooks/notebooks.html" title="Example Notebooks"
              >next</a> |</li>
         <li><a href="#">yoink 0.2 documentation</a> &raquo;</li> 
       </ul>

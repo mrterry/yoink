@@ -19,6 +19,8 @@ __ http://www.youtube.com/watch?v=ywHqIEv3xXg&t=31m42s
 
 .. youtube:: ywHqIEv3xXg?start=1902
 
+Follow the development on GitHub: `https://github.com/mrterry/yoink`.  Feedback
+and pull requests are welcome.
 
 Dependencies
 ------------
@@ -36,20 +38,10 @@ Helpful Links
 .. toctree::
    :maxdepth: 2
 
-   notebooks
+   notebooks/notebooks
    walkthrough
-
-
-Known Issues
-------------
-The custom widgets provided by yoink are designed to work independent of the
-backend.  Yes, even with the quirky macosx backend.  That said, we recommend
-running the integrated extractors (
-:class:`yoink.cmap_app.CmapExtractor`, and 
-:class:`yoink.line_app.LineExtractor`)
-with matplotlib *not* in interactive mode.  Some drawing operations and
-reasonable performance requires programatic control over redraws.  There no
-known performance issues with using the widgets individually.
+   known_issues
+   modules
 
 
 Thanks

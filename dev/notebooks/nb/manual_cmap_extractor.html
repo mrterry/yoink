@@ -8,35 +8,35 @@
     
     <title>&lt;no title&gt; &mdash; yoink 0.2 documentation</title>
     
-    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
+        URL_ROOT:    '../../',
         VERSION:     '0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="yoink 0.2 documentation" href="../index.html" /> 
+    <link rel="top" title="yoink 0.2 documentation" href="../../index.html" /> 
   </head>
   <body>
     <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
+          <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
+          <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">yoink 0.2 documentation</a> &raquo;</li> 
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -49,7 +49,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>[Yoinker]</title>
+<title>[]</title>
 <style type="text/css">
 .clearfix{*zoom:1;}.clearfix:before,.clearfix:after{display:table;content:"";line-height:0;}
 .clearfix:after{clear:both;}
@@ -1744,32 +1744,11 @@ init_mathjax();
 <div class="input hbox">
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">yoink.cmap_app</span> <span class="kn">import</span> <span class="n">CmapExtractor</span>
-<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell vbox">
-<div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">pix</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s">&#39;/Users/terry10/Downloads/v1_gridfloat/obfuscated.png&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pix</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell vbox">
-<div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">thing</span> <span class="o">=</span> <span class="n">CmapExtractor</span><span class="p">(</span><span class="n">pix</span><span class="p">,</span> <span class="s">&#39;test&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span class="o">%</span><span class="k">pylab</span> <span class="n">qt</span>
+<span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">yoink.widgets</span> <span class="kn">import</span> <span class="n">ShutterCrop</span><span class="p">,</span> <span class="n">DragableColorLine</span>
+<span class="kn">from</span> <span class="nn">yoink.interp</span> <span class="kn">import</span> <span class="n">invert_cmap</span>
 </pre></div>
 
 </div>
@@ -1781,20 +1760,7 @@ init_mathjax();
 
 <div class="hbox output_area"><div class="prompt"></div>
 <div class="box-flex1 output_subarea output_stream output_stdout">
-<pre>&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-</pre>
-</div>
-</div>
-
-<div class="hbox output_area"><div class="prompt"></div>
-<div class="box-flex1 output_subarea output_stream output_stderr">
-<pre>/Users/terry10/ana/envs/conda152/lib/python2.7/site-packages/matplotlib/image.py:628: UserWarning: The backend (matplotlib.backends.backend_macosx.RendererMac) does not support interpolation=&apos;none&apos;. The image will be interpolated with &apos;nearest&#96; mode.
-  warnings.warn(&quot;The backend (%s) does not support interpolation=&apos;none&apos;. The image will be interpolated with &apos;nearest&#96; mode.&quot; % renderer.__class__)
+<pre>Populating the interactive namespace from numpy and matplotlib
 </pre>
 </div>
 </div>
@@ -1804,10 +1770,16 @@ init_mathjax();
 </div>
 <div class="cell border-box-sizing code_cell vbox">
 <div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
-<span class="k">print</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<div class="highlight"><pre><span class="n">clf</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">X</span><span class="o">-</span><span class="n">Y</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">X</span><span class="o">+</span><span class="n">Y</span><span class="o">*</span><span class="n">X</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet_r</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -1817,10 +1789,11 @@ init_mathjax();
 <div class="output vbox">
 
 
-<div class="hbox output_area"><div class="prompt"></div>
-<div class="box-flex1 output_subarea output_stream output_stdout">
-<pre>[&apos;y&apos;, &apos;x&apos;, &apos;rgb&apos;, &apos;z&apos;, &apos;l&apos;]
-</pre>
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[7]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>&lt;matplotlib.colorbar.Colorbar instance at 0x111a68050&gt;</pre>
 </div>
 </div>
 
@@ -1829,11 +1802,10 @@ init_mathjax();
 </div>
 <div class="cell border-box-sizing code_cell vbox">
 <div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gist_earth</span><span class="p">)</span>
-<span class="c">#plt.imshow(height, cmap=plt.cm.gist_earth)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;cmap.png&#39;</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s">&#39;cmap.png&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -1841,19 +1813,204 @@ init_mathjax();
 </div>
 <div class="cell border-box-sizing code_cell vbox">
 <div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;3d&#39;</span><span class="p">)</span>
-<span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;rgb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="s">&#39;ko-&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;rgb&#39;</span><span class="p">]:</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">y</span><span class="p">],</span> <span class="p">[</span><span class="n">z</span><span class="p">],</span> <span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;red&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;green&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s">&#39;blue&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
 </pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[9]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>&lt;matplotlib.image.AxesImage at 0x11250a0d0&gt;</pre>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">cropper</span> <span class="o">=</span> <span class="n">ShutterCrop</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">())</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Cropping&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[10]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>&lt;matplotlib.text.Text at 0x112681ed0&gt;</pre>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">ext</span> <span class="o">=</span> <span class="n">cropper</span><span class="o">.</span><span class="n">get_extents</span><span class="p">()</span>
+<span class="n">j0</span><span class="p">,</span> <span class="n">jx</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ext</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">i0</span><span class="p">,</span> <span class="n">ix</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ext</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+<span class="n">img_crop</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j0</span><span class="p">:</span><span class="n">jx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">figure</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">imshow</span><span class="p">(</span><span class="n">img_crop</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[12]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>&lt;matplotlib.image.AxesImage at 0x111a128d0&gt;</pre>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">fake_ax</span> <span class="o">=</span> <span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">xl</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">()</span>
+<span class="n">yl</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">()</span>
+<span class="n">cbar_select</span> <span class="o">=</span> <span class="n">DragableColorLine</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">(),</span> <span class="n">fake_ax</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="o">*</span><span class="n">xl</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">*</span><span class="n">yl</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[13]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>(599.5, -0.5)</pre>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">cbar_select</span><span class="o">.</span><span class="n">rgb</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">cbar_select</span><span class="o">.</span><span class="n">rgb</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s">&#39;g&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cbar_select</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">cbar_select</span><span class="o">.</span><span class="n">rgb</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="s">&#39;b&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[14]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>[&lt;matplotlib.lines.Line2D at 0x111a86c10&gt;]</pre>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">z</span> <span class="o">=</span> <span class="n">invert_cmap</span><span class="p">(</span><span class="n">img_crop</span><span class="p">,</span> <span class="n">cbar_select</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">cbar_select</span><span class="o">.</span><span class="n">rgb</span><span class="p">)</span>
+<span class="n">zmin</span><span class="p">,</span> <span class="n">zmax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span>  <span class="c"># from colorbar</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">zmin</span> <span class="o">+</span> <span class="n">z</span><span class="o">*</span><span class="p">(</span><span class="n">zmax</span><span class="o">-</span><span class="n">zmin</span><span class="p">)</span>
+
+<span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+<span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span>  <span class="c"># PNGs index top to bottom</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">figure</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">clf</span><span class="p">()</span>
+<span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+<span class="n">pcolormesh</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet_r</span><span class="p">)</span>
+<span class="n">clim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+<span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet_r</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[24]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>&lt;matplotlib.collections.QuadMesh at 0x11682add0&gt;</pre>
+</div>
+</div>
 
 </div>
 </div>
@@ -1862,7 +2019,7 @@ init_mathjax();
 <div class="input hbox">
 <div class="prompt input_prompt">In&nbsp;[]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">s</span>
+<div class="highlight"><pre>
 </pre></div>
 
 </div>
@@ -1877,17 +2034,17 @@ init_mathjax();
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="../index.html">
-              <img class="logo" src="../_static/shrimp_b.png" alt="Logo"/>
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/shrimp_b.png" alt="Logo"/>
             </a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="../_sources/notebooks/cmap_demo.txt"
+    <li><a href="../../_sources/notebooks/nb/manual_cmap_extractor.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
+    <form class="search" action="../../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
@@ -1906,12 +2063,12 @@ init_mathjax();
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
+          <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
+          <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../index.html">yoink 0.2 documentation</a> &raquo;</li> 
+        <li><a href="../../index.html">yoink 0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

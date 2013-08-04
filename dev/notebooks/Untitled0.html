@@ -49,7 +49,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>[Yoinker]</title>
+<title>[]</title>
 <style type="text/css">
 .clearfix{*zoom:1;}.clearfix:before,.clearfix:after{display:table;content:"";line-height:0;}
 .clearfix:after{clear:both;}
@@ -1744,32 +1744,7 @@ init_mathjax();
 <div class="input hbox">
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">yoink.cmap_app</span> <span class="kn">import</span> <span class="n">CmapExtractor</span>
-<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell vbox">
-<div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">pix</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s">&#39;/Users/terry10/Downloads/v1_gridfloat/obfuscated.png&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pix</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell vbox">
-<div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">thing</span> <span class="o">=</span> <span class="n">CmapExtractor</span><span class="p">(</span><span class="n">pix</span><span class="p">,</span> <span class="s">&#39;test&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span class="o">%</span><span class="k">pylab</span>
 </pre></div>
 
 </div>
@@ -1781,20 +1756,8 @@ init_mathjax();
 
 <div class="hbox output_area"><div class="prompt"></div>
 <div class="box-flex1 output_subarea output_stream output_stdout">
-<pre>&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-&lt;class &apos;yoink.widgets.DragableColorLine&apos;&gt; draw
-</pre>
-</div>
-</div>
-
-<div class="hbox output_area"><div class="prompt"></div>
-<div class="box-flex1 output_subarea output_stream output_stderr">
-<pre>/Users/terry10/ana/envs/conda152/lib/python2.7/site-packages/matplotlib/image.py:628: UserWarning: The backend (matplotlib.backends.backend_macosx.RendererMac) does not support interpolation=&apos;none&apos;. The image will be interpolated with &apos;nearest&#96; mode.
-  warnings.warn(&quot;The backend (%s) does not support interpolation=&apos;none&apos;. The image will be interpolated with &apos;nearest&#96; mode.&quot; % renderer.__class__)
+<pre>Using matplotlib backend: MacOSX
+Populating the interactive namespace from numpy and matplotlib
 </pre>
 </div>
 </div>
@@ -1804,10 +1767,30 @@ init_mathjax();
 </div>
 <div class="cell border-box-sizing code_cell vbox">
 <div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">thing</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
-<span class="k">print</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<div class="highlight"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">clf</span><span class="p">()</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">imshow</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">gca</span><span class="p">()</span>
+<span class="n">img</span><span class="o">.</span><span class="n">set_extent</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1001</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">1004</span><span class="p">])</span>
+<span class="k">print</span> <span class="n">xlim</span><span class="p">()</span>
+<span class="n">xl</span> <span class="o">=</span> <span class="n">xlim</span><span class="p">()</span>
+<span class="n">yl</span> <span class="o">=</span> <span class="n">ylim</span><span class="p">()</span>
+<span class="c">#ax.set_yscale(&#39;log&#39;)</span>
+<span class="c">#ax.set_xscale(&#39;log&#39;)</span>
+<span class="n">xlim</span><span class="p">(</span><span class="o">*</span><span class="n">xl</span><span class="p">)</span>
+<span class="n">ylim</span><span class="p">(</span><span class="o">*</span><span class="n">yl</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -1819,8 +1802,16 @@ init_mathjax();
 
 <div class="hbox output_area"><div class="prompt"></div>
 <div class="box-flex1 output_subarea output_stream output_stdout">
-<pre>[&apos;y&apos;, &apos;x&apos;, &apos;rgb&apos;, &apos;z&apos;, &apos;l&apos;]
+<pre>(10.0, 1001.0)
 </pre>
+</div>
+</div>
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[53]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>(13.0, 1004.0)</pre>
 </div>
 </div>
 
@@ -1829,11 +1820,13 @@ init_mathjax();
 </div>
 <div class="cell border-box-sizing code_cell vbox">
 <div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;z&#39;</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gist_earth</span><span class="p">)</span>
-<span class="c">#plt.imshow(height, cmap=plt.cm.gist_earth)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span class="mo">00</span><span class="n">ext</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_extent</span><span class="p">()</span>
+<span class="n">ext</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">100</span>
+<span class="n">ext</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">100</span>
+<span class="n">img</span><span class="o">.</span><span class="n">set_extent</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+<span class="n">draw</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -1841,18 +1834,70 @@ init_mathjax();
 </div>
 <div class="cell border-box-sizing code_cell vbox">
 <div class="input hbox">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s">&#39;3d&#39;</span><span class="p">)</span>
-<span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;rgb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="s">&#39;ko-&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;rgb&#39;</span><span class="p">]:</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">y</span><span class="p">],</span> <span class="p">[</span><span class="n">z</span><span class="p">],</span> <span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;red&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;green&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s">&#39;blue&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class="highlight"><pre><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">*</span><span class="n">ext</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">draw</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[46]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">xlim</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[46]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>(0.01, 1.0009999999999999)</pre>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">img</span><span class="o">.</span><span class="n">get_ex</span><span class="p">()</span><span class="n">img</span><span class="o">.</span><span class="n">get_extent</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+
+<div class="vbox output_wrapper">
+<div class="output vbox">
+
+
+<div class="hbox output_area"><div class="prompt output_prompt">
+Out[47]:</div>
+<div class="box-flex1 output_subarea output_pyout">
+
+<pre>[1e-05, 0.001001, 13, 1004]</pre>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell vbox">
+<div class="input hbox">
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="input_area box-flex1">
+<div class="highlight"><pre><span class="n">c</span> <span class="kn">import</span> <span class="nn">a</span><span class="o">,</span> <span class="nn">b</span><span class="o">,</span> <span class="nn">c</span><span class="o">,</span> <span class="nn">x</span><span class="o">,</span> <span class="nn">yfrom</span> <span class="nn">sympy.abc</span> <span class="nn">import</span> <span class="nn">a</span><span class="o">,</span> <span class="nn">b</span><span class="o">,</span> <span class="nn">c</span><span class="o">,</span> <span class="nn">x</span><span class="o">,</span> <span class="nn">y</span>
 </pre></div>
 
 </div>
@@ -1862,7 +1907,7 @@ init_mathjax();
 <div class="input hbox">
 <div class="prompt input_prompt">In&nbsp;[]:</div>
 <div class="input_area box-flex1">
-<div class="highlight"><pre><span class="n">s</span>
+<div class="highlight"><pre><span class="k">print</span> <span class="n">exp</span>
 </pre></div>
 
 </div>
@@ -1882,7 +1927,7 @@ init_mathjax();
             </a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="../_sources/notebooks/cmap_demo.txt"
+    <li><a href="../_sources/notebooks/Untitled0.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
