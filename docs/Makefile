@@ -117,7 +117,7 @@ push-dev:
 	cp -r ../html/* dev/ && \
 	git add dev/ && \
 	git commit -am "Pushed dev docs at $(date)" && \
-	git push
+	git push origin gh-pages
 
 push-release:
 	cd $(BUILDDIR) && \
@@ -129,7 +129,7 @@ push-release:
 	cp -r ../html/* $(RELEASE)/ && \
 	git add $(RELEASE)/ && \
 	git commit -am "Pushed $(RELEASE) docs at $(date)" && \
-	git push
+	git push origin gh-pages
 
 push-root:
 	cd $(BUILDDIR) && \
@@ -140,4 +140,4 @@ push-root:
 	cp -r ../html/* . && \
 	git add . && \
 	git commit -am "Pushed root-level docs at $(date)" && \
-	git push
+	git push origin gh-pages
