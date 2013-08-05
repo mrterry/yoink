@@ -46,7 +46,7 @@ setup(
     classifiers=CLASSIFIERS,
     url=URL,
     packages=['yoink', 'yoink.data', 'yoink.test'],
-    package_data={'yoink': ['data/*.png']},
+    package_data={'yoink': ['data/*.png', 'test/*.txt']},
     scripts=['bin/yoink'],
     install_requires=['numpy', 'scipy', 'matplotlib >= 1.2'],
     requires=['numpy', 'scipy', 'matplotlib'],
