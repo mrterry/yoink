@@ -43,7 +43,7 @@ def rdp_indexes(points, eps2, dist2=None):
 
     stack = [(0, N-1)]
 
-    for i in range(N):
+    for i in xrange(N**2):
         if not stack:
             return sorted(keep)
 
