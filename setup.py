@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 descr = """Data Extraction Tools
 
@@ -41,14 +41,15 @@ setup(
     license=LICENSE,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
-    platform='Any',
-    hidden=True,
     classifiers=CLASSIFIERS,
     url=URL,
     packages=['yoink', 'yoink.data', 'yoink.test'],
     package_data={'yoink': ['data/*.png', 'test/*.txt']},
     scripts=['bin/yoink'],
-    install_requires=['numpy', 'scipy', 'matplotlib >= 1.2'],
-    requires=['numpy', 'scipy', 'matplotlib'],
+    install_requires=['numpy',
+                      'scipy',
+                      'matplotlib >=1.2',
+                      'scikit-image >=0.8',
+                      ],
     include_package_data=True,
 )
