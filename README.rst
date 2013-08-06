@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/mrterry/yoink.png
+   :target: https://travis-ci.org/mrterry/yoink
+
 Yoink
 =====
 
